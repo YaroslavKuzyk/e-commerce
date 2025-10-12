@@ -1,0 +1,22 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "@pinia/nuxt": "^0.11.2",
+    "nuxt": "^3.14.0",
+    "nuxt-auth-sanctum": "^0.5.2",
+    "pinia": "^3.0.3",
+    "vue": "latest"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "latest"
+  }
+}
