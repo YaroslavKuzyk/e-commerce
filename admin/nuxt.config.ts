@@ -8,7 +8,7 @@ export default defineNuxtConfig({
   css: ["~/assets/styles/tailwind.css"],
 
   devServer: {
-    port: 3000,
+    port: 3001,
   },
 
   sanctum: {
