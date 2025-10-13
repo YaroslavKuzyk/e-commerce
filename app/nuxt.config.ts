@@ -4,7 +4,8 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: true,
 
-  modules: ["@pinia/nuxt", "nuxt-auth-sanctum"],
+  modules: ["@pinia/nuxt", "nuxt-auth-sanctum", "@nuxt/ui"],
+  css: ["~/assets/styles/tailwind.css"],
 
   sanctum: {
     baseUrl: process.env.NUXT_SANCTUM_BASE_URL,
