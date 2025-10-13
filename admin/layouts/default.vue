@@ -1,11 +1,14 @@
 <template>
   <UApp>
-    <NuxtLayout>
+    <UDashboardGroup>
+      <VSidebar />
       <NuxtPage />
-    </NuxtLayout>
+    </UDashboardGroup>
   </UApp>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import VSidebar from "~/components/sidebar/VSidebar.vue";
+</script>
 
 <style scoped></style>

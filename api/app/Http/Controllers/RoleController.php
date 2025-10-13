@@ -33,7 +33,6 @@ class RoleController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:roles,name',
-            'description' => 'nullable|string|max:500',
         ]);
 
         $role = $this->roleService->createRole($validated);
@@ -65,7 +64,6 @@ class RoleController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
-            'description' => 'nullable|string|max:500',
         ]);
 
         $role = $this->roleService->updateRole($role, $validated);
