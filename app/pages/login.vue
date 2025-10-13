@@ -44,11 +44,11 @@
 </template>
 
 <script setup>
+const authStore = useAuthStore();
 const credentials = ref({
   email: "",
   password: "",
 });
-const { login } = useSanctumAuth();
 
 const loading = ref(false);
 const error = ref("");
@@ -58,7 +58,7 @@ const handleLogin = async () => {
   error.value = "";
 
   try {
-    await login(credentials.value);
+    await authStore.login(credentials.value);
 
     navigateTo("/dashboard");
   } catch (err) {

@@ -2,38 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Contracts\Services\AuthServiceInterface;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
+    public function __construct(
+        private AuthServiceInterface $authService
+    ) {}
+
     /**
      * Register a new user
      */
     public function register(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
-
-        // Create token for the user
-        $token = $user->createToken('auth-token')->plainTextToken;
+        $result = $this->authService->register($validated);
 
         return response()->json([
             'message' => 'Registration successful',
-            'user' => $user,
-            'token' => $token,
+            'user' => $result['user'],
+            'token' => $result['token'],
         ], 201);
     }
 
@@ -44,31 +39,26 @@ class AuthController extends Controller
     {
         \Log::info('Login attempt', ['email' => $request->email]);
 
-        $request->validate([
+        $validated = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        try {
+            $token = $this->authService->login($validated);
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            \Log::warning('Login failed', ['email' => $request->email]);
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
+            \Log::info('Login successful', [
+                'email' => $validated['email'],
+                'token_preview' => substr($token, 0, 10) . '...'
             ]);
+
+            return response()->json([
+                'token' => $token,
+            ], 200);
+        } catch (\Exception $e) {
+            \Log::warning('Login failed', ['email' => $validated['email']]);
+            throw $e;
         }
-
-        // Create token for the user
-        $token = $user->createToken('auth-token')->plainTextToken;
-
-        \Log::info('Login successful', [
-            'user_id' => $user->id,
-            'token_preview' => substr($token, 0, 10) . '...'
-        ]);
-
-        return response()->json([
-            'token' => $token,
-        ], 200);
     }
 
     /**
@@ -76,15 +66,7 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        // Delete only the current access token
-        $token = $request->user()->currentAccessToken();
-
-        if ($token && method_exists($token, 'delete')) {
-            $token->delete();
-        } else {
-            // Fallback: delete all tokens if currentAccessToken is not available
-            $request->user()->tokens()->delete();
-        }
+        $this->authService->logout($request->user());
 
         return response()->json([
             'message' => 'Logout successful',

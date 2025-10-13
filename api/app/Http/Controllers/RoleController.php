@@ -2,20 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
+use App\Contracts\Services\RoleServiceInterface;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Validation\ValidationException;
 
 class RoleController extends Controller
 {
+    public function __construct(
+        private RoleServiceInterface $roleService
+    ) {}
+
     /**
      * Display a listing of the resource.
      */
     public function index(): JsonResponse
     {
-        $roles = Role::withCount(['users', 'permissions'])->get();
+        $roles = $this->roleService->getAllRoles();
 
         return response()->json([
             'success' => true,
@@ -33,7 +36,7 @@ class RoleController extends Controller
             'description' => 'nullable|string|max:500',
         ]);
 
-        $role = Role::create($validated);
+        $role = $this->roleService->createRole($validated);
 
         return response()->json([
             'success' => true,
@@ -47,8 +50,7 @@ class RoleController extends Controller
      */
     public function show(Role $role): JsonResponse
     {
-        $role->load(['permissions', 'users']);
-        $role->loadCount(['users', 'permissions']);
+        $role = $this->roleService->getRoleById($role);
 
         return response()->json([
             'success' => true,
@@ -66,12 +68,12 @@ class RoleController extends Controller
             'description' => 'nullable|string|max:500',
         ]);
 
-        $role->update($validated);
+        $role = $this->roleService->updateRole($role, $validated);
 
         return response()->json([
             'success' => true,
             'message' => 'Role updated successfully',
-            'data' => $role->fresh(),
+            'data' => $role,
         ]);
     }
 
@@ -81,39 +83,22 @@ class RoleController extends Controller
      */
     public function destroy(Request $request, Role $role): JsonResponse
     {
-        // Validate replacement role
         $validated = $request->validate([
             'replacement_role_id' => 'required|exists:roles,id|different:' . $role->id,
         ]);
 
-        $replacementRole = Role::findOrFail($validated['replacement_role_id']);
-
-        // Get all users with this role
-        $users = $role->users;
-
-        // Start transaction
-        \DB::beginTransaction();
-
         try {
-            // Reassign all users to the replacement role
-            foreach ($users as $user) {
-                $user->roles()->detach($role->id);
-                $user->assignRole($replacementRole);
-            }
-
-            // Delete the role
-            $role->delete();
-
-            \DB::commit();
+            $result = $this->roleService->deleteRoleWithReassignment(
+                $role,
+                $validated['replacement_role_id']
+            );
 
             return response()->json([
                 'success' => true,
-                'message' => "Role deleted successfully. {$users->count()} users reassigned to '{$replacementRole->name}'",
-                'reassigned_users_count' => $users->count(),
+                'message' => "Role deleted successfully. {$result['reassigned_count']} users reassigned to '{$result['replacement_role']}'",
+                'reassigned_users_count' => $result['reassigned_count'],
             ]);
         } catch (\Exception $e) {
-            \DB::rollBack();
-
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to delete role: ' . $e->getMessage(),

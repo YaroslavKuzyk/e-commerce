@@ -25,7 +25,6 @@ definePageMeta({
   middleware: ["sanctum:auth"],
 });
 
-const { logout } = useSanctumAuth();
 const authStore = useAuthStore();
 
 const formatDate = (dateString) => {
@@ -42,7 +41,7 @@ const goHome = () => {
 };
 
 const handleLogout = async () => {
-  await logout();
+  await authStore.logout();
   navigateTo("/login");
 };
 </script>

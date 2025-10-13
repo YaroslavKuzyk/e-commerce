@@ -66,6 +66,7 @@
 </template>
 
 <script setup>
+const authStore = useAuthStore();
 const formData = ref({
   name: "",
   email: "",
@@ -79,13 +80,7 @@ const handleRegister = async () => {
   loading.value = true;
 
   try {
-    const { data, status, error, refresh } = await useSanctumFetch(
-      "/api/register",
-      {
-        method: "POST",
-        body: formData.value,
-      }
-    );
+    await authStore.register(formData.value);
     navigateTo("/dashboard");
   } catch (err) {
     console.log(err);
