@@ -17,6 +17,11 @@ class RoleSeeder extends Seeder
         // Створюємо CRUD permissions для управління ролями
         $rolePermissions = [
             [
+                'name' => 'Read Permissions',
+                'type' => Permission::TYPE_READ,
+                'group' => 'permissions_management',
+            ],
+            [
                 'name' => 'Create Role',
                 'type' => Permission::TYPE_CREATE,
                 'group' => 'roles_management',

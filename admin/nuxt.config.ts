@@ -4,7 +4,12 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: true,
 
-  modules: ["@pinia/nuxt", "nuxt-auth-sanctum", "@nuxt/ui"],
+  modules: [
+    "@pinia/nuxt",
+    "nuxt-auth-sanctum",
+    "@nuxt/ui",
+    "nuxt-lucide-icons",
+  ],
   css: ["~/assets/styles/tailwind.css"],
 
   devServer: {
