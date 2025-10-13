@@ -2,6 +2,8 @@
   <div class="container">
     <h1>Welcome to Nuxt + Laravel Sanctum Auth</h1>
 
+    <UAvatar src="https://github.com/benjamincanac.png" />
+
     <div v-if="authStore.user">
       <p>Hello, {{ authStore.user.name }}!</p>
       <p>Email: {{ authStore.user.email }}</p>
