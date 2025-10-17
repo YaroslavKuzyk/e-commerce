@@ -7,6 +7,7 @@ use App\Contracts\Services\RoleServiceInterface;
 use App\Contracts\Repositories\RoleRepositoryInterface;
 use App\Models\Role;
 use Illuminate\Support\Facades\DB;
+use App\Http\Resources\RoleResource;
 
 class RoleService implements RoleServiceInterface
 {
@@ -17,7 +18,8 @@ class RoleService implements RoleServiceInterface
 
     public function getAllRoles()
     {
-        return $this->roleRepository->getAll();
+        $roles = $this->roleRepository->getAll();
+        return RoleResource::collection($roles);
     }
 
     public function getRoleById(Role $role)

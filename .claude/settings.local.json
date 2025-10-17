@@ -23,7 +23,11 @@
       "Bash(docker stop:*)",
       "Bash(docker rm:*)",
       "Bash(npm uninstall:*)",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)",
+      "Bash(tasklist)"
     ],
     "deny": [],
     "ask": []
