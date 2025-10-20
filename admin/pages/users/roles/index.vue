@@ -23,13 +23,19 @@
           </template>
         </USelectMenu>
         <div class="flex items-center gap-2 shrink-0">
-          <UButton color="error">Видалити роль</UButton>
+          <UButton color="error" @click="isDeleteRoleModalOpen = true"
+            >Видалити роль</UButton
+          >
           <UButton @click="isCreateRoleModalOpen = true">Додати роль</UButton>
         </div>
       </div>
     </template>
 
-    <UTable :data="permissionsData" :columns="columns" class="flex-1">
+    <UTable
+      :data="selectedRole ? permissionsData : []"
+      :columns="columns"
+      class="flex-1"
+    >
       <template #actions-cell="{ row }">
         <UCheckbox
           :model-value="selectedPermissionIds.includes(Number(row.original.id))"
@@ -38,37 +44,15 @@
       </template>
     </UTable>
 
-    <UModal
-      title="Створити нову роль"
-      description="Створіть нову роль для адміністратора."
-      v-model:open="isCreateRoleModalOpen"
-    >
-      <template #body>
-        <UTable :data="permissionsData" :columns="columns" class="flex-1">
-          <template #actions-cell="{ row }">
-            <UCheckbox
-              :model-value="
-                selectedPermissionIds.includes(Number(row.original.id))
-              "
-              @change="handlePermissionChange(row.original.id)"
-            />
-          </template>
-        </UTable>
-
-        <USeparator />
-
-        <div class="flex justify-end mt-4">
-          <UButton @click="isCreateRoleModalOpen = false">
-            Створити роль
-          </UButton>
-        </div>
-      </template>
-    </UModal>
+    <VRoleCreateModal v-model:is-open="isCreateRoleModalOpen" />
+    <VRoleDeleteModal v-model:is-open="isDeleteRoleModalOpen" />
   </VSidebarContent>
 </template>
 
 <script setup lang="ts">
 import VSidebarContent from "~/components/sidebar/VSidebarContent.vue";
+import VRoleCreateModal from "~/components/roles/modals/VRoleCreateModal.vue";
+import VRoleDeleteModal from "~/components/roles/modals/VRoleDeleteModal.vue";
 
 definePageMeta({
   middleware: ["sanctum:auth"],
@@ -82,6 +66,22 @@ const { data: rolesData } = await roleStore.fetchRoles();
 const selectedRole = ref(null);
 const selectedPermissionIds = ref<number[]>([]);
 const isCreateRoleModalOpen = ref(false);
+const isDeleteRoleModalOpen = ref(false);
+const columns = ref([
+  {
+    header: "Назва",
+    accessorKey: "name",
+  },
+  {
+    id: "actions",
+    header: "Дія",
+    meta: {
+      class: {
+        th: "w-[100px]",
+      },
+    },
+  },
+]);
 
 watch(
   () => selectedRole.value,
@@ -103,20 +103,4 @@ const handlePermissionChange = (permissionId: number) => {
     selectedPermissionIds.value.push(permissionId);
   }
 };
-
-const columns = ref([
-  {
-    header: "Назва",
-    accessorKey: "name",
-  },
-  {
-    id: "actions",
-    header: "Дія",
-    meta: {
-      class: {
-        th: "w-[100px]",
-      },
-    },
-  },
-]);
 </script>

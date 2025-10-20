@@ -11,10 +11,9 @@ class RoleRepository implements RoleRepositoryInterface
     public function getAll(): Collection
     {
         $roles = Role::with('permissions')->withCount(['users', 'permissions'])->get();
-        // return $roles->filter(function ($role) {
-        //     return $role->name !== 'SuperAdmin';
-        // });
-        return $roles;
+        return $roles->filter(function ($role) {
+            return $role->name !== 'SuperAdmin';
+        });
     }
 
     public function findById(int $id): ?Role
