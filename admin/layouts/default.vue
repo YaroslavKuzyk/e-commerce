@@ -1,5 +1,6 @@
 <template>
   <UApp>
+    <NuxtLoadingIndicator />
     <UDashboardGroup>
       <VSidebar />
       <NuxtPage />
