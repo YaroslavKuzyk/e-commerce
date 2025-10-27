@@ -90,10 +90,10 @@ const menus = computed(() => {
       icon: "i-lucide-users",
       children: [
         {
-          label: "Список Адміністраторів",
+          label: "Адміністратори",
           icon: "i-lucide-shield-user",
           to: "/users/administrators",
-          requiredPermissions: ["Read Administrators"],
+          requiredPermissions: ["Read Admin Users"],
         },
         {
           label: "Ролі",
@@ -134,6 +134,15 @@ const menus = computed(() => {
     .filter((menu): menu is MenuItem => menu !== null);
 });
 
+const handleLogout = async () => {
+  try {
+    await authStore.logout();
+    navigateTo("/login");
+  } catch (error) {
+    console.error("Logout error:", error);
+  }
+};
+
 const dropdownItems = computed(() => {
   return [
     [
@@ -159,6 +168,7 @@ const dropdownItems = computed(() => {
       {
         label: "Вихід",
         icon: "i-lucide-log-out",
+        onSelect: handleLogout,
       },
     ],
   ];

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminRoleController;
 use App\Http\Controllers\Admin\AdminPermissionController;
+use App\Http\Controllers\Admin\AdminUserController;
 use Illuminate\Support\Facades\Route;
 
 // Admin routes group with /admin prefix
@@ -26,6 +27,14 @@ Route::prefix('admin')->group(function () {
 
         // Permission management routes with permissions
         Route::get('permissions', [AdminPermissionController::class, 'index'])->middleware('permission:Read Permissions');
+
+        // Admin users management routes with permissions
+        Route::get('users', [AdminUserController::class, 'index'])->middleware('permission:Read Admin Users');
+        Route::get('users/{user}', [AdminUserController::class, 'show'])->middleware('permission:Read Admin Users');
+        Route::post('users', [AdminUserController::class, 'store'])->middleware('permission:Create Admin User');
+        Route::put('users/{user}', [AdminUserController::class, 'update'])->middleware('permission:Update Admin User');
+        Route::patch('users/{user}', [AdminUserController::class, 'update'])->middleware('permission:Update Admin User');
+        Route::delete('users/{user}', [AdminUserController::class, 'destroy'])->middleware('permission:Delete Admin User');
     });
 });
 

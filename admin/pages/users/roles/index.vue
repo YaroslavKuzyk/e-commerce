@@ -39,7 +39,7 @@
       </div>
     </template>
 
-    <HasPermissions :required-permissions="['Update Role', 'Read Permissions']">
+    <HasPermissions :required-permissions="['Read Roles', 'Read Permissions']">
       <VRoleUpdateForm
         :selected-role="selectedRoleData"
         :permissions-data="permissionsData || []"

@@ -13,17 +13,20 @@
         />
       </template>
     </UTable>
-    <div v-if="selectedRole" class="flex justify-end items-end gap-2">
-      <UFormField label="Назва" name="name">
-        <UInput v-model="state.name" class="w-[100%]" />
-      </UFormField>
-      <UButton type="submit">Оновити роль</UButton>
-    </div>
+    <HasPermissions :required-permissions="['Update Role']">
+      <div v-if="selectedRole" class="flex justify-end items-end gap-2">
+        <UFormField label="Назва" name="name">
+          <UInput v-model="state.name" class="w-[100%]" />
+        </UFormField>
+        <UButton type="submit">Оновити роль</UButton>
+      </div>
+    </HasPermissions>
   </UForm>
 </template>
 
 <script setup lang="ts">
 import { z } from "zod";
+import HasPermissions from "~/components/common/VHasPermissions.vue";
 
 interface Props {
   selectedRole: any;
