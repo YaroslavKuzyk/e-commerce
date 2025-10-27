@@ -43,8 +43,35 @@ class RoleSeeder extends Seeder
             ],
         ];
 
+        // Створюємо CRUD permissions для управління адміністраторами
+        $adminUserPermissions = [
+            [
+                'name' => 'Create Admin User',
+                'type' => Permission::TYPE_CREATE,
+                'group' => 'admin_users_management',
+            ],
+            [
+                'name' => 'Read Admin Users',
+                'type' => Permission::TYPE_READ,
+                'group' => 'admin_users_management',
+            ],
+            [
+                'name' => 'Update Admin User',
+                'type' => Permission::TYPE_UPDATE,
+                'group' => 'admin_users_management',
+            ],
+            [
+                'name' => 'Delete Admin User',
+                'type' => Permission::TYPE_DELETE,
+                'group' => 'admin_users_management',
+            ],
+        ];
+
+        // Об'єднуємо всі permissions
+        $allPermissions = array_merge($rolePermissions, $adminUserPermissions);
+
         $createdPermissions = [];
-        foreach ($rolePermissions as $permissionData) {
+        foreach ($allPermissions as $permissionData) {
             $permission = Permission::firstOrCreate(
                 ['name' => $permissionData['name']],
                 $permissionData
