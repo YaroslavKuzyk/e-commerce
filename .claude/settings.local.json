@@ -27,7 +27,10 @@
       "Bash(netstat:*)",
       "Bash(findstr:*)",
       "Bash(taskkill:*)",
-      "Bash(tasklist)"
+      "Bash(tasklist)",
+      "Bash(docker-compose exec app composer require darkaonline/l5-swagger)",
+      "Bash(docker-compose exec app php artisan vendor:publish --provider \"L5Swagger\\L5SwaggerServiceProvider\")",
+      "Bash(docker-compose exec app php artisan l5-swagger:generate)"
     ],
     "deny": [],
     "ask": []

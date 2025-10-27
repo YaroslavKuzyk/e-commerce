@@ -4,9 +4,15 @@ export interface IRoleProvider {
   >;
   getAllRoles(): ReturnType<typeof useAsyncData<IRole[] | undefined>>;
   getRoleById(id: number): ReturnType<typeof useAsyncData<IRole | undefined>>;
-  createRole(role: IRole): ReturnType<typeof useAsyncData<IRole | undefined>>;
-  updateRole(role: IRole): ReturnType<typeof useAsyncData<IRole | undefined>>;
-  deleteRole(role: IRole): ReturnType<typeof useAsyncData<IRole | undefined>>;
+  createRole(
+    payload: ICreateRole
+  ): ReturnType<typeof useAsyncData<IRole | undefined>>;
+  updateRole(
+    payload: IUpdateRole
+  ): ReturnType<typeof useAsyncData<IRole | undefined>>;
+  deleteRole(
+    payload: IDeleteRole
+  ): ReturnType<typeof useAsyncData<IRole | undefined>>;
 }
 
 export interface IPermission {
@@ -20,4 +26,20 @@ export interface IRole {
   id: number;
   name: string;
   permissions: IPermission[];
+}
+
+export interface ICreateRole {
+  name: string;
+  permissions: number[];
+}
+
+export interface IDeleteRole {
+  roleId: number;
+  replacementRoleId: number;
+}
+
+export interface IUpdateRole {
+  roleId: number;
+  name: string;
+  permissions: number[];
 }

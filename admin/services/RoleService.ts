@@ -2,6 +2,9 @@ import {
   type IPermission,
   type IRole,
   type IRoleProvider,
+  type ICreateRole,
+  type IDeleteRole,
+  type IUpdateRole,
 } from "~/models/roles";
 
 export class RoleService implements IRoleProvider {
@@ -28,17 +31,17 @@ export class RoleService implements IRoleProvider {
   getRoleById(id: number) {
     const client = useSanctumClient();
 
-    return useAsyncData<IRole>("role", () =>
+    return useAsyncData<IRole>(`role-${id}`, () =>
       client<{ success: boolean; data: IRole }>(`/api/roles/${id}`).then(
         (res) => res.data
       )
     );
   }
 
-  createRole(role: IRole) {
+  createRole(role: ICreateRole) {
     const client = useSanctumClient();
 
-    return useAsyncData<IRole>("role", () =>
+    return useAsyncData<IRole>(`role-create-${Date.now()}`, () =>
       client<{ success: boolean; data: IRole }>("/api/roles", {
         method: "POST",
         body: role,
@@ -46,22 +49,38 @@ export class RoleService implements IRoleProvider {
     );
   }
 
-  updateRole(role: IRole) {
+  updateRole(payload: IUpdateRole) {
     const client = useSanctumClient();
-    return useAsyncData<IRole>("role", () =>
-      client<{ success: boolean; data: IRole }>(`/api/roles/${role.id}`, {
-        method: "PUT",
-        body: role,
-      }).then((res) => res.data)
+    return useAsyncData<IRole>(
+      `role-update-${payload.roleId}-${Date.now()}`,
+      () =>
+        client<{ success: boolean; data: IRole }>(
+          `/api/roles/${payload.roleId}`,
+          {
+            method: "PUT",
+            body: {
+              name: payload.name,
+              permissions: payload.permissions,
+            },
+          }
+        ).then((res) => res.data)
     );
   }
 
-  deleteRole(role: IRole) {
+  deleteRole(payload: IDeleteRole) {
     const client = useSanctumClient();
-    return useAsyncData<IRole>("role", () =>
-      client<{ success: boolean; data: IRole }>(`/api/roles/${role.id}`, {
-        method: "DELETE",
-      }).then((res) => res.data)
+    return useAsyncData<IRole>(
+      `role-delete-${payload.roleId}-${Date.now()}`,
+      () =>
+        client<{ success: boolean; data: IRole }>(
+          `/api/roles/${payload.roleId}`,
+          {
+            method: "DELETE",
+            body: {
+              replacement_role_id: payload.replacementRoleId,
+            },
+          }
+        ).then((res) => res.data)
     );
   }
 }

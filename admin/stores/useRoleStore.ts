@@ -1,6 +1,11 @@
 import { defineStore } from "pinia";
 import { useRole } from "~/composables/useRole";
-import type { IRole } from "~/models/roles";
+import type {
+  ICreateRole,
+  IDeleteRole,
+  IRole,
+  IUpdateRole,
+} from "~/models/roles";
 
 export const useRoleStore = defineStore("role", () => {
   const {
@@ -24,16 +29,16 @@ export const useRoleStore = defineStore("role", () => {
     return await getRoleById(id);
   };
 
-  const onCreateRole = async (role: IRole) => {
-    return await createRole(role);
+  const onCreateRole = async (payload: ICreateRole) => {
+    return await createRole(payload);
   };
 
-  const onUpdateRole = async (role: IRole) => {
-    return await updateRole(role);
+  const onUpdateRole = async (payload: IUpdateRole) => {
+    return await updateRole(payload);
   };
 
-  const onDeleteRole = async (role: IRole) => {
-    return await deleteRole(role);
+  const onDeleteRole = async (payload: IDeleteRole) => {
+    return await deleteRole(payload);
   };
 
   return {

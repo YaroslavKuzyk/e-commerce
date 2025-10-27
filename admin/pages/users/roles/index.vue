@@ -31,26 +31,25 @@
       </div>
     </template>
 
-    <UTable
-      :data="selectedRole ? permissionsData : []"
-      :columns="columns"
-      class="flex-1"
-    >
-      <template #actions-cell="{ row }">
-        <UCheckbox
-          :model-value="selectedPermissionIds.includes(Number(row.original.id))"
-          @change="handlePermissionChange(row.original.id)"
-        />
-      </template>
-    </UTable>
-
-    <VRoleCreateModal v-model:is-open="isCreateRoleModalOpen" />
-    <VRoleDeleteModal v-model:is-open="isDeleteRoleModalOpen" />
+    <VRoleUpdateForm
+      :selected-role="selectedRoleData"
+      :permissions-data="permissionsData || []"
+      @refresh="refreshRoles"
+    />
+    <VRoleCreateModal
+      v-model:is-open="isCreateRoleModalOpen"
+      @refresh="refreshRoles"
+    />
+    <VRoleDeleteModal
+      v-model:is-open="isDeleteRoleModalOpen"
+      @refresh="refreshRoles"
+    />
   </VSidebarContent>
 </template>
 
 <script setup lang="ts">
 import VSidebarContent from "~/components/sidebar/VSidebarContent.vue";
+import VRoleUpdateForm from "~/components/roles/forms/VRoleUpdateForm.vue";
 import VRoleCreateModal from "~/components/roles/modals/VRoleCreateModal.vue";
 import VRoleDeleteModal from "~/components/roles/modals/VRoleDeleteModal.vue";
 
@@ -61,46 +60,19 @@ definePageMeta({
 const roleStore = useRoleStore();
 
 const { data: permissionsData } = await roleStore.fetchPermissions();
-const { data: rolesData } = await roleStore.fetchRoles();
+const { data: rolesData, refresh: refreshRolesData } =
+  await roleStore.fetchRoles();
+
+const refreshRoles = async () => {
+  await refreshRolesData();
+};
 
 const selectedRole = ref(null);
-const selectedPermissionIds = ref<number[]>([]);
 const isCreateRoleModalOpen = ref(false);
 const isDeleteRoleModalOpen = ref(false);
-const columns = ref([
-  {
-    header: "Назва",
-    accessorKey: "name",
-  },
-  {
-    id: "actions",
-    header: "Дія",
-    meta: {
-      class: {
-        th: "w-[100px]",
-      },
-    },
-  },
-]);
 
-watch(
-  () => selectedRole.value,
-  (value) => {
-    if (!value || !rolesData.value) return [];
-
-    const role = rolesData.value.find((role) => role.id === value);
-    selectedPermissionIds.value =
-      role?.permissions?.map((permission) => permission.id) || [];
-  }
-);
-
-const handlePermissionChange = (permissionId: number) => {
-  if (selectedPermissionIds.value.includes(permissionId)) {
-    selectedPermissionIds.value = selectedPermissionIds.value.filter(
-      (id) => id !== permissionId
-    );
-  } else {
-    selectedPermissionIds.value.push(permissionId);
-  }
-};
+const selectedRoleData = computed(() => {
+  if (!selectedRole.value || !rolesData.value) return null;
+  return rolesData.value.find((role: any) => role.id === selectedRole.value);
+});
 </script>

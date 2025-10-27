@@ -58,6 +58,7 @@ interface IEmits {
 }
 
 const emits = defineEmits<IEmits>();
+const toast = useToast();
 
 const schema = z.object({
   deleteRole: z.number().nullable(),
@@ -79,7 +80,27 @@ const replacementRoleList = computed(() =>
   rolesData.value?.filter((role) => role.id !== state.deleteRole)
 );
 
-const onSubmit = (event: any) => {
-  console.log(event.data);
+const onSubmit = async (event: any) => {
+  try {
+    const payload = event.data;
+    await roleStore.onDeleteRole({
+      roleId: payload.deleteRole,
+      replacementRoleId: payload.replacementRole,
+    });
+
+    toast.add({
+      title: "Успішно",
+      description: "Роль успішно видалена",
+      color: "success",
+    });
+
+    emits("close");
+  } catch (error) {
+    toast.add({
+      title: "Помилка",
+      description: "Не вдалося видалити роль",
+      color: "error",
+    });
+  }
 };
 </script>

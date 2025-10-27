@@ -1,9 +1,13 @@
 <template>
-  <div>
+  <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
+    <UFormField label="Назва" name="name">
+      <UInput v-model="state.name" class="w-[100%]" />
+    </UFormField>
+
     <UTable :data="permissionsData" :columns="columns" class="flex-1">
       <template #actions-cell="{ row }">
         <UCheckbox
-          :model-value="selectedPermissionIds.includes(Number(row.original.id))"
+          :model-value="state.permissions.includes(Number(row.original.id))"
           @change="handlePermissionChange(row.original.id)"
         />
       </template>
@@ -12,23 +16,35 @@
     <USeparator />
 
     <div class="flex justify-end mt-4">
-      <UButton @click="emits('close')"> Створити роль </UButton>
+      <UButton type="submit"> Створити роль </UButton>
     </div>
-  </div>
+  </UForm>
 </template>
 
 <script setup lang="ts">
+import { z } from "zod";
+
 interface IEmits {
   (e: "close"): void;
 }
 
 const emits = defineEmits<IEmits>();
+const toast = useToast();
+
+const schema = z.object({
+  name: z.string().min(1),
+  permissions: z.array(z.number()),
+});
+
+const state = reactive({
+  name: "",
+  permissions: [] as number[],
+});
 
 const roleStore = useRoleStore();
 
 const { data: permissionsData } = await roleStore.fetchPermissions();
 
-const selectedPermissionIds = ref<number[]>([]);
 const columns = ref([
   {
     header: "Назва",
@@ -46,12 +62,31 @@ const columns = ref([
 ]);
 
 const handlePermissionChange = (permissionId: number) => {
-  if (selectedPermissionIds.value.includes(permissionId)) {
-    selectedPermissionIds.value = selectedPermissionIds.value.filter(
-      (id) => id !== permissionId
+  if (state.permissions.includes(permissionId)) {
+    state.permissions = state.permissions.filter(
+      (id: number) => id !== permissionId
     );
   } else {
-    selectedPermissionIds.value.push(permissionId);
+    state.permissions.push(permissionId);
+  }
+};
+
+const onSubmit = async (event: any) => {
+  try {
+    const payload = event.data;
+    await roleStore.onCreateRole(payload);
+    emits("close");
+    toast.add({
+      title: "Успішно",
+      description: "Роль успішно створена",
+      color: "success",
+    });
+  } catch (error) {
+    toast.add({
+      title: "Помилка",
+      description: "Не вдалося створити роль",
+      color: "error",
+    });
   }
 };
 </script>

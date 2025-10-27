@@ -32,12 +32,30 @@ class RoleService implements RoleServiceInterface
 
     public function createRole(array $data): Role
     {
-        return $this->roleRepository->create($data);
+        $permissions = $data['permissions'] ?? [];
+        unset($data['permissions']);
+
+        $role = $this->roleRepository->create($data);
+
+        if (!empty($permissions)) {
+            $role->permissions()->sync($permissions);
+        }
+
+        return $role->load('permissions');
     }
 
     public function updateRole(Role $role, array $data): Role
     {
-        return $this->roleRepository->update($role, $data);
+        $permissions = $data['permissions'] ?? null;
+        unset($data['permissions']);
+
+        $role = $this->roleRepository->update($role, $data);
+
+        if ($permissions !== null) {
+            $role->permissions()->sync($permissions);
+        }
+
+        return $role->load('permissions');
     }
 
     public function deleteRoleWithReassignment(Role $role, int $replacementRoleId): array
