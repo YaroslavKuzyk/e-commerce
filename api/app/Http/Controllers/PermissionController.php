@@ -12,6 +12,34 @@ class PermissionController extends Controller
         private readonly PermissionServiceInterface $permissionService
     ) {}
 
+    /**
+     * Display a listing of the resource.
+     *
+     * @OA\Get(
+     *     path="/api/permissions",
+     *     tags={"Permissions"},
+     *     summary="Get all permissions",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of permissions",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="array", @OA\Items(
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Read Users"),
+     *                 @OA\Property(property="type", type="string", example="read"),
+     *                 @OA\Property(property="group", type="string", example="users")
+     *                 )
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="User is authenticated, but dont have permission **Read Permissions** to access this resource"),
+     *     @OA\Response(response=422, description="Validation error"),
+     *     @OA\Response(response=500, description="Internal server error")
+     * )
+     */
     public function index(): JsonResponse
     {
         $permissions = $this->permissionService->getAll();

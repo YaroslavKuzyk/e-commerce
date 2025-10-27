@@ -54,8 +54,7 @@ class RoleSeeder extends Seeder
 
         // Створюємо роль SuperAdmin
         $superAdminRole = Role::firstOrCreate(
-            ['name' => 'SuperAdmin'],
-            ['description' => 'Super Administrator with full access to all permissions']
+            ['name' => 'SuperAdmin']
         );
 
         // Призначаємо всі permissions для ролей SuperAdmin

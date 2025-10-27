@@ -17,9 +17,9 @@
 </template>
 
 <script setup lang="ts">
-interface Props {
+interface IProps {
   title: string;
 }
 
-const props = defineProps<Props>();
+const props = defineProps<IProps>();
 </script>
