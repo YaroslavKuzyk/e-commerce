@@ -11,7 +11,7 @@ export class AuthService implements IAuthProvider {
   }
 
   async register(payload: IAuthRegisterPayload): Promise<void> {
-    await useSanctumFetch("/api/register", {
+    await useSanctumFetch("/api/admin/register", {
       method: "POST",
       body: payload,
     });

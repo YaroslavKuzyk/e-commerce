@@ -5,15 +5,15 @@ namespace App\Providers;
 use App\Contracts\Repositories\PermissionRepositoryInterface;
 use App\Contracts\Repositories\RoleRepositoryInterface;
 use App\Contracts\Repositories\UserRepositoryInterface;
-use App\Contracts\Services\AuthServiceInterface;
-use App\Contracts\Services\RoleServiceInterface;
-use App\Contracts\Services\PermissionServiceInterface;
+use App\Contracts\Services\Admin\AdminAuthServiceInterface;
+use App\Contracts\Services\Admin\AdminRoleServiceInterface;
+use App\Contracts\Services\Admin\AdminPermissionServiceInterface;
 use App\Repositories\PermissionRepository;
 use App\Repositories\RoleRepository;
 use App\Repositories\UserRepository;
-use App\Services\AuthService;
-use App\Services\RoleService;
-use App\Services\PermissionService;
+use App\Services\Admin\AdminAuthService;
+use App\Services\Admin\AdminRoleService;
+use App\Services\Admin\AdminPermissionService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -28,10 +28,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(RoleRepositoryInterface::class, RoleRepository::class);
         $this->app->bind(PermissionRepositoryInterface::class, PermissionRepository::class);
 
-        // Register Service bindings
-        $this->app->bind(AuthServiceInterface::class, AuthService::class);
-        $this->app->bind(RoleServiceInterface::class, RoleService::class);
-        $this->app->bind(PermissionServiceInterface::class, PermissionService::class);
+        // Register Admin Service bindings
+        $this->app->bind(AdminAuthServiceInterface::class, AdminAuthService::class);
+        $this->app->bind(AdminRoleServiceInterface::class, AdminRoleService::class);
+        $this->app->bind(AdminPermissionServiceInterface::class, AdminPermissionService::class);
     }
 
     /**

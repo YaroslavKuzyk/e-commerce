@@ -13,7 +13,7 @@ export class RoleService implements IRoleProvider {
 
     return useAsyncData<IPermission[]>("permissions", () =>
       client<{ success: boolean; data: IPermission[] }>(
-        "/api/permissions"
+        "/api/admin/permissions"
       ).then((res) => res.data)
     );
   }
@@ -22,7 +22,7 @@ export class RoleService implements IRoleProvider {
     const client = useSanctumClient();
 
     return useAsyncData<IRole[]>("roles", () =>
-      client<{ success: boolean; data: IRole[] }>("/api/roles").then(
+      client<{ success: boolean; data: IRole[] }>("/api/admin/roles").then(
         (res) => res.data
       )
     );
@@ -32,7 +32,7 @@ export class RoleService implements IRoleProvider {
     const client = useSanctumClient();
 
     return useAsyncData<IRole>(`role-${id}`, () =>
-      client<{ success: boolean; data: IRole }>(`/api/roles/${id}`).then(
+      client<{ success: boolean; data: IRole }>(`/api/admin/roles/${id}`).then(
         (res) => res.data
       )
     );
@@ -42,7 +42,7 @@ export class RoleService implements IRoleProvider {
     const client = useSanctumClient();
 
     return useAsyncData<IRole>(`role-create-${Date.now()}`, () =>
-      client<{ success: boolean; data: IRole }>("/api/roles", {
+      client<{ success: boolean; data: IRole }>("/api/admin/roles", {
         method: "POST",
         body: role,
       }).then((res) => res.data)
@@ -55,7 +55,7 @@ export class RoleService implements IRoleProvider {
       `role-update-${payload.roleId}-${Date.now()}`,
       () =>
         client<{ success: boolean; data: IRole }>(
-          `/api/roles/${payload.roleId}`,
+          `/api/admin/roles/${payload.roleId}`,
           {
             method: "PUT",
             body: {
@@ -73,7 +73,7 @@ export class RoleService implements IRoleProvider {
       `role-delete-${payload.roleId}-${Date.now()}`,
       () =>
         client<{ success: boolean; data: IRole }>(
-          `/api/roles/${payload.roleId}`,
+          `/api/admin/roles/${payload.roleId}`,
           {
             method: "DELETE",
             body: {

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Contracts\Services;
+namespace App\Contracts\Services\Admin;
 
 use App\Models\User;
 
-interface AuthServiceInterface
+interface AdminAuthServiceInterface
 {
     public function register(array $data): array;
 

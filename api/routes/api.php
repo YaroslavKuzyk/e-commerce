@@ -1,28 +1,32 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\Admin\AdminAuthController;
+use App\Http\Controllers\Admin\AdminRoleController;
+use App\Http\Controllers\Admin\AdminPermissionController;
 use Illuminate\Support\Facades\Route;
 
-// Public routes
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+// Admin routes group with /admin prefix
+Route::prefix('admin')->group(function () {
+    // Public admin routes
+    Route::post('/register', [AdminAuthController::class, 'register']);
+    Route::post('/login', [AdminAuthController::class, 'login']);
 
-Route::middleware('auth:sanctum')->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout']);
-    Route::get('/user', [AuthController::class, 'user']);
+    // Protected admin routes
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/logout', [AdminAuthController::class, 'logout']);
+        Route::get('/user', [AdminAuthController::class, 'user']);
 
-    // Role management routes with permissions
-    Route::get('roles', [RoleController::class, 'index'])->middleware('permission:Read Roles');
-    Route::get('roles/{role}', [RoleController::class, 'show'])->middleware('permission:Read Roles');
-    Route::post('roles', [RoleController::class, 'store'])->middleware('permission:Create Role');
-    Route::put('roles/{role}', [RoleController::class, 'update'])->middleware('permission:Update Role');
-    Route::patch('roles/{role}', [RoleController::class, 'update'])->middleware('permission:Update Role');
-    Route::delete('roles/{role}', [RoleController::class, 'destroy'])->middleware('permission:Delete Role');
+        // Role management routes with permissions
+        Route::get('roles', [AdminRoleController::class, 'index'])->middleware('permission:Read Roles');
+        Route::get('roles/{role}', [AdminRoleController::class, 'show'])->middleware('permission:Read Roles');
+        Route::post('roles', [AdminRoleController::class, 'store'])->middleware('permission:Create Role');
+        Route::put('roles/{role}', [AdminRoleController::class, 'update'])->middleware('permission:Update Role');
+        Route::patch('roles/{role}', [AdminRoleController::class, 'update'])->middleware('permission:Update Role');
+        Route::delete('roles/{role}', [AdminRoleController::class, 'destroy'])->middleware('permission:Delete Role');
 
-    // Permission management routes with permissions
-    Route::get('permissions', [PermissionController::class, 'index'])->middleware('permission:Read Permissions');
+        // Permission management routes with permissions
+        Route::get('permissions', [AdminPermissionController::class, 'index'])->middleware('permission:Read Permissions');
+    });
 });
 
 

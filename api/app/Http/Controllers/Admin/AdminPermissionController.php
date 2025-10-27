@@ -1,23 +1,24 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use App\Contracts\Services\PermissionServiceInterface;
+use App\Http\Controllers\Controller;
+use App\Contracts\Services\Admin\AdminPermissionServiceInterface;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class PermissionController extends Controller
+class AdminPermissionController extends Controller
 {
     public function __construct(
-        private readonly PermissionServiceInterface $permissionService
+        private readonly AdminPermissionServiceInterface $permissionService
     ) {}
 
     /**
      * Display a listing of the resource.
      *
      * @OA\Get(
-     *     path="/api/permissions",
-     *     tags={"Permissions"},
+     *     path="/api/admin/permissions",
+     *     tags={"Admin Permissions"},
      *     summary="Get all permissions",
      *     security={{"bearerAuth":{}}},
      *     @OA\Response(

@@ -1,24 +1,25 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use App\Contracts\Services\AuthServiceInterface;
+use App\Http\Controllers\Controller;
+use App\Contracts\Services\Admin\AdminAuthServiceInterface;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 
-class AuthController extends Controller
+class AdminAuthController extends Controller
 {
     public function __construct(
-        private AuthServiceInterface $authService
+        private AdminAuthServiceInterface $authService
     ) {}
 
     /**
      * Register a new user
      *
      * @OA\Post(
-     *     path="/api/register",
-     *     tags={"Authentication"},
-     *     summary="Register a new user",
+     *     path="/api/admin/register",
+     *     tags={"Admin Authentication"},
+     *     summary="Register a new admin user",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -62,9 +63,9 @@ class AuthController extends Controller
      * Login user
      *
      * @OA\Post(
-     *     path="/api/login",
-     *     tags={"Authentication"},
-     *     summary="Login user",
+     *     path="/api/admin/login",
+     *     tags={"Admin Authentication"},
+     *     summary="Login admin user",
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
@@ -86,7 +87,7 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
-        \Log::info('Login attempt', ['email' => $request->email]);
+        \Log::info('Admin login attempt', ['email' => $request->email]);
 
         $validated = $request->validate([
             'email' => 'required|email',
@@ -96,7 +97,7 @@ class AuthController extends Controller
         try {
             $token = $this->authService->login($validated);
 
-            \Log::info('Login successful', [
+            \Log::info('Admin login successful', [
                 'email' => $validated['email'],
                 'token_preview' => substr($token, 0, 10) . '...'
             ]);
@@ -105,7 +106,7 @@ class AuthController extends Controller
                 'token' => $token,
             ], 200);
         } catch (\Exception $e) {
-            \Log::warning('Login failed', ['email' => $validated['email']]);
+            \Log::warning('Admin login failed', ['email' => $validated['email']]);
             throw $e;
         }
     }
@@ -114,9 +115,9 @@ class AuthController extends Controller
      * Logout user
      *
      * @OA\Post(
-     *     path="/api/logout",
-     *     tags={"Authentication"},
-     *     summary="Logout user",
+     *     path="/api/admin/logout",
+     *     tags={"Admin Authentication"},
+     *     summary="Logout admin user",
      *     security={{"bearerAuth":{}}},
      *     @OA\Response(
      *         response=200,
@@ -141,9 +142,9 @@ class AuthController extends Controller
      * Get authenticated user
      *
      * @OA\Get(
-     *     path="/api/user",
-     *     tags={"Authentication"},
-     *     summary="Get authenticated user",
+     *     path="/api/admin/user",
+     *     tags={"Admin Authentication"},
+     *     summary="Get authenticated admin user",
      *     security={{"bearerAuth":{}}},
      *     @OA\Response(
      *         response=200,

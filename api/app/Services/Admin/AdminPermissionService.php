@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Admin;
 
-use App\Contracts\Services\PermissionServiceInterface;
+use App\Contracts\Services\Admin\AdminPermissionServiceInterface;
 use App\Contracts\Repositories\PermissionRepositoryInterface;
 
-class PermissionService implements PermissionServiceInterface
+class AdminPermissionService implements AdminPermissionServiceInterface
 {
     public function __construct(
         private PermissionRepositoryInterface $permissionRepository

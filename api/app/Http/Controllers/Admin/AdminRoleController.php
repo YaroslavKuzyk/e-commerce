@@ -1,24 +1,25 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use App\Contracts\Services\RoleServiceInterface;
+use App\Http\Controllers\Controller;
+use App\Contracts\Services\Admin\AdminRoleServiceInterface;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
-class RoleController extends Controller
+class AdminRoleController extends Controller
 {
     public function __construct(
-        private RoleServiceInterface $roleService
+        private AdminRoleServiceInterface $roleService
     ) {}
 
     /**
      * Display a listing of the resource.
      *
      * @OA\Get(
-     *     path="/api/roles",
-     *     tags={"Roles"},
+     *     path="/api/admin/roles",
+     *     tags={"Admin Roles"},
      *     summary="Get all roles",
      *     security={{"bearerAuth":{}}},
      *     @OA\Response(
@@ -54,8 +55,8 @@ class RoleController extends Controller
      * Store a newly created resource in storage.
      *
      * @OA\Post(
-     *     path="/api/roles",
-     *     tags={"Roles"},
+     *     path="/api/admin/roles",
+     *     tags={"Admin Roles"},
      *     summary="Create a new role",
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
@@ -116,8 +117,8 @@ class RoleController extends Controller
      * Display the specified resource.
      *
      * @OA\Get(
-     *     path="/api/roles/{role}",
-     *     tags={"Roles"},
+     *     path="/api/admin/roles/{role}",
+     *     tags={"Admin Roles"},
      *     summary="Get a role by ID",
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
@@ -164,8 +165,8 @@ class RoleController extends Controller
      * Update the specified resource in storage.
      *
      * @OA\Put(
-     *     path="/api/roles/{role}",
-     *     tags={"Roles"},
+     *     path="/api/admin/roles/{role}",
+     *     tags={"Admin Roles"},
      *     summary="Update a role by ID",
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
@@ -234,8 +235,8 @@ class RoleController extends Controller
      * Reassigns users from deleted role to a replacement role.
      *
      * @OA\Delete(
-     *     path="/api/roles/{role}",
-     *     tags={"Roles"},
+     *     path="/api/admin/roles/{role}",
+     *     tags={"Admin Roles"},
      *     summary="Delete a role by ID",
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(

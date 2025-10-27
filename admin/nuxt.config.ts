@@ -21,9 +21,9 @@ export default defineNuxtConfig({
     origin: process.env.NUXT_SANCTUM_ORIGIN,
     mode: "token",
     endpoints: {
-      login: "/api/login",
-      logout: "/api/logout",
-      user: "/api/user",
+      login: "/api/admin/login",
+      logout: "/api/admin/logout",
+      user: "/api/admin/user",
     },
     redirect: {
       keepRequestedRoute: false,

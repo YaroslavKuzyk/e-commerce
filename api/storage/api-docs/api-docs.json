@@ -15,14 +15,14 @@
         }
     ],
     "paths": {
-        "/api/register": {
+        "/api/admin/register": {
             "post": {
                 "tags": [
-                    "Authentication"
+                    "Admin Authentication"
                 ],
-                "summary": "Register a new user",
+                "summary": "Register a new admin user",
                 "description": "Register a new user",
-                "operationId": "8a56853624e025573120a09a4c75d468",
+                "operationId": "1abe8c989618856bf02a1d3a6e9ad5ec",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -89,14 +89,14 @@
                 }
             }
         },
-        "/api/login": {
+        "/api/admin/login": {
             "post": {
                 "tags": [
-                    "Authentication"
+                    "Admin Authentication"
                 ],
-                "summary": "Login user",
+                "summary": "Login admin user",
                 "description": "Login user",
-                "operationId": "a3b306d14572d1f4bd6c064b3233e7b8",
+                "operationId": "bd58eda5dedb8d70b61fd7d02843d27b",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -148,14 +148,14 @@
                 }
             }
         },
-        "/api/logout": {
+        "/api/admin/logout": {
             "post": {
                 "tags": [
-                    "Authentication"
+                    "Admin Authentication"
                 ],
-                "summary": "Logout user",
+                "summary": "Logout admin user",
                 "description": "Logout user",
-                "operationId": "fe8f3429cd6979b3b4517e186505f9f9",
+                "operationId": "1324c5fa6f4fefd83cd7e7bad6eb61f0",
                 "responses": {
                     "200": {
                         "description": "Logout successful",
@@ -184,14 +184,14 @@
                 ]
             }
         },
-        "/api/user": {
+        "/api/admin/user": {
             "get": {
                 "tags": [
-                    "Authentication"
+                    "Admin Authentication"
                 ],
-                "summary": "Get authenticated user",
+                "summary": "Get authenticated admin user",
                 "description": "Get authenticated user",
-                "operationId": "7c1cf647d76fad4b3eb1549fa4fe2f4c",
+                "operationId": "480ecf5cc83b8d57a5599c08231d877c",
                 "responses": {
                     "200": {
                         "description": "User data",
@@ -225,14 +225,14 @@
                 ]
             }
         },
-        "/api/permissions": {
+        "/api/admin/permissions": {
             "get": {
                 "tags": [
-                    "Permissions"
+                    "Admin Permissions"
                 ],
                 "summary": "Get all permissions",
                 "description": "Display a listing of the resource.",
-                "operationId": "27bb1606a7b293d1d49f57bb94ae71f7",
+                "operationId": "b2d834f864ef451094a643288954b53e",
                 "responses": {
                     "200": {
                         "description": "List of permissions",
@@ -294,14 +294,14 @@
                 ]
             }
         },
-        "/api/roles": {
+        "/api/admin/roles": {
             "get": {
                 "tags": [
-                    "Roles"
+                    "Admin Roles"
                 ],
                 "summary": "Get all roles",
                 "description": "Display a listing of the resource.",
-                "operationId": "77e3636d8592997ce9d6d27b50857a69",
+                "operationId": "2482cf02dd8867d786adf73b0da707a0",
                 "responses": {
                     "200": {
                         "description": "List of roles",
@@ -380,11 +380,11 @@
             },
             "post": {
                 "tags": [
-                    "Roles"
+                    "Admin Roles"
                 ],
                 "summary": "Create a new role",
                 "description": "Store a newly created resource in storage.",
-                "operationId": "4a563842fbfcad237f63da43065fca3d",
+                "operationId": "2e8bb0f3e18d0c53e25f90759e365aa5",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -493,14 +493,14 @@
                 ]
             }
         },
-        "/api/roles/{role}": {
+        "/api/admin/roles/{role}": {
             "get": {
                 "tags": [
-                    "Roles"
+                    "Admin Roles"
                 ],
                 "summary": "Get a role by ID",
                 "description": "Display the specified resource.",
-                "operationId": "f917de2b9b752dd8759d69202136b7ff",
+                "operationId": "63517ddb599ee10bfb5cc3faa5c9133f",
                 "parameters": [
                     {
                         "name": "role",
@@ -589,11 +589,11 @@
             },
             "put": {
                 "tags": [
-                    "Roles"
+                    "Admin Roles"
                 ],
                 "summary": "Update a role by ID",
                 "description": "Update the specified resource in storage.",
-                "operationId": "1509723c88cb1e49be3ecc047204f64a",
+                "operationId": "8e62d3e5372c4a5c6fa40f75baaab267",
                 "parameters": [
                     {
                         "name": "role",
@@ -716,11 +716,11 @@
             },
             "delete": {
                 "tags": [
-                    "Roles"
+                    "Admin Roles"
                 ],
                 "summary": "Delete a role by ID",
                 "description": "Remove the specified resource from storage.\nReassigns users from deleted role to a replacement role.",
-                "operationId": "b96c05ea55ef4e3d29464b1b62c469aa",
+                "operationId": "b6f0e1cc7bf4365d3f234e675714fa4c",
                 "parameters": [
                     {
                         "name": "role",
@@ -811,16 +811,16 @@
     },
     "tags": [
         {
-            "name": "Authentication",
-            "description": "Authentication"
+            "name": "Admin Authentication",
+            "description": "Admin Authentication"
         },
         {
-            "name": "Permissions",
-            "description": "Permissions"
+            "name": "Admin Permissions",
+            "description": "Admin Permissions"
         },
         {
-            "name": "Roles",
-            "description": "Roles"
+            "name": "Admin Roles",
+            "description": "Admin Roles"
         }
     ]
 }
