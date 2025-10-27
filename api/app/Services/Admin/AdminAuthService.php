@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Admin;
 
 use App\Actions\Auth\CreateTokenAction;
 use App\Actions\Auth\LoginUserAction;
 use App\Actions\Auth\RegisterUserAction;
-use App\Contracts\Services\AuthServiceInterface;
+use App\Contracts\Services\Admin\AdminAuthServiceInterface;
 use App\Models\User;
 
-class AuthService implements AuthServiceInterface
+class AdminAuthService implements AdminAuthServiceInterface
 {
     public function __construct(
         private RegisterUserAction $registerUserAction,
