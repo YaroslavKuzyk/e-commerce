@@ -52,8 +52,34 @@ import { Slack, ChevronsUpDown } from "lucide-vue-next";
 
 const authStore = useAuthStore();
 
+interface MenuItem {
+  label: string;
+  icon: string;
+  to?: string;
+  requiredPermissions?: string[];
+  children?: MenuItem[];
+}
+
+const hasPermissions = (requiredPermissions: string[]): boolean => {
+  if (!requiredPermissions || requiredPermissions.length === 0) {
+    return true;
+  }
+
+  const user = authStore.user;
+
+  if (!user || !user.role || !user.role.permissions) {
+    return false;
+  }
+
+  return requiredPermissions.every((requiredPermission) => {
+    return user.role.permissions.some((permission) => {
+      return permission.name === requiredPermission;
+    });
+  });
+};
+
 const menus = computed(() => {
-  return [
+  const allMenus: MenuItem[] = [
     {
       label: "Головна",
       icon: "i-lucide-home",
@@ -67,15 +93,45 @@ const menus = computed(() => {
           label: "Список Адміністраторів",
           icon: "i-lucide-shield-user",
           to: "/users/administrators",
+          requiredPermissions: ["Read Administrators"],
         },
         {
           label: "Ролі",
           icon: "i-lucide-contact-round",
           to: "/users/roles",
+          requiredPermissions: ["Read Roles", "Read Permissions"],
         },
       ],
     },
   ];
+
+  return allMenus
+    .map((menu) => {
+      if (menu.children && menu.children.length > 0) {
+        const filteredChildren = menu.children.filter((child) => {
+          if (child.requiredPermissions) {
+            return hasPermissions(child.requiredPermissions);
+          }
+          return true;
+        });
+
+        if (filteredChildren.length === 0) {
+          return null;
+        }
+
+        return {
+          ...menu,
+          children: filteredChildren,
+        };
+      }
+
+      if (menu.requiredPermissions) {
+        return hasPermissions(menu.requiredPermissions) ? menu : null;
+      }
+
+      return menu;
+    })
+    .filter((menu): menu is MenuItem => menu !== null);
 });
 
 const dropdownItems = computed(() => {
