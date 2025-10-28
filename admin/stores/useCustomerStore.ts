@@ -3,26 +3,32 @@ import { useCustomer } from "~/composables/useCustomer";
 import type { ICustomerFilters } from "~/models/customers";
 
 export const useCustomerStore = defineStore("customer", () => {
-  const customerComposable = useCustomer();
+  const {
+    getAllCustomers,
+    getCustomerById,
+    createCustomer,
+    updateCustomer,
+    deleteCustomer,
+  } = useCustomer();
 
   const fetchCustomers = (filters?: ICustomerFilters) => {
-    return customerComposable.getAllCustomers(filters);
+    return getAllCustomers(filters);
   };
 
   const fetchCustomerById = (id: number) => {
-    return customerComposable.getCustomerById(id);
+    return getCustomerById(id);
   };
 
-  const onCreateCustomer = (payload: any) => {
-    return customerComposable.createCustomer(payload);
+  const onCreateCustomer = async (payload: any) => {
+    return await createCustomer(payload);
   };
 
-  const onUpdateCustomer = (payload: any) => {
-    return customerComposable.updateCustomer(payload);
+  const onUpdateCustomer = async (payload: any) => {
+    return await updateCustomer(payload);
   };
 
-  const onDeleteCustomer = (id: number) => {
-    return customerComposable.deleteCustomer(id);
+  const onDeleteCustomer = async (id: number) => {
+    return await deleteCustomer(id);
   };
 
   return {

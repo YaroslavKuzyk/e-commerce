@@ -21,14 +21,11 @@ export class AdminService implements IAdminProvider {
       : "/api/admin/users";
 
     return useAsyncData<IAdmin[]>(
-      `admins-${queryString}-${Date.now()}`,
+      `admins-${queryString}`,
       () =>
         client<{ success: boolean; data: IAdmin[] }>(url).then(
           (res) => res.data
-        ),
-      {
-        server: false,
-      }
+        )
     );
   }
 

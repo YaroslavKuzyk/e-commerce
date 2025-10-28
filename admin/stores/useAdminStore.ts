@@ -3,26 +3,32 @@ import { useAdmin } from "~/composables/useAdmin";
 import type { IAdminFilters } from "~/models/administrators";
 
 export const useAdminStore = defineStore("admin", () => {
-  const adminComposable = useAdmin();
+  const {
+    getAllAdmins,
+    getAdminById,
+    createAdmin,
+    updateAdmin,
+    deleteAdmin,
+  } = useAdmin();
 
   const fetchAdmins = (filters?: IAdminFilters) => {
-    return adminComposable.getAllAdmins(filters);
+    return getAllAdmins(filters);
   };
 
   const fetchAdminById = (id: number) => {
-    return adminComposable.getAdminById(id);
+    return getAdminById(id);
   };
 
-  const onCreateAdmin = (payload: any) => {
-    return adminComposable.createAdmin(payload);
+  const onCreateAdmin = async (payload: any) => {
+    return await createAdmin(payload);
   };
 
-  const onUpdateAdmin = (payload: any) => {
-    return adminComposable.updateAdmin(payload);
+  const onUpdateAdmin = async (payload: any) => {
+    return await updateAdmin(payload);
   };
 
-  const onDeleteAdmin = (id: number) => {
-    return adminComposable.deleteAdmin(id);
+  const onDeleteAdmin = async (id: number) => {
+    return await deleteAdmin(id);
   };
 
   return {

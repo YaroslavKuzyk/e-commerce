@@ -1,14 +1,19 @@
 import { CustomerService } from "~/services/CustomerService";
-import type { ICustomerProvider } from "~/models/customers";
+import type {
+  ICustomerProvider,
+  ICreateCustomer,
+  IUpdateCustomer,
+  ICustomerFilters,
+} from "~/models/customers";
 
-export const useCustomer = (): ICustomerProvider => {
-  const customerService = new CustomerService();
+let provider: ICustomerProvider = new CustomerService();
 
+export const useCustomer = () => {
   return {
-    getAllCustomers: customerService.getAllCustomers.bind(customerService),
-    getCustomerById: customerService.getCustomerById.bind(customerService),
-    createCustomer: customerService.createCustomer.bind(customerService),
-    updateCustomer: customerService.updateCustomer.bind(customerService),
-    deleteCustomer: customerService.deleteCustomer.bind(customerService),
+    getAllCustomers: (filters?: ICustomerFilters) => provider.getAllCustomers(filters),
+    getCustomerById: (id: number) => provider.getCustomerById(id),
+    createCustomer: (payload: ICreateCustomer) => provider.createCustomer(payload),
+    updateCustomer: (payload: IUpdateCustomer) => provider.updateCustomer(payload),
+    deleteCustomer: (id: number) => provider.deleteCustomer(id),
   };
 };

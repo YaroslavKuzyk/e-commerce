@@ -1,57 +1,58 @@
-import { ref, computed, watch, type Ref } from "vue";
+import { computed, watch, type Ref } from "vue";
 import type { AsyncData } from "#app";
 
 interface UsePaginationListOptions<TFilter, TData> {
+  key: string;
   filters: Ref<TFilter>;
   fetchMethod: (filters?: TFilter) => AsyncData<TData[] | undefined, any>;
   debounceFields?: (keyof TFilter)[];
   debounceDelay?: number;
 }
 
-export function usePaginationList<TFilter extends Record<string, any>, TData>({
+export async function usePaginationList<TFilter extends Record<string, any>, TData>({
+  key,
   filters,
   fetchMethod,
   debounceFields = [],
   debounceDelay = 500,
 }: UsePaginationListOptions<TFilter, TData>) {
-  const data = ref<TData[]>([]) as Ref<TData[]>;
-  const pending = ref(false);
-
-  // Debounce timeout
-  let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
-
-  const fetchData = async () => {
-    pending.value = true;
-    try {
-      const activeFilters = {} as TFilter;
-
-      // Build active filters (exclude null, undefined, empty strings)
-      Object.keys(filters.value).forEach((key) => {
-        const value = filters.value[key];
-        if (value !== null && value !== undefined && value !== "") {
-          activeFilters[key as keyof TFilter] = value;
-        }
-      });
-
-      const { data: responseData } = await fetchMethod(
-        Object.keys(activeFilters).length > 0 ? activeFilters : undefined
-      );
-      if (responseData.value) {
-        data.value = responseData.value;
+  // Build active filters helper
+  const buildFilters = () => {
+    const activeFilters = {} as TFilter;
+    Object.keys(filters.value).forEach((filterKey) => {
+      const value = filters.value[filterKey];
+      if (value !== null && value !== undefined && value !== "") {
+        activeFilters[filterKey as keyof TFilter] = value;
       }
-    } catch (error) {
-      console.error("Failed to fetch data:", error);
-    } finally {
-      pending.value = false;
-    }
+    });
+    return Object.keys(activeFilters).length > 0 ? activeFilters : undefined;
   };
 
+  // Use useAsyncData for SSR support
+  const {
+    data,
+    pending,
+    refresh,
+  } = await useAsyncData(
+    key,
+    async () => {
+      const { data: responseData } = await fetchMethod(buildFilters());
+      return responseData.value || [];
+    },
+    {
+      server: true,
+      lazy: false,
+    }
+  );
+
+  // Computed for active filters check
   const hasActiveFilters = computed(() => {
     return Object.values(filters.value).some(
       (value) => value !== null && value !== undefined && value !== ""
     );
   });
 
+  // Clear all filters
   const clearFilters = () => {
     Object.keys(filters.value).forEach((key) => {
       const value = filters.value[key];
@@ -67,6 +68,9 @@ export function usePaginationList<TFilter extends Record<string, any>, TData>({
     });
   };
 
+  // Debounce timeout
+  let debounceTimeout: ReturnType<typeof setTimeout> | null = null;
+
   // Watch debounce fields with delay
   if (debounceFields.length > 0) {
     debounceFields.forEach((field) => {
@@ -77,7 +81,7 @@ export function usePaginationList<TFilter extends Record<string, any>, TData>({
             clearTimeout(debounceTimeout);
           }
           debounceTimeout = setTimeout(() => {
-            fetchData();
+            refresh();
           }, debounceDelay);
         }
       );
@@ -93,14 +97,10 @@ export function usePaginationList<TFilter extends Record<string, any>, TData>({
     watch(
       () => instantFields.map((field) => filters.value[field]),
       () => {
-        fetchData();
+        refresh();
       }
     );
   }
-
-  const refresh = async () => {
-    await fetchData();
-  };
 
   return {
     data,
@@ -108,6 +108,5 @@ export function usePaginationList<TFilter extends Record<string, any>, TData>({
     hasActiveFilters,
     clearFilters,
     refresh,
-    fetchData,
   };
 }

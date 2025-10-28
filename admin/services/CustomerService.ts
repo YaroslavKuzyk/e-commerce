@@ -20,14 +20,11 @@ export class CustomerService implements ICustomerProvider {
       : "/api/admin/customers";
 
     return useAsyncData<ICustomer[]>(
-      `customers-${queryString}-${Date.now()}`,
+      `customers-${queryString}`,
       () =>
         client<{ success: boolean; data: ICustomer[] }>(url).then(
           (res) => res.data
-        ),
-      {
-        server: false,
-      }
+        )
     );
   }
 

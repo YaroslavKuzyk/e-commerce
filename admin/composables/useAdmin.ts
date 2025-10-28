@@ -1,14 +1,19 @@
 import { AdminService } from "~/services/AdminService";
-import type { IAdminProvider } from "~/models/administrators";
+import type {
+  IAdminProvider,
+  ICreateAdmin,
+  IUpdateAdmin,
+  IAdminFilters,
+} from "~/models/administrators";
 
-export const useAdmin = (): IAdminProvider => {
-  const adminService = new AdminService();
+let provider: IAdminProvider = new AdminService();
 
+export const useAdmin = () => {
   return {
-    getAllAdmins: adminService.getAllAdmins.bind(adminService),
-    getAdminById: adminService.getAdminById.bind(adminService),
-    createAdmin: adminService.createAdmin.bind(adminService),
-    updateAdmin: adminService.updateAdmin.bind(adminService),
-    deleteAdmin: adminService.deleteAdmin.bind(adminService),
+    getAllAdmins: (filters?: IAdminFilters) => provider.getAllAdmins(filters),
+    getAdminById: (id: number) => provider.getAdminById(id),
+    createAdmin: (payload: ICreateAdmin) => provider.createAdmin(payload),
+    updateAdmin: (payload: IUpdateAdmin) => provider.updateAdmin(payload),
+    deleteAdmin: (id: number) => provider.deleteAdmin(id),
   };
 };

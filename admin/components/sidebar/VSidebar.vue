@@ -109,6 +109,12 @@ const menus = computed(() => {
         },
       ],
     },
+    {
+      label: "Оплата та Доставка",
+      icon: "i-lucide-truck",
+      to: "/settings/delivery-payment",
+      requiredPermissions: ["Read Delivery Methods", "Read Payment Methods"],
+    },
   ];
 
   return allMenus
