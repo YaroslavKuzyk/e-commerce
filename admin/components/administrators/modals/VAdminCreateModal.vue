@@ -21,8 +21,8 @@ const emits = defineEmits<IEmits>();
 
 const isOpen = defineModel<boolean>("isOpen");
 
-const closeAndRefresh = async () => {
-  await emits("refresh");
+const closeAndRefresh = () => {
+  emits("refresh");
   isOpen.value = false;
 };
 </script>

@@ -7,28 +7,8 @@
             v-model="filters.search"
             placeholder="Пошук за ім'ям або email"
             icon="i-lucide-search"
-            class="w-[200px]"
+            class="w-[250px]"
           />
-          <USelectMenu
-            v-model="filters.role"
-            :items="rolesData || []"
-            placeholder="Роль"
-            value-key="id"
-            label-key="name"
-            class="w-[150px]"
-          >
-            <template #trailing>
-              <UButton
-                v-if="filters.role"
-                size="sm"
-                variant="link"
-                icon="i-lucide-circle-x"
-                aria-label="Очистити"
-                @click.stop="filters.role = null"
-                color="neutral"
-              />
-            </template>
-          </USelectMenu>
           <USelectMenu
             v-model="filters.status"
             :items="statusOptions"
@@ -45,6 +25,26 @@
                 icon="i-lucide-circle-x"
                 aria-label="Очистити"
                 @click.stop="filters.status = null"
+                color="neutral"
+              />
+            </template>
+          </USelectMenu>
+          <USelectMenu
+            v-model="filters.role"
+            :items="rolesData || []"
+            placeholder="Роль"
+            value-key="id"
+            label-key="name"
+            class="w-[150px]"
+          >
+            <template #trailing>
+              <UButton
+                v-if="filters.role"
+                size="sm"
+                variant="link"
+                icon="i-lucide-circle-x"
+                aria-label="Очистити"
+                @click.stop="filters.role = null"
                 color="neutral"
               />
             </template>
@@ -84,7 +84,7 @@
           </template>
 
           <template #actions-cell="{ row }">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center justify-end gap-2">
               <HasPermissions :required-permissions="['Update Admin User']">
                 <UTooltip
                   v-if="isSuperAdmin(row.original)"
@@ -133,14 +133,6 @@
             </div>
           </template>
         </UTable>
-
-        <div
-          v-if="!adminsData || adminsData.length === 0"
-          class="text-center py-8 text-gray-500"
-        >
-          <div class="i-lucide-users text-4xl mx-auto mb-2 opacity-50"></div>
-          <p>Адміністраторів не знайдено</p>
-        </div>
       </div>
     </HasPermissions>
 
@@ -216,7 +208,8 @@ const columns = [
     header: "Дії",
     meta: {
       class: {
-        th: "w-[120px]",
+        th: "w-[120px] text-right",
+        td: "text-right",
       },
     },
   },
@@ -228,14 +221,12 @@ const {
   hasActiveFilters,
   clearFilters,
   refresh: refreshAdmins,
-  fetchData,
-} = usePaginationList<typeof filters.value, IAdmin>({
+} = await usePaginationList<typeof filters.value, IAdmin>({
+  key: 'admins-list',
   filters,
   fetchMethod: (filters?: IAdminFilters) => adminStore.fetchAdmins(filters),
   debounceFields: ["search"],
 });
-
-await fetchData();
 
 const isSuperAdmin = (admin: IAdmin): boolean => {
   return admin.role?.name === "SuperAdmin";

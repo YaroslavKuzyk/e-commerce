@@ -35,11 +35,11 @@
       />
     </UFormField>
 
-    <UFormField label="Пароль (необов'язково)" name="password">
+    <UFormField label="Пароль" name="password">
       <UInput
         v-model="state.password"
         type="password"
-        placeholder="Залиште порожнім для автогенерації"
+        placeholder="Введіть пароль (мінімум 8 символів)"
         class="w-full"
       />
     </UFormField>
@@ -72,9 +72,7 @@ const schema = z.object({
   status: z.enum(["active", "inactive"]).optional(),
   password: z
     .string()
-    .min(8, "Пароль має містити мінімум 8 символів")
-    .optional()
-    .or(z.literal("")),
+    .min(8, "Пароль має містити мінімум 8 символів"),
 });
 
 const state = reactive({
@@ -105,11 +103,6 @@ const onSubmit = async (event: any) => {
     // Convert role object to role_id if it's an object
     if (payload.role_id && typeof payload.role_id === "object") {
       payload.role_id = payload.role_id.id;
-    }
-
-    // Remove password if empty
-    if (!payload.password) {
-      delete payload.password;
     }
 
     await adminStore.onCreateAdmin(payload);

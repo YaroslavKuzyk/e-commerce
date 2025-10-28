@@ -17,7 +17,7 @@ class AdminUserService implements AdminUserServiceInterface
 
     public function getAllAdmins(array $filters = [])
     {
-        $query = User::query()->with(['roles']);
+        $query = User::query()->with(['roles'])->where('type', 'Admin');
 
         // Filter by search (name or email)
         if (!empty($filters['search'])) {
@@ -54,11 +54,6 @@ class AdminUserService implements AdminUserServiceInterface
 
     public function createAdmin(array $data): User
     {
-        // Generate random password if not provided
-        if (empty($data['password'])) {
-            $data['password'] = Str::random(16);
-        }
-
         // Hash the password
         $data['password'] = Hash::make($data['password']);
 
@@ -66,6 +61,9 @@ class AdminUserService implements AdminUserServiceInterface
         if (!isset($data['status'])) {
             $data['status'] = 'active';
         }
+
+        // Set type as Admin
+        $data['type'] = 'Admin';
 
         // Extract role_id for later
         $roleId = $data['role_id'] ?? null;

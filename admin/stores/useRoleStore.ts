@@ -17,16 +17,16 @@ export const useRoleStore = defineStore("role", () => {
     deleteRole,
   } = useRole();
 
-  const fetchPermissions = async () => {
-    return await getAllPermissions();
+  const fetchPermissions = () => {
+    return getAllPermissions();
   };
 
-  const fetchRoles = async () => {
-    return await getAllRoles();
+  const fetchRoles = () => {
+    return getAllRoles();
   };
 
-  const fetchRoleById = async (id: number) => {
-    return await getRoleById(id);
+  const fetchRoleById = (id: number) => {
+    return getRoleById(id);
   };
 
   const onCreateRole = async (payload: ICreateRole) => {

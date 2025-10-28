@@ -96,12 +96,24 @@ const menus = computed(() => {
           requiredPermissions: ["Read Admin Users"],
         },
         {
+          label: "Покупці",
+          icon: "i-lucide-shopping-bag",
+          to: "/users/customers",
+          requiredPermissions: ["Read Customers"],
+        },
+        {
           label: "Ролі",
           icon: "i-lucide-contact-round",
           to: "/users/roles",
           requiredPermissions: ["Read Roles", "Read Permissions"],
         },
       ],
+    },
+    {
+      label: "Оплата та Доставка",
+      icon: "i-lucide-truck",
+      to: "/settings/delivery-payment",
+      requiredPermissions: ["Read Delivery Methods", "Read Payment Methods"],
     },
   ];
 

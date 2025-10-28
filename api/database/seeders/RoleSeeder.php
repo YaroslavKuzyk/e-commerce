@@ -67,8 +67,76 @@ class RoleSeeder extends Seeder
             ],
         ];
 
+        // Створюємо CRUD permissions для управління покупцями
+        $customerPermissions = [
+            [
+                'name' => 'Create Customer',
+                'type' => Permission::TYPE_CREATE,
+                'group' => 'customers_management',
+            ],
+            [
+                'name' => 'Read Customers',
+                'type' => Permission::TYPE_READ,
+                'group' => 'customers_management',
+            ],
+            [
+                'name' => 'Update Customer',
+                'type' => Permission::TYPE_UPDATE,
+                'group' => 'customers_management',
+            ],
+            [
+                'name' => 'Delete Customer',
+                'type' => Permission::TYPE_DELETE,
+                'group' => 'customers_management',
+            ],
+        ];
+
+        // Створюємо permissions для управління методами доставки
+        $deliveryMethodPermissions = [
+            [
+                'name' => 'Read Delivery Methods',
+                'type' => Permission::TYPE_READ,
+                'group' => 'Delivery Methods',
+            ],
+            [
+                'name' => 'Create Delivery Method',
+                'type' => Permission::TYPE_CREATE,
+                'group' => 'Delivery Methods',
+            ],
+            [
+                'name' => 'Update Delivery Method',
+                'type' => Permission::TYPE_UPDATE,
+                'group' => 'Delivery Methods',
+            ],
+        ];
+
+        // Створюємо permissions для управління методами оплати
+        $paymentMethodPermissions = [
+            [
+                'name' => 'Read Payment Methods',
+                'type' => Permission::TYPE_READ,
+                'group' => 'Payment Methods',
+            ],
+            [
+                'name' => 'Create Payment Method',
+                'type' => Permission::TYPE_CREATE,
+                'group' => 'Payment Methods',
+            ],
+            [
+                'name' => 'Update Payment Method',
+                'type' => Permission::TYPE_UPDATE,
+                'group' => 'Payment Methods',
+            ],
+        ];
+
         // Об'єднуємо всі permissions
-        $allPermissions = array_merge($rolePermissions, $adminUserPermissions);
+        $allPermissions = array_merge(
+            $rolePermissions,
+            $adminUserPermissions,
+            $customerPermissions,
+            $deliveryMethodPermissions,
+            $paymentMethodPermissions
+        );
 
         $createdPermissions = [];
         foreach ($allPermissions as $permissionData) {

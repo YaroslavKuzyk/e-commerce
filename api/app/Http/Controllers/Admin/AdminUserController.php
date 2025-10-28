@@ -81,12 +81,12 @@ class AdminUserController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"name", "email", "role_id"},
+     *             required={"name", "email", "role_id", "password"},
      *             @OA\Property(property="name", type="string", example="John Doe"),
      *             @OA\Property(property="email", type="string", example="john@example.com"),
      *             @OA\Property(property="role_id", type="integer", example=1),
      *             @OA\Property(property="status", type="string", enum={"active", "inactive"}, example="active"),
-     *             @OA\Property(property="password", type="string", example="SecurePass123")
+     *             @OA\Property(property="password", type="string", example="SecurePass123", description="Required password (minimum 8 characters)")
      *         )
      *     ),
      *     @OA\Response(
@@ -111,7 +111,7 @@ class AdminUserController extends Controller
             'email' => 'required|string|email|max:255|unique:users,email',
             'role_id' => 'required|exists:roles,id',
             'status' => 'nullable|in:active,inactive',
-            'password' => 'nullable|string|min:8',
+            'password' => 'required|string|min:8',
         ]);
 
         $user = $this->adminUserService->createAdmin($validated);
