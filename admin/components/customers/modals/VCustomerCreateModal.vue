@@ -1,17 +1,17 @@
 <template>
   <UModal
-    title="Створити нового адміністратора"
-    description="Додайте нового адміністратора до системи."
+    title="Створити нового покупця"
+    description="Додайте нового покупця до системи."
     v-model:open="isOpen"
   >
     <template #body>
-      <VAdminCreateForm @close="closeAndRefresh" />
+      <VCustomerCreateForm @close="closeAndRefresh" />
     </template>
   </UModal>
 </template>
 
 <script setup lang="ts">
-import VAdminCreateForm from "@/components/administrators/forms/VAdminCreateForm.vue";
+import VCustomerCreateForm from "@/components/customers/forms/VCustomerCreateForm.vue";
 
 interface IEmits {
   (e: "refresh"): void;

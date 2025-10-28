@@ -20,10 +20,15 @@ export class AdminService implements IAdminProvider {
       ? `/api/admin/users?${queryString}`
       : "/api/admin/users";
 
-    return useAsyncData<IAdmin[]>(`admins-${queryString}`, () =>
-      client<{ success: boolean; data: IAdmin[] }>(url).then(
-        (res) => res.data
-      )
+    return useAsyncData<IAdmin[]>(
+      `admins-${queryString}-${Date.now()}`,
+      () =>
+        client<{ success: boolean; data: IAdmin[] }>(url).then(
+          (res) => res.data
+        ),
+      {
+        server: false,
+      }
     );
   }
 

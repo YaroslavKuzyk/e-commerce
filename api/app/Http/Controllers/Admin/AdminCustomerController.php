@@ -3,36 +3,30 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Contracts\Services\Admin\AdminUserServiceInterface;
+use App\Contracts\Services\Admin\AdminCustomerServiceInterface;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
-class AdminUserController extends Controller
+class AdminCustomerController extends Controller
 {
     public function __construct(
-        private AdminUserServiceInterface $adminUserService
+        private AdminCustomerServiceInterface $adminCustomerService
     ) {}
 
     /**
      * Display a listing of the resource.
      *
      * @OA\Get(
-     *     path="/api/admin/users",
-     *     tags={"Admin Users"},
-     *     summary="Get all admin users",
+     *     path="/api/admin/customers",
+     *     tags={"Admin Customers"},
+     *     summary="Get all customers",
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="search",
      *         in="query",
      *         description="Search by name or email",
      *         @OA\Schema(type="string")
-     *     ),
-     *     @OA\Parameter(
-     *         name="role",
-     *         in="query",
-     *         description="Filter by role ID",
-     *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Parameter(
      *         name="status",
@@ -42,31 +36,30 @@ class AdminUserController extends Controller
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="List of admin users",
+     *         description="List of customers",
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="data", type="array", @OA\Items(
      *                 @OA\Property(property="id", type="integer", example=1),
      *                 @OA\Property(property="name", type="string", example="John Doe"),
      *                 @OA\Property(property="email", type="string", example="john@example.com"),
-     *                 @OA\Property(property="status", type="string", example="active"),
-     *                 @OA\Property(property="role", type="object")
+     *                 @OA\Property(property="status", type="string", example="active")
      *             ))
      *         )
      *     ),
      *     @OA\Response(response=401, description="Unauthenticated"),
-     *     @OA\Response(response=403, description="Forbidden - Missing 'Read Admin Users' permission"),
+     *     @OA\Response(response=403, description="Forbidden - Missing 'Read Customers' permission"),
      *     @OA\Response(response=500, description="Internal server error")
      * )
      */
     public function index(Request $request): JsonResponse
     {
-        $filters = $request->only(['search', 'role', 'status']);
-        $users = $this->adminUserService->getAllAdmins($filters);
+        $filters = $request->only(['search', 'status']);
+        $customers = $this->adminCustomerService->getAllCustomers($filters);
 
         return response()->json([
             'success' => true,
-            'data' => $users,
+            'data' => $customers,
         ]);
     }
 
@@ -74,32 +67,31 @@ class AdminUserController extends Controller
      * Store a newly created resource in storage.
      *
      * @OA\Post(
-     *     path="/api/admin/users",
-     *     tags={"Admin Users"},
-     *     summary="Create a new admin user",
+     *     path="/api/admin/customers",
+     *     tags={"Admin Customers"},
+     *     summary="Create a new customer",
      *     security={{"bearerAuth":{}}},
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"name", "email", "role_id", "password"},
+     *             required={"name", "email", "password"},
      *             @OA\Property(property="name", type="string", example="John Doe"),
      *             @OA\Property(property="email", type="string", example="john@example.com"),
-     *             @OA\Property(property="role_id", type="integer", example=1),
      *             @OA\Property(property="status", type="string", enum={"active", "inactive"}, example="active"),
      *             @OA\Property(property="password", type="string", example="SecurePass123", description="Required password (minimum 8 characters)")
      *         )
      *     ),
      *     @OA\Response(
      *         response=201,
-     *         description="User created successfully",
+     *         description="Customer created successfully",
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Admin user created successfully"),
+     *             @OA\Property(property="message", type="string", example="Customer created successfully"),
      *             @OA\Property(property="data", type="object")
      *         )
      *     ),
      *     @OA\Response(response=401, description="Unauthenticated"),
-     *     @OA\Response(response=403, description="Forbidden - Missing 'Create Admin User' permission"),
+     *     @OA\Response(response=403, description="Forbidden - Missing 'Create Customer' permission"),
      *     @OA\Response(response=422, description="Validation error"),
      *     @OA\Response(response=500, description="Internal server error")
      * )
@@ -109,16 +101,15 @@ class AdminUserController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email',
-            'role_id' => 'required|exists:roles,id',
             'status' => 'nullable|in:active,inactive',
             'password' => 'required|string|min:8',
         ]);
 
-        $user = $this->adminUserService->createAdmin($validated);
+        $user = $this->adminCustomerService->createCustomer($validated);
 
         return response()->json([
             'success' => true,
-            'message' => 'Admin user created successfully',
+            'message' => 'Customer created successfully',
             'data' => $user,
         ], 201);
     }
@@ -127,37 +118,37 @@ class AdminUserController extends Controller
      * Display the specified resource.
      *
      * @OA\Get(
-     *     path="/api/admin/users/{user}",
-     *     tags={"Admin Users"},
-     *     summary="Get an admin user by ID",
+     *     path="/api/admin/customers/{customer}",
+     *     tags={"Admin Customers"},
+     *     summary="Get a customer by ID",
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
-     *         name="user",
+     *         name="customer",
      *         in="path",
      *         required=true,
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="User found",
+     *         description="Customer found",
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=true),
      *             @OA\Property(property="data", type="object")
      *         )
      *     ),
      *     @OA\Response(response=401, description="Unauthenticated"),
-     *     @OA\Response(response=403, description="Forbidden - Missing 'Read Admin Users' permission"),
-     *     @OA\Response(response=404, description="User not found"),
+     *     @OA\Response(response=403, description="Forbidden - Missing 'Read Customers' permission"),
+     *     @OA\Response(response=404, description="Customer not found"),
      *     @OA\Response(response=500, description="Internal server error")
      * )
      */
-    public function show(User $user): JsonResponse
+    public function show(User $customer): JsonResponse
     {
-        $user = $this->adminUserService->getAdminById($user);
+        $customer = $this->adminCustomerService->getCustomerById($customer);
 
         return response()->json([
             'success' => true,
-            'data' => $user,
+            'data' => $customer,
         ]);
     }
 
@@ -165,12 +156,12 @@ class AdminUserController extends Controller
      * Update the specified resource in storage.
      *
      * @OA\Put(
-     *     path="/api/admin/users/{user}",
-     *     tags={"Admin Users"},
-     *     summary="Update an admin user by ID",
+     *     path="/api/admin/customers/{customer}",
+     *     tags={"Admin Customers"},
+     *     summary="Update a customer by ID",
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
-     *         name="user",
+     *         name="customer",
      *         in="path",
      *         required=true,
      *         @OA\Schema(type="integer")
@@ -178,46 +169,44 @@ class AdminUserController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"name", "email", "role_id"},
+     *             required={"name", "email"},
      *             @OA\Property(property="name", type="string", example="John Doe"),
      *             @OA\Property(property="email", type="string", example="john@example.com"),
-     *             @OA\Property(property="role_id", type="integer", example=1),
      *             @OA\Property(property="status", type="string", enum={"active", "inactive"}, example="active"),
      *             @OA\Property(property="password", type="string", example="NewPassword123")
      *         )
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="User updated successfully",
+     *         description="Customer updated successfully",
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Admin user updated successfully"),
+     *             @OA\Property(property="message", type="string", example="Customer updated successfully"),
      *             @OA\Property(property="data", type="object")
      *         )
      *     ),
      *     @OA\Response(response=401, description="Unauthenticated"),
-     *     @OA\Response(response=403, description="Forbidden - Missing 'Update Admin User' permission"),
-     *     @OA\Response(response=404, description="User not found"),
+     *     @OA\Response(response=403, description="Forbidden - Missing 'Update Customer' permission"),
+     *     @OA\Response(response=404, description="Customer not found"),
      *     @OA\Response(response=422, description="Validation error"),
      *     @OA\Response(response=500, description="Internal server error")
      * )
      */
-    public function update(Request $request, User $user): JsonResponse
+    public function update(Request $request, User $customer): JsonResponse
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'role_id' => 'required|exists:roles,id',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $customer->id,
             'status' => 'nullable|in:active,inactive',
             'password' => 'nullable|string|min:8',
         ]);
 
-        $user = $this->adminUserService->updateAdmin($user, $validated);
+        $customer = $this->adminCustomerService->updateCustomer($customer, $validated);
 
         return response()->json([
             'success' => true,
-            'message' => 'Admin user updated successfully',
-            'data' => $user,
+            'message' => 'Customer updated successfully',
+            'data' => $customer,
         ]);
     }
 
@@ -225,43 +214,43 @@ class AdminUserController extends Controller
      * Remove the specified resource from storage.
      *
      * @OA\Delete(
-     *     path="/api/admin/users/{user}",
-     *     tags={"Admin Users"},
-     *     summary="Delete an admin user by ID",
+     *     path="/api/admin/customers/{customer}",
+     *     tags={"Admin Customers"},
+     *     summary="Delete a customer by ID",
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
-     *         name="user",
+     *         name="customer",
      *         in="path",
      *         required=true,
      *         @OA\Schema(type="integer")
      *     ),
      *     @OA\Response(
      *         response=200,
-     *         description="User deleted successfully",
+     *         description="Customer deleted successfully",
      *         @OA\JsonContent(
      *             @OA\Property(property="success", type="boolean", example=true),
-     *             @OA\Property(property="message", type="string", example="Admin user deleted successfully")
+     *             @OA\Property(property="message", type="string", example="Customer deleted successfully")
      *         )
      *     ),
      *     @OA\Response(response=401, description="Unauthenticated"),
-     *     @OA\Response(response=403, description="Forbidden - Missing 'Delete Admin User' permission"),
-     *     @OA\Response(response=404, description="User not found"),
-     *     @OA\Response(response=500, description="Failed to delete user")
+     *     @OA\Response(response=403, description="Forbidden - Missing 'Delete Customer' permission"),
+     *     @OA\Response(response=404, description="Customer not found"),
+     *     @OA\Response(response=500, description="Failed to delete customer")
      * )
      */
-    public function destroy(User $user): JsonResponse
+    public function destroy(User $customer): JsonResponse
     {
         try {
-            $this->adminUserService->deleteAdmin($user);
+            $this->adminCustomerService->deleteCustomer($customer);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Admin user deleted successfully',
+                'message' => 'Customer deleted successfully',
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to delete admin user: ' . $e->getMessage(),
+                'message' => 'Failed to delete customer: ' . $e->getMessage(),
             ], 500);
         }
     }

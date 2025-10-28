@@ -9,6 +9,7 @@ use App\Contracts\Services\Admin\AdminAuthServiceInterface;
 use App\Contracts\Services\Admin\AdminRoleServiceInterface;
 use App\Contracts\Services\Admin\AdminPermissionServiceInterface;
 use App\Contracts\Services\Admin\AdminUserServiceInterface;
+use App\Contracts\Services\Admin\AdminCustomerServiceInterface;
 use App\Repositories\PermissionRepository;
 use App\Repositories\RoleRepository;
 use App\Repositories\UserRepository;
@@ -16,6 +17,7 @@ use App\Services\Admin\AdminAuthService;
 use App\Services\Admin\AdminRoleService;
 use App\Services\Admin\AdminPermissionService;
 use App\Services\Admin\AdminUserService;
+use App\Services\Admin\AdminCustomerService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -35,6 +37,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AdminRoleServiceInterface::class, AdminRoleService::class);
         $this->app->bind(AdminPermissionServiceInterface::class, AdminPermissionService::class);
         $this->app->bind(AdminUserServiceInterface::class, AdminUserService::class);
+        $this->app->bind(AdminCustomerServiceInterface::class, AdminCustomerService::class);
     }
 
     /**

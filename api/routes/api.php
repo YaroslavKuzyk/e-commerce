@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\AdminRoleController;
 use App\Http\Controllers\Admin\AdminPermissionController;
 use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\Admin\AdminCustomerController;
 use Illuminate\Support\Facades\Route;
 
 // Admin routes group with /admin prefix
@@ -35,6 +36,14 @@ Route::prefix('admin')->group(function () {
         Route::put('users/{user}', [AdminUserController::class, 'update'])->middleware('permission:Update Admin User');
         Route::patch('users/{user}', [AdminUserController::class, 'update'])->middleware('permission:Update Admin User');
         Route::delete('users/{user}', [AdminUserController::class, 'destroy'])->middleware('permission:Delete Admin User');
+
+        // Customer management routes with permissions
+        Route::get('customers', [AdminCustomerController::class, 'index'])->middleware('permission:Read Customers');
+        Route::get('customers/{customer}', [AdminCustomerController::class, 'show'])->middleware('permission:Read Customers');
+        Route::post('customers', [AdminCustomerController::class, 'store'])->middleware('permission:Create Customer');
+        Route::put('customers/{customer}', [AdminCustomerController::class, 'update'])->middleware('permission:Update Customer');
+        Route::patch('customers/{customer}', [AdminCustomerController::class, 'update'])->middleware('permission:Update Customer');
+        Route::delete('customers/{customer}', [AdminCustomerController::class, 'destroy'])->middleware('permission:Delete Customer');
     });
 });
 

@@ -8,18 +8,7 @@
       <UInput
         v-model="state.email"
         type="email"
-        placeholder="admin@example.com"
-        class="w-full"
-      />
-    </UFormField>
-
-    <UFormField label="Роль" name="role_id">
-      <USelectMenu
-        v-model="state.role_id"
-        :items="rolesData || []"
-        placeholder="Оберіть роль"
-        value-key="id"
-        label-key="name"
+        placeholder="customer@example.com"
         class="w-full"
       />
     </UFormField>
@@ -66,9 +55,8 @@ const emits = defineEmits<IEmits>();
 const toast = useToast();
 
 const schema = z.object({
-  name: z.string().min(1, "Ім'я є обов'ązковим"),
+  name: z.string().min(1, "Ім'я є обов'язковим"),
   email: z.string().email("Некоректний email"),
-  role_id: z.number().min(1, "Роль є обов'язковою"),
   status: z.enum(["active", "inactive"]).optional(),
   password: z
     .string()
@@ -78,7 +66,6 @@ const schema = z.object({
 const state = reactive({
   name: "",
   email: "",
-  role_id: null as number | null,
   status: "active" as "active" | "inactive",
   password: "",
 });
@@ -88,10 +75,7 @@ const statusOptions = [
   { label: "Неактивний", value: "inactive" },
 ];
 
-const roleStore = useRoleStore();
-const adminStore = useAdminStore();
-
-const { data: rolesData } = await roleStore.fetchRoles();
+const customerStore = useCustomerStore();
 
 const loading = ref(false);
 
@@ -100,16 +84,11 @@ const onSubmit = async (event: any) => {
     loading.value = true;
     const payload = { ...event.data };
 
-    // Convert role object to role_id if it's an object
-    if (payload.role_id && typeof payload.role_id === "object") {
-      payload.role_id = payload.role_id.id;
-    }
-
-    await adminStore.onCreateAdmin(payload);
+    await customerStore.onCreateCustomer(payload);
 
     toast.add({
       title: "Успішно",
-      description: "Адміністратора успішно створено",
+      description: "Покупця успішно створено",
       color: "success",
     });
 
@@ -118,13 +97,12 @@ const onSubmit = async (event: any) => {
     // Reset form
     state.name = "";
     state.email = "";
-    state.role_id = null;
     state.status = "active";
     state.password = "";
   } catch (error: any) {
     toast.add({
       title: "Помилка",
-      description: error?.message || "Не вдалося створити адміністратора",
+      description: error?.message || "Не вдалося створити покупця",
       color: "error",
     });
   } finally {
