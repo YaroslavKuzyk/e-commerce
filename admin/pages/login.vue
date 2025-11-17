@@ -1,50 +1,122 @@
 <template>
-  <div class="container">
-    <div class="form-card">
-      <h1>Login</h1>
-
-      <form @submit.prevent="handleLogin">
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            id="email"
-            v-model="credentials.email"
-            type="email"
-            required
-            placeholder="Enter your email"
+  <div
+    class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4 py-12"
+  >
+    <div class="w-full max-w-md">
+      <!-- Logo and Title -->
+      <div class="text-center mb-8">
+        <div
+          class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/30 mb-4"
+        >
+          <UIcon
+            name="i-lucide-shopping-cart"
+            class="w-8 h-8 text-primary-600 dark:text-primary-400"
           />
         </div>
+        <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          Ласкаво просимо
+        </h1>
+        <p class="text-gray-600 dark:text-gray-400">
+          Увійдіть до адміністративної панелі
+        </p>
+      </div>
 
-        <div class="form-group">
-          <label for="password">Password</label>
-          <input
-            id="password"
-            v-model="credentials.password"
-            type="password"
-            required
-            placeholder="Enter your password"
+      <!-- Login Card -->
+      <UCard class="shadow-xl backdrop-blur-sm bg-white/90 dark:bg-gray-800/90">
+        <form @submit.prevent="handleLogin" class="space-y-6">
+          <!-- Email Field -->
+          <UFormGroup label="Email" name="email" required>
+            <UInput
+              class="w-full mb-4"
+              v-model="credentials.email"
+              type="email"
+              placeholder="Введіть ваш email"
+              icon="i-lucide-mail"
+              size="lg"
+              :disabled="loading"
+              autocomplete="email"
+            />
+          </UFormGroup>
+
+          <!-- Password Field -->
+          <UFormGroup label="Пароль" name="password" required>
+            <UInput
+              class="w-full mb-4"
+              v-model="credentials.password"
+              :type="showPassword ? 'text' : 'password'"
+              placeholder="Введіть ваш пароль"
+              icon="i-lucide-lock"
+              size="lg"
+              :disabled="loading"
+              autocomplete="current-password"
+            >
+              <template #trailing>
+                <UButton
+                  variant="ghost"
+                  color="neutral"
+                  size="xs"
+                  :icon="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+                  @click="showPassword = !showPassword"
+                  tabindex="-1"
+                />
+              </template>
+            </UInput>
+          </UFormGroup>
+
+          <!-- Remember Me & Forgot Password -->
+          <div class="flex items-center justify-end w-full">
+            <NuxtLink
+              to="/forgot-password"
+              class="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors flex-shrink-0"
+            >
+              Забули пароль?
+            </NuxtLink>
+          </div>
+
+          <!-- Error Alert -->
+          <UAlert
+            v-if="error"
+            color="error"
+            variant="soft"
+            :title="error"
+            icon="i-lucide-alert-circle"
+            :close-button="{
+              icon: 'i-lucide-x',
+              color: 'error',
+              variant: 'ghost',
+            }"
+            @close="error = ''"
           />
-        </div>
 
-        <div v-if="error" class="error">
-          {{ error }}
-        </div>
+          <!-- Submit Button -->
+          <UButton
+            type="submit"
+            block
+            size="lg"
+            :loading="loading"
+            :disabled="loading || !credentials.email || !credentials.password"
+            icon="i-lucide-log-in"
+          >
+            {{ loading ? "Вхід..." : "Увійти" }}
+          </UButton>
+        </form>
+      </UCard>
 
-        <button type="submit" :disabled="loading">
-          {{ loading ? "Logging in..." : "Login" }}
-        </button>
-      </form>
-
-      <p class="link">
-        Don't have an account?
-        <NuxtLink to="/register">Register here</NuxtLink>
-      </p>
+      <!-- Footer -->
+      <div class="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
+        <p>© 2025 E-Commerce Admin. Всі права захищені.</p>
+      </div>
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+definePageMeta({
+  layout: "guest",
+});
+
 const authStore = useAuthStore();
+
 const credentials = ref({
   email: "",
   password: "",
@@ -52,6 +124,7 @@ const credentials = ref({
 
 const loading = ref(false);
 const error = ref("");
+const showPassword = ref(false);
 
 const handleLogin = async () => {
   loading.value = true;
@@ -60,105 +133,39 @@ const handleLogin = async () => {
   try {
     await authStore.login(credentials.value);
 
-    navigateTo("/dashboard");
-  } catch (err) {
-    console.log(err);
+    // Show success message
+    useToast().add({
+      title: "Успішно!",
+      description: "Ви успішно увійшли в систему",
+      icon: "i-lucide-check-circle",
+      color: "success",
+    });
 
-    error.value =
-      err.data?.message || "Login failed. Please check your credentials.";
+    navigateTo("/dashboard");
+  } catch (err: any) {
+    console.error("Login error:", err);
+
+    error.value = err.data?.message || "Помилка входу. Перевірте ваші дані.";
+
+    // Show error toast
+    useToast().add({
+      title: "Помилка входу",
+      description: error.value,
+      icon: "i-lucide-alert-circle",
+      color: "error",
+    });
   } finally {
     loading.value = false;
   }
 };
+
+// Auto-fill for development (remove in production)
+onMounted(() => {
+  if (process.dev) {
+    credentials.value = {
+      email: "",
+      password: "",
+    };
+  }
+});
 </script>
-
-<style scoped>
-.container {
-  max-width: 400px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-family: Arial, sans-serif;
-}
-
-.form-card {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-h1 {
-  color: #333;
-  margin-bottom: 2rem;
-  text-align: center;
-}
-
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-label {
-  display: block;
-  margin-bottom: 0.5rem;
-  color: #555;
-  font-weight: 500;
-}
-
-input {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-  box-sizing: border-box;
-}
-
-input:focus {
-  outline: none;
-  border-color: #3b82f6;
-}
-
-button {
-  width: 100%;
-  background: #3b82f6;
-  color: white;
-  border: none;
-  padding: 0.75rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-}
-
-button:hover:not(:disabled) {
-  background: #2563eb;
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.error {
-  color: #ef4444;
-  background: #fee2e2;
-  padding: 0.75rem;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-}
-
-.link {
-  text-align: center;
-  margin-top: 1rem;
-  color: #666;
-}
-
-.link a {
-  color: #3b82f6;
-  text-decoration: none;
-}
-
-.link a:hover {
-  text-decoration: underline;
-}
-</style>
