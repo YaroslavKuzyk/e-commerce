@@ -5,6 +5,7 @@ import type { IAdminFilters } from "~/models/administrators";
 export const useAdminStore = defineStore("admin", () => {
   const {
     getAllAdmins,
+    getAllAdminsPromise,
     getAdminById,
     createAdmin,
     updateAdmin,
@@ -13,6 +14,10 @@ export const useAdminStore = defineStore("admin", () => {
 
   const fetchAdmins = (filters?: IAdminFilters) => {
     return getAllAdmins(filters);
+  };
+
+  const fetchAdminsPromise = async (filters?: IAdminFilters) => {
+    return await getAllAdminsPromise(filters);
   };
 
   const fetchAdminById = (id: number) => {
@@ -33,6 +38,7 @@ export const useAdminStore = defineStore("admin", () => {
 
   return {
     fetchAdmins,
+    fetchAdminsPromise,
     fetchAdminById,
     onCreateAdmin,
     onUpdateAdmin,

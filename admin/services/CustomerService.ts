@@ -28,6 +28,22 @@ export class CustomerService implements ICustomerProvider {
     );
   }
 
+  async getAllCustomersPromise(filters?: ICustomerFilters): Promise<ICustomer[]> {
+    const client = useSanctumClient();
+
+    const queryParams = new URLSearchParams();
+    if (filters?.search) queryParams.append("search", filters.search);
+    if (filters?.status) queryParams.append("status", filters.status);
+
+    const queryString = queryParams.toString();
+    const url = queryString
+      ? `/api/admin/customers?${queryString}`
+      : "/api/admin/customers";
+
+    const response = await client<{ success: boolean; data: ICustomer[] }>(url);
+    return response.data;
+  }
+
   getCustomerById(id: number) {
     const client = useSanctumClient();
 

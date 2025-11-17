@@ -4,6 +4,7 @@ export interface IAdminProvider {
   getAllAdmins(
     filters?: IAdminFilters
   ): ReturnType<typeof useAsyncData<IAdmin[] | undefined>>;
+  getAllAdminsPromise(filters?: IAdminFilters): Promise<IAdmin[]>;
   getAdminById(id: number): ReturnType<typeof useAsyncData<IAdmin | undefined>>;
   createAdmin(
     payload: ICreateAdmin

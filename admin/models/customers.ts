@@ -2,6 +2,7 @@ export interface ICustomerProvider {
   getAllCustomers(
     filters?: ICustomerFilters
   ): ReturnType<typeof useAsyncData<ICustomer[] | undefined>>;
+  getAllCustomersPromise(filters?: ICustomerFilters): Promise<ICustomer[]>;
   getCustomerById(id: number): ReturnType<typeof useAsyncData<ICustomer | undefined>>;
   createCustomer(
     payload: ICreateCustomer

@@ -5,6 +5,7 @@ namespace App\Actions\Auth;
 use App\Contracts\Repositories\UserRepositoryInterface;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Enums\UserType;
 
 class RegisterUserAction
 {
@@ -18,7 +19,7 @@ class RegisterUserAction
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'type' => 'Customer',
+            'type' => UserType::CUSTOMER,
         ]);
     }
 }

@@ -11,6 +11,7 @@ let provider: IAdminProvider = new AdminService();
 export const useAdmin = () => {
   return {
     getAllAdmins: (filters?: IAdminFilters) => provider.getAllAdmins(filters),
+    getAllAdminsPromise: (filters?: IAdminFilters) => provider.getAllAdminsPromise(filters),
     getAdminById: (id: number) => provider.getAdminById(id),
     createAdmin: (payload: ICreateAdmin) => provider.createAdmin(payload),
     updateAdmin: (payload: IUpdateAdmin) => provider.updateAdmin(payload),

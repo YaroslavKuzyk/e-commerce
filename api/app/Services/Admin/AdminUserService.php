@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Http\Resources\UserResource;
+use App\Enums\UserType;
 
 class AdminUserService implements AdminUserServiceInterface
 {
@@ -17,7 +18,7 @@ class AdminUserService implements AdminUserServiceInterface
 
     public function getAllAdmins(array $filters = [])
     {
-        $query = User::query()->with(['roles'])->where('type', 'Admin');
+        $query = User::query()->with(['roles'])->where('type', UserType::ADMIN);
 
         // Filter by search (name or email)
         if (!empty($filters['search'])) {
@@ -63,7 +64,7 @@ class AdminUserService implements AdminUserServiceInterface
         }
 
         // Set type as Admin
-        $data['type'] = 'Admin';
+        $data['type'] = UserType::ADMIN;
 
         // Extract role_id for later
         $roleId = $data['role_id'] ?? null;
