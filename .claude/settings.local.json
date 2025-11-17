@@ -7,7 +7,14 @@
       "Bash(docker-compose exec app tail -n 50 storage/logs/laravel.log)",
       "Bash(find . -type f ( -name \"*.vue\" -o -name \"*.ts\" ) ! -path \"./.nuxt/*\" ! -path \"./node_modules/*\" -exec grep -l \"deliveryPayment\" {} ;)",
       "Bash(npm run dev)",
-      "Bash(docker-compose exec app tail -n 100 storage/logs/laravel.log)"
+      "Bash(docker-compose exec app tail -n 100 storage/logs/laravel.log)",
+      "Bash(docker-compose up:*)",
+      "Bash(docker compose:*)",
+      "Bash(docker run:*)",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Bash(docker-compose exec:*)",
+      "Bash(php artisan:*)"
     ],
     "deny": [],
     "ask": []

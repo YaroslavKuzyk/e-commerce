@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use App\Http\Resources\UserResource;
+use App\Enums\UserType;
 
 class AdminCustomerService implements AdminCustomerServiceInterface
 {
@@ -17,7 +18,7 @@ class AdminCustomerService implements AdminCustomerServiceInterface
 
     public function getAllCustomers(array $filters = [])
     {
-        $query = User::query()->where('type', 'Customer');
+        $query = User::query()->where('type', UserType::CUSTOMER);
 
         // Filter by search (name or email)
         if (!empty($filters['search'])) {
@@ -54,7 +55,7 @@ class AdminCustomerService implements AdminCustomerServiceInterface
         }
 
         // Set type as Customer
-        $data['type'] = 'Customer';
+        $data['type'] = UserType::CUSTOMER;
 
         // Create the user
         $user = $this->userRepository->create($data);
@@ -73,7 +74,7 @@ class AdminCustomerService implements AdminCustomerServiceInterface
         }
 
         // Ensure type remains Customer
-        $data['type'] = 'Customer';
+        $data['type'] = UserType::CUSTOMER;
 
         // Update the user
         $user = $this->userRepository->update($user, $data);

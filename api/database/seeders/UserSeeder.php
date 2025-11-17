@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\Role;
+use App\Enums\UserType;
 
 class UserSeeder extends Seeder
 {
@@ -20,6 +21,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'admin',
                 'password' => bcrypt('superpassword'),
+                'type' => UserType::ADMIN,
             ]
         );
 

@@ -29,6 +29,23 @@ export class AdminService implements IAdminProvider {
     );
   }
 
+  async getAllAdminsPromise(filters?: IAdminFilters): Promise<IAdmin[]> {
+    const client = useSanctumClient();
+
+    const queryParams = new URLSearchParams();
+    if (filters?.search) queryParams.append("search", filters.search);
+    if (filters?.role) queryParams.append("role", filters.role.toString());
+    if (filters?.status) queryParams.append("status", filters.status);
+
+    const queryString = queryParams.toString();
+    const url = queryString
+      ? `/api/admin/users?${queryString}`
+      : "/api/admin/users";
+
+    const response = await client<{ success: boolean; data: IAdmin[] }>(url);
+    return response.data;
+  }
+
   getAdminById(id: number) {
     const client = useSanctumClient();
 

@@ -5,6 +5,7 @@ import type { ICustomerFilters } from "~/models/customers";
 export const useCustomerStore = defineStore("customer", () => {
   const {
     getAllCustomers,
+    getAllCustomersPromise,
     getCustomerById,
     createCustomer,
     updateCustomer,
@@ -13,6 +14,10 @@ export const useCustomerStore = defineStore("customer", () => {
 
   const fetchCustomers = (filters?: ICustomerFilters) => {
     return getAllCustomers(filters);
+  };
+
+  const fetchCustomersPromise = async (filters?: ICustomerFilters) => {
+    return await getAllCustomersPromise(filters);
   };
 
   const fetchCustomerById = (id: number) => {
@@ -33,6 +38,7 @@ export const useCustomerStore = defineStore("customer", () => {
 
   return {
     fetchCustomers,
+    fetchCustomersPromise,
     fetchCustomerById,
     onCreateCustomer,
     onUpdateCustomer,

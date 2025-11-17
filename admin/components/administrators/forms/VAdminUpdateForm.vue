@@ -111,14 +111,11 @@ const loading = ref(false);
 watch(
   () => props.admin,
   (newAdmin) => {
-    if (newAdmin && rolesData.value) {
+    if (newAdmin) {
       state.name = newAdmin.name;
       state.email = newAdmin.email;
-      // Find the role object from rolesData instead of just the ID
-      const roleObj = rolesData.value.find(
-        (role: any) => role.id === newAdmin.role?.id
-      );
-      state.role_id = roleObj || null;
+      // Зберігаємо тільки ID ролі
+      state.role_id = newAdmin.role?.id || null;
       state.status = newAdmin.status;
       state.password = "";
     }

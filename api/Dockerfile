@@ -21,11 +21,17 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Copy composer files first
+COPY composer.json composer.lock /var/www/
+
+# Install PHP dependencies
+RUN composer install --no-interaction --no-dev --prefer-dist --no-scripts --no-autoloader
+
 # Copy existing application directory
 COPY . /var/www
 
-# Install PHP dependencies
-RUN composer install --no-interaction --no-dev --prefer-dist
+# Complete composer installation
+RUN composer dump-autoload --no-dev --optimize
 
 # Copy existing application directory permissions
 RUN chown -R www-data:www-data /var/www

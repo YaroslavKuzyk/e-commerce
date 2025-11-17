@@ -220,13 +220,17 @@ const {
   pending,
   hasActiveFilters,
   clearFilters,
-  refresh: refreshAdmins,
+  refresh: internalRefresh,
 } = await usePaginationList<typeof filters.value, IAdmin>({
   key: 'admins-list',
   filters,
-  fetchMethod: (filters?: IAdminFilters) => adminStore.fetchAdmins(filters),
+  fetchFunction: (filters?: IAdminFilters) => adminStore.fetchAdminsPromise(filters),
   debounceFields: ["search"],
 });
+
+const refreshAdmins = async () => {
+  await internalRefresh();
+};
 
 const isSuperAdmin = (admin: IAdmin): boolean => {
   return admin.role?.name === "SuperAdmin";

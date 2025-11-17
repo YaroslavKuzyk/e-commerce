@@ -2,9 +2,7 @@
   <UDashboardSidebar
     collapsible
     :ui="{ footer: 'border-t border-default' }"
-    :default-size="13"
-    :min-size="13"
-    :max-size="13"
+    resizable
   >
     <template #header="{ collapsed }">
       <div v-if="!collapsed" class="flex items-center gap-2">

@@ -1,18 +1,20 @@
 import { computed, watch, type Ref } from "vue";
-import type { AsyncData } from "#app";
 
 interface UsePaginationListOptions<TFilter, TData> {
   key: string;
   filters: Ref<TFilter>;
-  fetchMethod: (filters?: TFilter) => AsyncData<TData[] | undefined, any>;
+  fetchFunction: (filters?: TFilter) => Promise<TData[]>;
   debounceFields?: (keyof TFilter)[];
   debounceDelay?: number;
 }
 
-export async function usePaginationList<TFilter extends Record<string, any>, TData>({
+export async function usePaginationList<
+  TFilter extends Record<string, any>,
+  TData
+>({
   key,
   filters,
-  fetchMethod,
+  fetchFunction,
   debounceFields = [],
   debounceDelay = 500,
 }: UsePaginationListOptions<TFilter, TData>) {
@@ -28,21 +30,10 @@ export async function usePaginationList<TFilter extends Record<string, any>, TDa
     return Object.keys(activeFilters).length > 0 ? activeFilters : undefined;
   };
 
-  // Use useAsyncData for SSR support
-  const {
-    data,
-    pending,
-    refresh,
-  } = await useAsyncData(
+  // Використовуємо useAsyncData з функцією, яка залежить від фільтрів
+  const { data, pending, refresh } = await useAsyncData<TData[]>(
     key,
-    async () => {
-      const { data: responseData } = await fetchMethod(buildFilters());
-      return responseData.value || [];
-    },
-    {
-      server: true,
-      lazy: false,
-    }
+    () => fetchFunction(buildFilters())
   );
 
   // Computed for active filters check
@@ -54,18 +45,30 @@ export async function usePaginationList<TFilter extends Record<string, any>, TDa
 
   // Clear all filters
   const clearFilters = () => {
-    Object.keys(filters.value).forEach((key) => {
-      const value = filters.value[key];
+    const newFilters = { ...filters.value } as Record<string, any>;
+    Object.keys(newFilters).forEach((key) => {
+      const value = newFilters[key];
       if (typeof value === "string") {
-        filters.value[key] = "" as any;
+        newFilters[key] = "";
       } else if (typeof value === "number") {
-        filters.value[key] = null as any;
+        newFilters[key] = null;
       } else if (Array.isArray(value)) {
-        filters.value[key] = [] as any;
+        newFilters[key] = [];
       } else {
-        filters.value[key] = null as any;
+        newFilters[key] = null;
       }
     });
+    filters.value = newFilters as TFilter;
+  };
+
+  // Wrapper для refresh
+  const refreshData = async () => {
+    try {
+      await refresh();
+      return data.value;
+    } catch (error) {
+      throw error;
+    }
   };
 
   // Debounce timeout
@@ -81,7 +84,7 @@ export async function usePaginationList<TFilter extends Record<string, any>, TDa
             clearTimeout(debounceTimeout);
           }
           debounceTimeout = setTimeout(() => {
-            refresh();
+            refreshData();
           }, debounceDelay);
         }
       );
@@ -97,7 +100,7 @@ export async function usePaginationList<TFilter extends Record<string, any>, TDa
     watch(
       () => instantFields.map((field) => filters.value[field]),
       () => {
-        refresh();
+        refreshData();
       }
     );
   }
@@ -107,6 +110,6 @@ export async function usePaginationList<TFilter extends Record<string, any>, TDa
     pending,
     hasActiveFilters,
     clearFilters,
-    refresh,
+    refresh: refreshData,
   };
 }

@@ -163,7 +163,7 @@ const {
 } = await usePaginationList<typeof filters.value, ICustomer>({
   key: 'customers-list',
   filters,
-  fetchMethod: (filters?: ICustomerFilters) => customerStore.fetchCustomers(filters),
+  fetchFunction: (filters?: ICustomerFilters) => customerStore.fetchCustomersPromise(filters),
   debounceFields: ["search"],
 });
 
