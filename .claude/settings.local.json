@@ -14,7 +14,9 @@
       "Bash(curl:*)",
       "Bash(python3:*)",
       "Bash(docker-compose exec:*)",
-      "Bash(php artisan:*)"
+      "Bash(php artisan:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []

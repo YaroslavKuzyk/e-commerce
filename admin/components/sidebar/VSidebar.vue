@@ -25,20 +25,47 @@
 
     <template #footer="{ collapsed }">
       <UDropdownMenu :items="dropdownItems">
-        <UButton
-          :avatar="{
-            src: 'https://github.com/benjamincanac.png',
-          }"
-          :label="collapsed ? undefined : authStore.user?.name"
-          color="neutral"
-          variant="ghost"
-          class="w-full"
-          :block="collapsed"
-        >
-          <template #trailing>
-            <ChevronsUpDown class="size-4 ml-auto" />
-          </template>
-        </UButton>
+        <template #default>
+          <UButton
+            color="neutral"
+            variant="ghost"
+            class="w-full"
+            :block="collapsed"
+          >
+            <template #leading>
+              <VAvatar
+                :name="authStore.user?.name || 'User'"
+                size="xs"
+                shape="circle"
+              />
+            </template>
+            <template v-if="!collapsed" #default>
+              {{ authStore.user?.name }}
+            </template>
+            <template v-if="!collapsed" #trailing>
+              <ChevronsUpDown class="size-4 ml-auto" />
+            </template>
+          </UButton>
+        </template>
+        <template #account>
+          <div class="flex items-center gap-3 px-2 py-2">
+            <VAvatar
+              :name="authStore.user?.name || 'User'"
+              size="sm"
+              shape="circle"
+            />
+            <div class="flex flex-col items-start min-w-0 flex-1">
+              <p
+                class="text-sm font-semibold text-gray-900 dark:text-white truncate"
+              >
+                {{ authStore.user?.name || "User" }}
+              </p>
+              <p class="text-xs text-gray-500 dark:text-gray-400 truncate">
+                {{ authStore.user?.email || "" }}
+              </p>
+            </div>
+          </div>
+        </template>
       </UDropdownMenu>
     </template>
   </UDashboardSidebar>
@@ -157,28 +184,28 @@ const dropdownItems = computed(() => {
   return [
     [
       {
-        label: authStore.user?.name,
-        avatar: {
-          src: "https://github.com/benjamincanac.png",
-        },
-        type: "label",
+        label: authStore.user?.name || "User",
+        slot: "account",
+        disabled: true,
       },
     ],
     [
       {
         label: "Профіль",
         icon: "i-lucide-user",
+        to: "/profile",
       },
       {
         label: "Налаштування",
-        icon: "i-lucide-cog",
+        icon: "i-lucide-settings",
+        to: "/settings",
       },
     ],
     [
       {
         label: "Вихід",
         icon: "i-lucide-log-out",
-        onSelect: handleLogout,
+        click: handleLogout,
       },
     ],
   ];
