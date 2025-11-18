@@ -8,7 +8,6 @@ export default defineNuxtConfig({
     "@pinia/nuxt",
     "nuxt-auth-sanctum",
     "@nuxt/ui",
-    "nuxt-lucide-icons",
   ],
   css: ["~/assets/styles/tailwind.css"],
 

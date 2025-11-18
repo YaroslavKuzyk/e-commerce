@@ -5,9 +5,11 @@
         <UButton
           to="/profile"
           variant="ghost"
-          icon="i-lucide-arrow-left"
           color="neutral"
         >
+          <template #leading>
+            <ArrowLeft class="w-5 h-5" />
+          </template>
           Повернутись до профілю
         </UButton>
       </div>
@@ -103,10 +105,7 @@
                 <div
                   class="p-2 bg-primary-100 dark:bg-primary-900/20 rounded-lg w-10 h-10 flex items-center justify-center"
                 >
-                  <UIcon
-                    name="i-lucide-user"
-                    class="w-5 h-5 text-primary-600 dark:text-primary-400"
-                  />
+                  <User class="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 </div>
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                   Персональна інформація
@@ -167,10 +166,7 @@
                 <div
                   class="p-2 bg-primary-100 dark:bg-primary-900/20 rounded-lg w-10 h-10 flex items-center justify-center"
                 >
-                  <UIcon
-                    name="i-lucide-lock"
-                    class="w-5 h-5 text-primary-600 dark:text-primary-400"
-                  />
+                  <Lock class="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 </div>
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                   Зміна пароля
@@ -236,10 +232,7 @@
                 <div
                   class="p-2 bg-primary-100 dark:bg-primary-900/20 rounded-lg w-10 h-10 flex items-center justify-center"
                 >
-                  <UIcon
-                    name="i-lucide-image"
-                    class="w-5 h-5 text-primary-600 dark:text-primary-400"
-                  />
+                  <ImageIcon class="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 </div>
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
                   Аватар
@@ -253,7 +246,9 @@
                 власних зображень буде доступне в наступних версіях.
               </p>
               <UButton color="neutral" variant="outline" disabled>
-                <UIcon name="i-lucide-upload" class="w-4 h-4 mr-2" />
+                <template #leading>
+                  <Upload class="w-4 h-4" />
+                </template>
                 Завантажити фото (скоро)
               </UButton>
             </div>
@@ -270,6 +265,7 @@
 
 <script setup lang="ts">
 import { z } from "zod";
+import { ArrowLeft, User, Lock, Image as ImageIcon, Upload } from "lucide-vue-next";
 import type { IUser } from "~/models/auth";
 import VSidebarContent from "~/components/sidebar/VSidebarContent.vue";
 

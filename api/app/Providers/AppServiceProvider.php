@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Contracts\DeliveryMethodRepositoryInterface;
 use App\Contracts\PaymentMethodRepositoryInterface;
+use App\Contracts\FileRepositoryInterface;
 use App\Contracts\Repositories\PermissionRepositoryInterface;
 use App\Contracts\Repositories\RoleRepositoryInterface;
 use App\Contracts\Repositories\UserRepositoryInterface;
@@ -16,6 +17,7 @@ use App\Contracts\Services\Admin\AdminUserServiceInterface;
 use App\Contracts\Services\Admin\AdminCustomerServiceInterface;
 use App\Repositories\DeliveryMethodRepository;
 use App\Repositories\PaymentMethodRepository;
+use App\Repositories\FileRepository;
 use App\Repositories\PermissionRepository;
 use App\Repositories\RoleRepository;
 use App\Repositories\UserRepository;
@@ -41,6 +43,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(PermissionRepositoryInterface::class, PermissionRepository::class);
         $this->app->bind(DeliveryMethodRepositoryInterface::class, DeliveryMethodRepository::class);
         $this->app->bind(PaymentMethodRepositoryInterface::class, PaymentMethodRepository::class);
+        $this->app->bind(FileRepositoryInterface::class, FileRepository::class);
 
         // Register Admin Service bindings
         $this->app->bind(AdminAuthServiceInterface::class, AdminAuthService::class);

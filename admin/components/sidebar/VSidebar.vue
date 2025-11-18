@@ -73,13 +73,27 @@
 
 <script setup lang="ts">
 import { useAuthStore } from "~/stores/useAuthStore";
-import { Slack, ChevronsUpDown } from "lucide-vue-next";
+import {
+  Slack,
+  ChevronsUpDown,
+  Home,
+  Users,
+  ShieldCheck,
+  ShoppingBag,
+  ContactRound,
+  Truck,
+  Folder,
+  User,
+  Settings,
+  LogOut,
+} from "lucide-vue-next";
+import type { Component } from "vue";
 
 const authStore = useAuthStore();
 
 interface MenuItem {
   label: string;
-  icon: string;
+  icon: Component;
   to?: string;
   requiredPermissions?: string[];
   children?: MenuItem[];
@@ -107,28 +121,28 @@ const menus = computed(() => {
   const allMenus: MenuItem[] = [
     {
       label: "Головна",
-      icon: "i-lucide-home",
+      icon: Home,
       to: "/",
     },
     {
       label: "Користувачі",
-      icon: "i-lucide-users",
+      icon: Users,
       children: [
         {
           label: "Адміністратори",
-          icon: "i-lucide-shield-user",
+          icon: ShieldCheck,
           to: "/users/administrators",
           requiredPermissions: ["Read Admin Users"],
         },
         {
           label: "Покупці",
-          icon: "i-lucide-shopping-bag",
+          icon: ShoppingBag,
           to: "/users/customers",
           requiredPermissions: ["Read Customers"],
         },
         {
           label: "Ролі",
-          icon: "i-lucide-contact-round",
+          icon: ContactRound,
           to: "/users/roles",
           requiredPermissions: ["Read Roles", "Read Permissions"],
         },
@@ -136,9 +150,14 @@ const menus = computed(() => {
     },
     {
       label: "Оплата та Доставка",
-      icon: "i-lucide-truck",
-      to: "/settings/delivery-payment",
+      icon: Truck,
+      to: "/delivery-payment",
       requiredPermissions: ["Read Delivery Methods", "Read Payment Methods"],
+    },
+    {
+      label: "Файли",
+      icon: Folder,
+      to: "/files",
     },
   ];
 
@@ -192,19 +211,19 @@ const dropdownItems = computed(() => {
     [
       {
         label: "Профіль",
-        icon: "i-lucide-user",
+        icon: User,
         to: "/profile",
       },
       {
         label: "Налаштування",
-        icon: "i-lucide-settings",
+        icon: Settings,
         to: "/settings",
       },
     ],
     [
       {
         label: "Вихід",
-        icon: "i-lucide-log-out",
+        icon: LogOut,
         click: handleLogout,
       },
     ],

@@ -16,7 +16,11 @@
       "Bash(docker-compose exec:*)",
       "Bash(php artisan:*)",
       "Bash(git remote set-url:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(cat:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm install:*)",
+      "Bash(jq \".paths | keys | map(select(contains(\"\"/files\"\")))\")"
     ],
     "deny": [],
     "ask": []

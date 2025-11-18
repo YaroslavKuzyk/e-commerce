@@ -16,11 +16,12 @@
                 v-if="selectedRole"
                 size="sm"
                 variant="link"
-                icon="i-lucide-circle-x"
                 aria-label="Очистити"
                 @click.stop="selectedRole = null"
                 color="neutral"
-              />
+              >
+                <CircleX class="w-4 h-4" />
+              </UButton>
             </template>
           </USelectMenu>
         </HasPermissions>
@@ -59,6 +60,7 @@
 </template>
 
 <script setup lang="ts">
+import { CircleX } from "lucide-vue-next";
 import HasPermissions from "~/components/common/VHasPermissions.vue";
 import VSidebarContent from "~/components/sidebar/VSidebarContent.vue";
 import VRoleUpdateForm from "~/components/roles/forms/VRoleUpdateForm.vue";

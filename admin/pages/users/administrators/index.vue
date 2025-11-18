@@ -6,9 +6,12 @@
           <UInput
             v-model="filters.search"
             placeholder="Пошук за ім'ям або email"
-            icon="i-lucide-search"
             class="w-[250px]"
-          />
+          >
+            <template #leading>
+              <Search class="w-5 h-5" />
+            </template>
+          </UInput>
           <USelectMenu
             v-model="filters.status"
             :items="statusOptions"
@@ -22,11 +25,12 @@
                 v-if="filters.status"
                 size="sm"
                 variant="link"
-                icon="i-lucide-circle-x"
                 aria-label="Очистити"
                 @click.stop="filters.status = null"
                 color="neutral"
-              />
+              >
+                <CircleX class="w-4 h-4" />
+              </UButton>
             </template>
           </USelectMenu>
           <USelectMenu
@@ -42,19 +46,22 @@
                 v-if="filters.role"
                 size="sm"
                 variant="link"
-                icon="i-lucide-circle-x"
                 aria-label="Очистити"
                 @click.stop="filters.role = null"
                 color="neutral"
-              />
+              >
+                <CircleX class="w-4 h-4" />
+              </UButton>
             </template>
           </USelectMenu>
           <UButton
             v-if="hasActiveFilters"
             variant="ghost"
             @click="clearFilters"
-            icon="i-lucide-x"
           >
+            <template #leading>
+              <X class="w-5 h-5" />
+            </template>
             Очистити фільтри
           </UButton>
         </div>
@@ -95,17 +102,19 @@
                     size="sm"
                     variant="ghost"
                     color="neutral"
-                    icon="i-lucide-shield-check"
                     disabled
-                  />
+                  >
+                    <ShieldCheck class="w-4 h-4" />
+                  </UButton>
                 </UTooltip>
                 <UButton
                   v-else
                   size="sm"
                   variant="ghost"
-                  icon="i-lucide-pencil"
                   @click="openEditModal(row.original)"
-                />
+                >
+                  <Pencil class="w-4 h-4" />
+                </UButton>
               </HasPermissions>
               <HasPermissions :required-permissions="['Delete Admin User']">
                 <UButton
@@ -113,9 +122,10 @@
                   size="sm"
                   variant="ghost"
                   color="error"
-                  icon="i-lucide-trash-2"
                   @click="openDeleteModal(row.original)"
-                />
+                >
+                  <Trash2 class="w-4 h-4" />
+                </UButton>
                 <UTooltip
                   v-else
                   text="Неможливо видалити SuperAdmin"
@@ -125,9 +135,10 @@
                     size="sm"
                     variant="ghost"
                     color="neutral"
-                    icon="i-lucide-shield-check"
                     disabled
-                  />
+                  >
+                    <ShieldCheck class="w-4 h-4" />
+                  </UButton>
                 </UTooltip>
               </HasPermissions>
             </div>
@@ -154,6 +165,7 @@
 </template>
 
 <script setup lang="ts">
+import { Search, CircleX, X, ShieldCheck, Pencil, Trash2 } from "lucide-vue-next";
 import HasPermissions from "~/components/common/VHasPermissions.vue";
 import VSidebarContent from "~/components/sidebar/VSidebarContent.vue";
 import VAdminCreateModal from "~/components/administrators/modals/VAdminCreateModal.vue";

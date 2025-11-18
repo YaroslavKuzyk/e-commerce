@@ -14,11 +14,12 @@
             v-if="state.deleteRole"
             size="sm"
             variant="link"
-            icon="i-lucide-circle-x"
             aria-label="Очистити"
             @click.stop="state.deleteRole = null"
             color="neutral"
-          />
+          >
+            <CircleX class="w-4 h-4" />
+          </UButton>
         </template>
       </USelectMenu>
     </UFormField>
@@ -36,11 +37,12 @@
             v-if="state.replacementRole"
             size="sm"
             variant="link"
-            icon="i-lucide-circle-x"
             aria-label="Очистити"
             @click.stop="state.replacementRole = null"
             color="neutral"
-          />
+          >
+            <CircleX class="w-4 h-4" />
+          </UButton>
         </template>
       </USelectMenu>
     </UFormField>
@@ -52,6 +54,7 @@
 
 <script setup lang="ts">
 import { z } from "zod";
+import { CircleX } from "lucide-vue-next";
 
 interface IEmits {
   (e: "close"): void;
