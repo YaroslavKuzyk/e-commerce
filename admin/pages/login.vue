@@ -8,10 +8,7 @@
         <div
           class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary-100 dark:bg-primary-900/30 mb-4"
         >
-          <UIcon
-            name="i-lucide-shopping-cart"
-            class="w-8 h-8 text-primary-600 dark:text-primary-400"
-          />
+          <ShoppingCart class="w-8 h-8 text-primary-600 dark:text-primary-400" />
         </div>
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
           Ласкаво просимо
@@ -31,11 +28,14 @@
               v-model="credentials.email"
               type="email"
               placeholder="Введіть ваш email"
-              icon="i-lucide-mail"
               size="lg"
               :disabled="loading"
               autocomplete="email"
-            />
+            >
+              <template #leading>
+                <Mail class="w-4 h-4 text-gray-400" />
+              </template>
+            </UInput>
           </UFormGroup>
 
           <!-- Password Field -->
@@ -45,20 +45,24 @@
               v-model="credentials.password"
               :type="showPassword ? 'text' : 'password'"
               placeholder="Введіть ваш пароль"
-              icon="i-lucide-lock"
               size="lg"
               :disabled="loading"
               autocomplete="current-password"
             >
+              <template #leading>
+                <Lock class="w-4 h-4 text-gray-400" />
+              </template>
               <template #trailing>
                 <UButton
                   variant="ghost"
                   color="neutral"
                   size="xs"
-                  :icon="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
                   @click="showPassword = !showPassword"
                   tabindex="-1"
-                />
+                >
+                  <EyeOff v-if="showPassword" class="w-4 h-4" />
+                  <Eye v-else class="w-4 h-4" />
+                </UButton>
               </template>
             </UInput>
           </UFormGroup>
@@ -79,14 +83,22 @@
             color="error"
             variant="soft"
             :title="error"
-            icon="i-lucide-alert-circle"
-            :close-button="{
-              icon: 'i-lucide-x',
-              color: 'error',
-              variant: 'ghost',
-            }"
             @close="error = ''"
-          />
+          >
+            <template #icon>
+              <AlertCircle class="w-5 h-5" />
+            </template>
+            <template #close>
+              <UButton
+                color="error"
+                variant="ghost"
+                size="xs"
+                @click="error = ''"
+              >
+                <X class="w-4 h-4" />
+              </UButton>
+            </template>
+          </UAlert>
 
           <!-- Submit Button -->
           <UButton
@@ -95,8 +107,10 @@
             size="lg"
             :loading="loading"
             :disabled="loading || !credentials.email || !credentials.password"
-            icon="i-lucide-log-in"
           >
+            <template #leading>
+              <LogIn class="w-5 h-5" />
+            </template>
             {{ loading ? "Вхід..." : "Увійти" }}
           </UButton>
         </form>
@@ -111,6 +125,8 @@
 </template>
 
 <script setup lang="ts">
+import { ShoppingCart, Mail, Lock, Eye, EyeOff, AlertCircle, X, LogIn, CheckCircle } from 'lucide-vue-next';
+
 definePageMeta({
   layout: "guest",
 });
@@ -137,7 +153,6 @@ const handleLogin = async () => {
     useToast().add({
       title: "Успішно!",
       description: "Ви успішно увійшли в систему",
-      icon: "i-lucide-check-circle",
       color: "success",
     });
 
@@ -151,7 +166,6 @@ const handleLogin = async () => {
     useToast().add({
       title: "Помилка входу",
       description: error.value,
-      icon: "i-lucide-alert-circle",
       color: "error",
     });
   } finally {

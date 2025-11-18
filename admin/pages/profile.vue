@@ -5,9 +5,11 @@
         <UButton
           to="/settings"
           variant="solid"
-          icon="i-lucide-settings"
           color="primary"
         >
+          <template #leading>
+            <Settings class="w-5 h-5" />
+          </template>
           Налаштування профілю
         </UButton>
       </div>
@@ -153,6 +155,7 @@
 </template>
 
 <script setup lang="ts">
+import { Settings } from "lucide-vue-next";
 import type { IUser } from "~/models/auth";
 import VSidebarContent from "~/components/sidebar/VSidebarContent.vue";
 

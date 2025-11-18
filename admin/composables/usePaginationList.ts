@@ -24,6 +24,10 @@ export async function usePaginationList<
     Object.keys(filters.value).forEach((filterKey) => {
       const value = filters.value[filterKey];
       if (value !== null && value !== undefined && value !== "") {
+        // Skip empty arrays
+        if (Array.isArray(value) && value.length === 0) {
+          return;
+        }
         activeFilters[filterKey as keyof TFilter] = value;
       }
     });
@@ -38,9 +42,16 @@ export async function usePaginationList<
 
   // Computed for active filters check
   const hasActiveFilters = computed(() => {
-    return Object.values(filters.value).some(
-      (value) => value !== null && value !== undefined && value !== ""
-    );
+    return Object.values(filters.value).some((value) => {
+      if (value === null || value === undefined || value === "") {
+        return false;
+      }
+      // Check for empty arrays
+      if (Array.isArray(value) && value.length === 0) {
+        return false;
+      }
+      return true;
+    });
   });
 
   // Clear all filters
@@ -101,7 +112,8 @@ export async function usePaginationList<
       () => instantFields.map((field) => filters.value[field]),
       () => {
         refreshData();
-      }
+      },
+      { deep: true }
     );
   }
 

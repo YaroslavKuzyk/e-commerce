@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminCustomerController;
 use App\Http\Controllers\Admin\AdminDeliveryMethodController;
 use App\Http\Controllers\Admin\AdminPaymentMethodController;
+use App\Http\Controllers\Admin\AdminFileController;
 use Illuminate\Support\Facades\Route;
 
 // Admin routes group with /admin prefix
@@ -64,5 +65,12 @@ Route::prefix('admin')->group(function () {
         Route::put('payment-methods/{id}', [AdminPaymentMethodController::class, 'update'])->middleware('permission:Update Payment Method');
         Route::patch('payment-methods/{id}', [AdminPaymentMethodController::class, 'update'])->middleware('permission:Update Payment Method');
         Route::patch('payment-methods/{id}/toggle-active', [AdminPaymentMethodController::class, 'toggleActive'])->middleware('permission:Update Payment Method');
+
+        // File management routes
+        Route::get('files', [AdminFileController::class, 'index']);
+        Route::get('files/{id}', [AdminFileController::class, 'show']);
+        Route::post('files', [AdminFileController::class, 'store']);
+        Route::delete('files/{id}', [AdminFileController::class, 'destroy']);
+        Route::get('files/{id}/download', [AdminFileController::class, 'download']);
     });
 });
