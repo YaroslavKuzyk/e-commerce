@@ -27,14 +27,22 @@
         </HasPermissions>
         <div class="flex items-center gap-2 shrink-0">
           <HasPermissions :required-permissions="['Delete Role']">
-            <UButton color="error" @click="isDeleteRoleModalOpen = true"
-              >Видалити роль</UButton
-            >
+            <UButton color="error" variant="outline" @click="isDeleteRoleModalOpen = true">
+              <template #leading>
+                <Trash2 class="w-4 h-4" />
+              </template>
+              Видалити роль
+            </UButton>
           </HasPermissions>
           <HasPermissions
             :required-permissions="['Create Role', 'Read Permissions']"
           >
-            <UButton @click="isCreateRoleModalOpen = true">Додати роль</UButton>
+            <UButton @click="isCreateRoleModalOpen = true">
+              <template #leading>
+                <Plus class="w-4 h-4" />
+              </template>
+              Додати роль
+            </UButton>
           </HasPermissions>
         </div>
       </div>
@@ -60,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import { CircleX } from "lucide-vue-next";
+import { CircleX, Plus, Trash2 } from "lucide-vue-next";
 import HasPermissions from "~/components/common/VHasPermissions.vue";
 import VSidebarContent from "~/components/sidebar/VSidebarContent.vue";
 import VRoleUpdateForm from "~/components/roles/forms/VRoleUpdateForm.vue";

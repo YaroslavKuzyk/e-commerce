@@ -18,7 +18,12 @@
         <UFormField label="Назва" name="name">
           <UInput v-model="state.name" class="w-[100%]" />
         </UFormField>
-        <UButton type="submit">Оновити роль</UButton>
+        <UButton type="submit">
+          <template #leading>
+            <Send class="w-4 h-4" />
+          </template>
+          Підтвердити
+        </UButton>
       </div>
     </HasPermissions>
   </UForm>
@@ -26,6 +31,7 @@
 
 <script setup lang="ts">
 import { z } from "zod";
+import { Send } from "lucide-vue-next";
 import HasPermissions from "~/components/common/VHasPermissions.vue";
 
 interface Props {

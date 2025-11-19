@@ -70,6 +70,7 @@ Route::prefix('admin')->group(function () {
         Route::get('files', [AdminFileController::class, 'index']);
         Route::get('files/{id}', [AdminFileController::class, 'show']);
         Route::post('files', [AdminFileController::class, 'store']);
+        Route::post('files/bulk-delete', [AdminFileController::class, 'bulkDelete']);
         Route::delete('files/{id}', [AdminFileController::class, 'destroy']);
         Route::get('files/{id}/download', [AdminFileController::class, 'download']);
     });

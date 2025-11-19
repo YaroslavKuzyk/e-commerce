@@ -30,9 +30,9 @@ class FileService
      * Get all files with user information.
      *
      * @param array $filters
-     * @return Collection
+     * @return Collection|\Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function getAllFiles(array $filters = []): Collection
+    public function getAllFiles(array $filters = [])
     {
         return $this->fileRepository->getAllWithUser($filters);
     }
@@ -97,6 +97,20 @@ class FileService
 
         // Delete database record
         return $this->fileRepository->delete($id);
+    }
+
+    /**
+     * Delete multiple files and their physical files.
+     *
+     * @param array $ids
+     * @return void
+     * @throws \Exception
+     */
+    public function deleteFiles(array $ids): void
+    {
+        foreach ($ids as $id) {
+            $this->deleteFile($id);
+        }
     }
 
     /**

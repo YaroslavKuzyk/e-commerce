@@ -34,7 +34,7 @@ class AdminFileController extends Controller
      * @OA\Get(
      *     path="/api/admin/files",
      *     tags={"Admin Files"},
-     *     summary="Get all files with optional filters",
+     *     summary="Get all files with optional filters and pagination",
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="search",
@@ -56,6 +56,20 @@ class AdminFileController extends Controller
      *         description="Filter by file types (comma-separated: image,video,audio,pdf,archive,other)",
      *         required=false,
      *         @OA\Schema(type="string", example="image,video")
+     *     ),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Items per page (if not provided, returns all items)",
+     *         required=false,
+     *         @OA\Schema(type="integer", example=15)
      *     ),
      *     @OA\Response(
      *         response=200,
@@ -83,6 +97,14 @@ class AdminFileController extends Controller
      *                     @OA\Property(property="created_at", type="string", format="date-time", example="2025-11-18T10:30:00.000000Z"),
      *                     @OA\Property(property="updated_at", type="string", format="date-time", example="2025-11-18T10:30:00.000000Z")
      *                 )
+     *             ),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 @OA\Property(property="current_page", type="integer", example=1),
+     *                 @OA\Property(property="last_page", type="integer", example=5),
+     *                 @OA\Property(property="per_page", type="integer", example=15),
+     *                 @OA\Property(property="total", type="integer", example=73)
      *             )
      *         )
      *     ),
@@ -98,13 +120,30 @@ class AdminFileController extends Controller
             'search' => $request->query('search'),
             'user_search' => $request->query('user_search'),
             'types' => $request->query('types') ? explode(',', $request->query('types')) : [],
+            'page' => $request->query('page', 1),
+            'per_page' => $request->query('per_page'),
         ];
 
-        $files = $this->fileService->getAllFiles($filters);
+        $result = $this->fileService->getAllFiles($filters);
 
+        // If pagination is used (per_page is provided)
+        if ($filters['per_page']) {
+            return response()->json([
+                'success' => true,
+                'data' => FileResource::collection($result->items()),
+                'meta' => [
+                    'current_page' => $result->currentPage(),
+                    'last_page' => $result->lastPage(),
+                    'per_page' => $result->perPage(),
+                    'total' => $result->total(),
+                ],
+            ]);
+        }
+
+        // If no pagination (return all items)
         return response()->json([
             'success' => true,
-            'data' => FileResource::collection($files),
+            'data' => FileResource::collection($result),
         ]);
     }
 
@@ -391,6 +430,77 @@ class AdminFileController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to delete file: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    /**
+     * Remove multiple files.
+     *
+     * @OA\Post(
+     *     path="/api/admin/files/bulk-delete",
+     *     tags={"Admin Files"},
+     *     summary="Delete multiple files by IDs",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"ids"},
+     *             @OA\Property(
+     *                 property="ids",
+     *                 type="array",
+     *                 @OA\Items(type="integer"),
+     *                 example={1, 2, 3}
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Files deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Files deleted successfully")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(
+     *         response=422,
+     *         description="Validation error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="message", type="string", example="The ids field is required.")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=500,
+     *         description="Server error",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=false),
+     *             @OA\Property(property="message", type="string", example="Failed to delete files: Error message")
+     *         )
+     *     )
+     * )
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function bulkDelete(Request $request): JsonResponse
+    {
+        $request->validate([
+            'ids' => 'required|array',
+            'ids.*' => 'required|integer|exists:files,id',
+        ]);
+
+        try {
+            $this->fileService->deleteFiles($request->input('ids'));
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Files deleted successfully',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to delete files: ' . $e->getMessage(),
             ], 500);
         }
     }

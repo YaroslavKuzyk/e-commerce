@@ -72,11 +72,17 @@
     <USeparator />
 
     <div class="flex justify-end gap-2">
-      <UButton type="button" variant="outline" @click="emits('close')">
+      <UButton type="button" variant="outline" color="neutral" @click="emits('close')">
+        <template #leading>
+          <Ban class="w-4 h-4" />
+        </template>
         Скасувати
       </UButton>
       <UButton type="submit" :loading="loading">
-        {{ paymentMethod ? "Оновити" : "Створити" }}
+        <template #leading>
+          <Send class="w-4 h-4" />
+        </template>
+        Підтвердити
       </UButton>
     </div>
   </UForm>
@@ -84,6 +90,7 @@
 
 <script setup lang="ts">
 import { z } from "zod";
+import { Send, Ban } from "lucide-vue-next";
 import type { PaymentMethod } from "~/models/paymentMethod";
 
 interface IProps {

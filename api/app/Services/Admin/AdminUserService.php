@@ -41,6 +41,17 @@ class AdminUserService implements AdminUserServiceInterface
             $query->where('status', $filters['status']);
         }
 
+        // Apply pagination if per_page is provided
+        if (!empty($filters['per_page'])) {
+            $admins = $query->paginate(
+                $filters['per_page'],
+                ['*'],
+                'page',
+                $filters['page'] ?? 1
+            );
+            return UserResource::collection($admins);
+        }
+
         $admins = $query->get();
 
         return UserResource::collection($admins);
@@ -83,10 +94,11 @@ class AdminUserService implements AdminUserServiceInterface
 
     public function updateAdmin(User $user, array $data): User
     {
-        // Prevent changing role of SuperAdmin users
+        // Prevent changing role of SuperAdmin users, unless it's a SuperAdmin updating themselves
         $user->load('roles');
+        $currentUser = auth()->user();
 
-        if ($user->hasRole('SuperAdmin')) {
+        if ($user->hasRole('SuperAdmin') && $currentUser->id !== $user->id) {
             throw new \Exception('Неможливо редагувати роль адміністратора з роллю SuperAdmin');
         }
 
@@ -99,7 +111,7 @@ class AdminUserService implements AdminUserServiceInterface
         }
 
         // Extract role_id for later
-        $roleId = $data['role_id'] ?? null;
+        $roleId = array_key_exists('role_id', $data) ? $data['role_id'] : null;
         unset($data['role_id']);
 
         // Update the user

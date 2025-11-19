@@ -29,6 +29,7 @@ class FileResource extends JsonResource
                     'id' => $this->user->id,
                     'name' => $this->user->name,
                     'email' => $this->user->email,
+                    'avatar_file_id' => $this->user->avatar_file_id,
                 ];
             }),
             'created_at' => $this->created_at?->toISOString(),

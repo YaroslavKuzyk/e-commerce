@@ -27,11 +27,11 @@ class FileRepository implements FileRepositoryInterface
      * Get all files with user relationship.
      *
      * @param array $filters
-     * @return Collection
+     * @return Collection|\Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function getAllWithUser(array $filters = []): Collection
+    public function getAllWithUser(array $filters = [])
     {
-        $query = $this->model->with('user:id,name,email');
+        $query = $this->model->with('user:id,name,email,avatar_file_id');
 
         // Filter by filename
         if (!empty($filters['search'])) {
@@ -89,7 +89,20 @@ class FileRepository implements FileRepositoryInterface
             });
         }
 
-        return $query->orderBy('created_at', 'desc')->get();
+        $query->orderBy('created_at', 'desc');
+
+        // Apply pagination if per_page is provided
+        if (!empty($filters['per_page'])) {
+            return $query->paginate(
+                $filters['per_page'],
+                ['*'],
+                'page',
+                $filters['page'] ?? 1
+            );
+        }
+
+        // Return all items if no pagination
+        return $query->get();
     }
 
     /**
@@ -101,7 +114,7 @@ class FileRepository implements FileRepositoryInterface
     public function findWithUser(int $id): ?File
     {
         return $this->model
-            ->with('user:id,name,email')
+            ->with('user:id,name,email,avatar_file_id')
             ->find($id);
     }
 
@@ -114,7 +127,7 @@ class FileRepository implements FileRepositoryInterface
     public function create(array $data): File
     {
         $file = $this->model->create($data);
-        $file->load('user:id,name,email');
+        $file->load('user:id,name,email,avatar_file_id');
 
         return $file;
     }

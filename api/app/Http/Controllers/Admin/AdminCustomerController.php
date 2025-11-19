@@ -20,7 +20,7 @@ class AdminCustomerController extends Controller
      * @OA\Get(
      *     path="/api/admin/customers",
      *     tags={"Admin Customers"},
-     *     summary="Get all customers",
+     *     summary="Get all customers with optional pagination",
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="search",
@@ -34,6 +34,18 @@ class AdminCustomerController extends Controller
      *         description="Filter by status (active/inactive)",
      *         @OA\Schema(type="string", enum={"active", "inactive"})
      *     ),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Items per page (if not provided, returns all items)",
+     *         @OA\Schema(type="integer", example=15)
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="List of customers",
@@ -44,7 +56,15 @@ class AdminCustomerController extends Controller
      *                 @OA\Property(property="name", type="string", example="John Doe"),
      *                 @OA\Property(property="email", type="string", example="john@example.com"),
      *                 @OA\Property(property="status", type="string", example="active")
-     *             ))
+     *             )),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 @OA\Property(property="current_page", type="integer", example=1),
+     *                 @OA\Property(property="last_page", type="integer", example=5),
+     *                 @OA\Property(property="per_page", type="integer", example=15),
+     *                 @OA\Property(property="total", type="integer", example=73)
+     *             )
      *         )
      *     ),
      *     @OA\Response(response=401, description="Unauthenticated"),
@@ -55,11 +75,28 @@ class AdminCustomerController extends Controller
     public function index(Request $request): JsonResponse
     {
         $filters = $request->only(['search', 'status']);
-        $customers = $this->adminCustomerService->getAllCustomers($filters);
+        $filters['page'] = $request->query('page', 1);
+        $filters['per_page'] = $request->query('per_page');
+
+        $result = $this->adminCustomerService->getAllCustomers($filters);
+
+        // If pagination is used (per_page is provided)
+        if ($filters['per_page']) {
+            return response()->json([
+                'success' => true,
+                'data' => $result->items(),
+                'meta' => [
+                    'current_page' => $result->currentPage(),
+                    'last_page' => $result->lastPage(),
+                    'per_page' => $result->perPage(),
+                    'total' => $result->total(),
+                ],
+            ]);
+        }
 
         return response()->json([
             'success' => true,
-            'data' => $customers,
+            'data' => $result,
         ]);
     }
 

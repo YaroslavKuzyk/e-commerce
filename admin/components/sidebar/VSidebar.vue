@@ -35,6 +35,7 @@
             <template #leading>
               <VAvatar
                 :name="authStore.user?.name || 'User'"
+                :file-id="authStore.user?.avatar_file_id"
                 size="xs"
                 shape="circle"
               />
@@ -51,6 +52,7 @@
           <div class="flex items-center gap-3 px-2 py-2">
             <VAvatar
               :name="authStore.user?.name || 'User'"
+              :file-id="authStore.user?.avatar_file_id"
               size="sm"
               shape="circle"
             />
@@ -224,7 +226,7 @@ const dropdownItems = computed(() => {
       {
         label: "Вихід",
         icon: LogOut,
-        click: handleLogout,
+        onClick: handleLogout,
       },
     ],
   ];

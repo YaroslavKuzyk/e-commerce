@@ -1,9 +1,21 @@
 import { computed, watch, type Ref } from "vue";
 
+export interface IPaginationMeta {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+}
+
+export interface IPaginatedResponse<TData> {
+  data: TData[];
+  meta?: IPaginationMeta;
+}
+
 interface UsePaginationListOptions<TFilter, TData> {
   key: string;
   filters: Ref<TFilter>;
-  fetchFunction: (filters?: TFilter) => Promise<TData[]>;
+  fetchFunction: (filters?: TFilter) => Promise<TData[] | IPaginatedResponse<TData>>;
   debounceFields?: (keyof TFilter)[];
   debounceDelay?: number;
 }
@@ -35,14 +47,30 @@ export async function usePaginationList<
   };
 
   // Використовуємо useAsyncData з функцією, яка залежить від фільтрів
-  const { data, pending, refresh } = await useAsyncData<TData[]>(
+  const { data: rawData, pending, refresh } = await useAsyncData<TData[] | IPaginatedResponse<TData>>(
     key,
     () => fetchFunction(buildFilters())
   );
 
+  // Extract data and meta from response
+  const data = computed(() => {
+    if (!rawData.value) return null;
+    if (Array.isArray(rawData.value)) return rawData.value;
+    return rawData.value.data;
+  });
+
+  const meta = computed(() => {
+    if (!rawData.value || Array.isArray(rawData.value)) return null;
+    return rawData.value.meta || null;
+  });
+
   // Computed for active filters check
   const hasActiveFilters = computed(() => {
-    return Object.values(filters.value).some((value) => {
+    return Object.entries(filters.value).some(([key, value]) => {
+      // Exclude pagination fields from active filters check
+      if (key === 'page' || key === 'per_page') {
+        return false;
+      }
       if (value === null || value === undefined || value === "") {
         return false;
       }
@@ -57,7 +85,16 @@ export async function usePaginationList<
   // Clear all filters
   const clearFilters = () => {
     const newFilters = { ...filters.value } as Record<string, any>;
+    // Store pagination values before clearing
+    const currentPage = newFilters['page'];
+    const currentPerPage = newFilters['per_page'];
+
     Object.keys(newFilters).forEach((key) => {
+      // Skip pagination fields
+      if (key === 'page' || key === 'per_page') {
+        return;
+      }
+
       const value = newFilters[key];
       if (typeof value === "string") {
         newFilters[key] = "";
@@ -69,6 +106,11 @@ export async function usePaginationList<
         newFilters[key] = null;
       }
     });
+
+    // Restore pagination values
+    newFilters['page'] = currentPage;
+    newFilters['per_page'] = currentPerPage;
+
     filters.value = newFilters as TFilter;
   };
 
@@ -76,7 +118,7 @@ export async function usePaginationList<
   const refreshData = async () => {
     try {
       await refresh();
-      return data.value;
+      return rawData.value;
     } catch (error) {
       throw error;
     }
@@ -102,9 +144,9 @@ export async function usePaginationList<
     });
   }
 
-  // Watch non-debounce fields instantly
+  // Watch non-debounce fields instantly (excluding pagination fields)
   const instantFields = Object.keys(filters.value).filter(
-    (key) => !debounceFields.includes(key as keyof TFilter)
+    (key) => !debounceFields.includes(key as keyof TFilter) && key !== 'page' && key !== 'per_page'
   );
 
   if (instantFields.length > 0) {
@@ -117,8 +159,18 @@ export async function usePaginationList<
     );
   }
 
+  // Watch pagination fields separately to trigger refresh
+  watch(
+    () => [filters.value['page' as keyof TFilter], filters.value['per_page' as keyof TFilter]],
+    ([newPage, newPerPage], [oldPage, oldPerPage]) => {
+      console.log('Pagination changed:', { newPage, newPerPage, oldPage, oldPerPage });
+      refreshData();
+    }
+  );
+
   return {
     data,
+    meta,
     pending,
     hasActiveFilters,
     clearFilters,

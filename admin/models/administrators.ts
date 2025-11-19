@@ -1,10 +1,11 @@
 import type { IRole } from "./roles";
+import type { IPaginationMeta } from "~/composables/usePaginationList";
 
 export interface IAdminProvider {
   getAllAdmins(
     filters?: IAdminFilters
   ): ReturnType<typeof useAsyncData<IAdmin[] | undefined>>;
-  getAllAdminsPromise(filters?: IAdminFilters): Promise<IAdmin[]>;
+  getAllAdminsPromise(filters?: IAdminFilters): Promise<IAdminsListResponse>;
   getAdminById(id: number): ReturnType<typeof useAsyncData<IAdmin | undefined>>;
   createAdmin(
     payload: ICreateAdmin
@@ -29,6 +30,14 @@ export interface IAdminFilters {
   search?: string;
   role?: number | null;
   status?: "active" | "inactive" | null;
+  page?: number;
+  per_page?: number;
+}
+
+export interface IAdminsListResponse {
+  success: boolean;
+  data: IAdmin[];
+  meta?: IPaginationMeta;
 }
 
 export interface ICreateAdmin {

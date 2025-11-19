@@ -11,9 +11,9 @@ interface FileRepositoryInterface
      * Get all files with user relationship.
      *
      * @param array $filters
-     * @return Collection
+     * @return Collection|\Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function getAllWithUser(array $filters = []): Collection;
+    public function getAllWithUser(array $filters = []);
 
     /**
      * Find a file by ID with user relationship.

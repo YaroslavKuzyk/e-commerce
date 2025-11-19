@@ -47,16 +47,25 @@
     <USeparator />
 
     <div class="flex justify-end gap-2">
-      <UButton type="button" variant="outline" @click="emits('close')">
+      <UButton type="button" variant="outline" color="neutral" @click="emits('close')">
+        <template #leading>
+          <Ban class="w-4 h-4" />
+        </template>
         Скасувати
       </UButton>
-      <UButton type="submit" :loading="loading"> Створити </UButton>
+      <UButton type="submit" :loading="loading">
+        <template #leading>
+          <Send class="w-4 h-4" />
+        </template>
+        Підтвердити
+      </UButton>
     </div>
   </UForm>
 </template>
 
 <script setup lang="ts">
 import { z } from "zod";
+import { Send, Ban } from "lucide-vue-next";
 
 interface IEmits {
   (e: "close"): void;

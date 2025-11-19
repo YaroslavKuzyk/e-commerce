@@ -28,6 +28,7 @@ class User extends Authenticatable
         'password',
         'status',
         'type',
+        'avatar_file_id',
     ];
 
     /**
