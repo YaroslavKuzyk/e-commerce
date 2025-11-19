@@ -47,14 +47,19 @@
       </USelectMenu>
     </UFormField>
     <div class="flex justify-end">
-      <UButton type="submit"> Видалити роль </UButton>
+      <UButton type="submit" color="error">
+        <template #leading>
+          <Send class="w-4 h-4" />
+        </template>
+        Підтвердити
+      </UButton>
     </div>
   </UForm>
 </template>
 
 <script setup lang="ts">
 import { z } from "zod";
-import { CircleX } from "lucide-vue-next";
+import { CircleX, Send } from "lucide-vue-next";
 
 interface IEmits {
   (e: "close"): void;

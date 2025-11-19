@@ -9,6 +9,7 @@ export const useFiles = () => {
     getFile: (id: number) => provider.getFile(id),
     uploadFile: (payload: IFileUploadPayload) => provider.uploadFile(payload),
     deleteFile: (id: number) => provider.deleteFile(id),
+    deleteFiles: (ids: number[]) => provider.deleteFiles(ids),
     getFileBlob: (id: number) => provider.getFileBlob(id),
   };
 };

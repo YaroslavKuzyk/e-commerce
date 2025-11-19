@@ -20,6 +20,7 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'status' => $this->status ?? 'active',
             'email_verified_at' => $this->email_verified_at,
+            'avatar_file_id' => $this->avatar_file_id,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'role' => $this->whenLoaded('roles', function () {

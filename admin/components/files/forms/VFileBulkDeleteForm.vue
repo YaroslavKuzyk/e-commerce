@@ -1,17 +1,13 @@
 <template>
   <div class="space-y-4">
-    <div v-if="file" class="p-4 bg-error-50 dark:bg-error-900/20 rounded-lg">
+    <div class="p-4 bg-error-50 dark:bg-error-900/20 rounded-lg">
       <p class="text-sm text-error-600 dark:text-error-400">
-        Ви збираєтеся видалити файл:
-      </p>
-      <p class="font-semibold mt-2">{{ file.original_name }}</p>
-      <p class="text-sm text-gray-600 dark:text-gray-400">
-        Розмір: {{ formatFileSize(file.size) }}
+        Ви збираєтеся видалити {{ fileIds.length }} {{ getFileWord(fileIds.length) }}
       </p>
     </div>
 
     <p class="text-sm text-gray-600 dark:text-gray-400">
-      Ця дія незворотна. Файл буде видалено з системи.
+      Ця дія незворотна. Всі вибрані файли будуть видалені з системи.
     </p>
 
     <USeparator />
@@ -40,10 +36,9 @@
 
 <script setup lang="ts">
 import { Send, Ban } from "lucide-vue-next";
-import type { IFile } from "~/models/files";
 
 interface IProps {
-  file: IFile | null;
+  fileIds: number[];
 }
 
 interface IEmits {
@@ -54,21 +49,27 @@ const props = defineProps<IProps>();
 const emits = defineEmits<IEmits>();
 const toast = useToast();
 
-const { deleteFile } = useFiles();
+const { deleteFiles } = useFiles();
 
 const loading = ref(false);
 
+const getFileWord = (count: number): string => {
+  if (count === 1) return "файл";
+  if (count >= 2 && count <= 4) return "файли";
+  return "файлів";
+};
+
 const onDelete = async () => {
-  if (!props.file) return;
+  if (!props.fileIds || props.fileIds.length === 0) return;
 
   try {
     loading.value = true;
 
-    await deleteFile(props.file.id);
+    await deleteFiles(props.fileIds);
 
     toast.add({
       title: "Успішно",
-      description: "Файл успішно видалено",
+      description: `${getFileWord(props.fileIds.length)} успішно видалено`,
       color: "success",
     });
 
@@ -76,19 +77,11 @@ const onDelete = async () => {
   } catch (error: any) {
     toast.add({
       title: "Помилка",
-      description: error?.message || "Не вдалося видалити файл",
+      description: error?.message || "Не вдалося видалити файли",
       color: "error",
     });
   } finally {
     loading.value = false;
   }
-};
-
-const formatFileSize = (bytes: number): string => {
-  if (bytes === 0) return "0 Bytes";
-  const k = 1024;
-  const sizes = ["Bytes", "KB", "MB", "GB"];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
 };
 </script>

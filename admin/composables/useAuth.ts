@@ -16,5 +16,6 @@ export const useAuth = () => {
     logout: () => provider.logout(),
     updateProfile: (payload: IUpdateProfilePayload) => provider.updateProfile(payload),
     updatePassword: (payload: IUpdatePasswordPayload) => provider.updatePassword(payload),
+    updateAvatar: (avatarFileId: number | null) => provider.updateAvatar(avatarFileId),
   };
 };

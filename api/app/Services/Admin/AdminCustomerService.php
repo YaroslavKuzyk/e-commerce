@@ -34,6 +34,17 @@ class AdminCustomerService implements AdminCustomerServiceInterface
             $query->where('status', $filters['status']);
         }
 
+        // Apply pagination if per_page is provided
+        if (!empty($filters['per_page'])) {
+            $customers = $query->paginate(
+                $filters['per_page'],
+                ['*'],
+                'page',
+                $filters['page'] ?? 1
+            );
+            return UserResource::collection($customers);
+        }
+
         $customers = $query->get();
 
         return UserResource::collection($customers);

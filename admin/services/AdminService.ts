@@ -4,6 +4,7 @@ import type {
   ICreateAdmin,
   IUpdateAdmin,
   IAdminFilters,
+  IAdminsListResponse,
 } from "~/models/administrators";
 
 export class AdminService implements IAdminProvider {
@@ -29,21 +30,23 @@ export class AdminService implements IAdminProvider {
     );
   }
 
-  async getAllAdminsPromise(filters?: IAdminFilters): Promise<IAdmin[]> {
+  async getAllAdminsPromise(filters?: IAdminFilters): Promise<IAdminsListResponse> {
     const client = useSanctumClient();
 
     const queryParams = new URLSearchParams();
     if (filters?.search) queryParams.append("search", filters.search);
     if (filters?.role) queryParams.append("role", filters.role.toString());
     if (filters?.status) queryParams.append("status", filters.status);
+    if (filters?.page) queryParams.append("page", String(filters.page));
+    if (filters?.per_page) queryParams.append("per_page", String(filters.per_page));
 
     const queryString = queryParams.toString();
     const url = queryString
       ? `/api/admin/users?${queryString}`
       : "/api/admin/users";
 
-    const response = await client<{ success: boolean; data: IAdmin[] }>(url);
-    return response.data;
+    const response = await client<IAdminsListResponse>(url);
+    return response;
   }
 
   getAdminById(id: number) {

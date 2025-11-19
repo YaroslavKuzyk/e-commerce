@@ -6,6 +6,7 @@ export interface IAuthProvider {
   logout(): Promise<void>;
   updateProfile(payload: IUpdateProfilePayload): Promise<IUser>;
   updatePassword(payload: IUpdatePasswordPayload): Promise<void>;
+  updateAvatar(avatarFileId: number | null): Promise<IUser>;
 }
 
 export interface IAuthPayload {
@@ -36,6 +37,7 @@ export interface IUser {
   email: string;
   status: "active" | "inactive";
   email_verified_at: string | null;
+  avatar_file_id: number | null;
   created_at: string;
   updated_at: string;
   role?: IRole;

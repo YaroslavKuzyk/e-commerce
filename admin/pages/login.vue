@@ -156,7 +156,7 @@ const handleLogin = async () => {
       color: "success",
     });
 
-    navigateTo("/dashboard");
+    navigateTo("/");
   } catch (err: any) {
     console.error("Login error:", err);
 

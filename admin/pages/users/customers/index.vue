@@ -46,7 +46,12 @@
         </div>
         <div class="flex items-center gap-2 shrink-0">
           <HasPermissions :required-permissions="['Create Customer']">
-            <UButton @click="openCreateModal">Додати покупця</UButton>
+            <UButton @click="openCreateModal">
+              <template #leading>
+                <Plus class="w-4 h-4" />
+              </template>
+              Додати покупця
+            </UButton>
           </HasPermissions>
         </div>
       </div>
@@ -105,16 +110,25 @@
       :customer="selectedCustomer"
       @refresh="refreshCustomers"
     />
+
+    <template #pagination>
+      <VPagination
+        :meta="meta"
+        @update:page="(page) => filters.page = page"
+        @update:per-page="(perPage) => filters.per_page = perPage"
+      />
+    </template>
   </VSidebarContent>
 </template>
 
 <script setup lang="ts">
-import { Search, CircleX, X, Pencil, Trash2 } from "lucide-vue-next";
+import { Search, CircleX, X, Pencil, Trash2, Plus } from "lucide-vue-next";
 import HasPermissions from "~/components/common/VHasPermissions.vue";
 import VSidebarContent from "~/components/sidebar/VSidebarContent.vue";
 import VCustomerCreateModal from "~/components/customers/modals/VCustomerCreateModal.vue";
 import VCustomerUpdateModal from "~/components/customers/modals/VCustomerUpdateModal.vue";
 import VCustomerDeleteModal from "~/components/customers/modals/VCustomerDeleteModal.vue";
+import VPagination from "~/components/common/VPagination.vue";
 import type { ICustomer, ICustomerFilters } from "~/models/customers";
 
 definePageMeta({
@@ -127,6 +141,8 @@ const customerStore = useCustomerStore();
 const filters = ref({
   search: "",
   status: null as "active" | "inactive" | null,
+  page: 1,
+  per_page: 15,
 });
 
 const statusOptions = [
@@ -165,6 +181,7 @@ const columns = [
 
 const {
   data: customersData,
+  meta,
   pending,
   hasActiveFilters,
   clearFilters,

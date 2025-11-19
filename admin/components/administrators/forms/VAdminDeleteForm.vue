@@ -17,7 +17,10 @@
     <USeparator />
 
     <div class="flex justify-end gap-2">
-      <UButton type="button" variant="outline" @click="emits('close')">
+      <UButton type="button" variant="outline" color="neutral" @click="emits('close')">
+        <template #leading>
+          <Ban class="w-4 h-4" />
+        </template>
         Скасувати
       </UButton>
       <UButton
@@ -26,13 +29,17 @@
         :loading="loading"
         @click="onDelete"
       >
-        Видалити
+        <template #leading>
+          <Send class="w-4 h-4" />
+        </template>
+        Підтвердити
       </UButton>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { Send, Ban } from "lucide-vue-next";
 import type { IAdmin } from "~/models/administrators";
 
 interface IProps {

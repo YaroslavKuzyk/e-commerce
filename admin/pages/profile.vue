@@ -31,7 +31,7 @@
               <div
                 class="absolute -bottom-16 left-1/2 transform -translate-x-1/2"
               >
-                <VAvatar :name="user.name" size="2xl" :border="true" />
+                <VAvatar :name="user.name" :file-id="user.avatar_file_id" size="2xl" :border="true" />
               </div>
             </div>
 

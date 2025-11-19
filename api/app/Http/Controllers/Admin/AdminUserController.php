@@ -20,7 +20,7 @@ class AdminUserController extends Controller
      * @OA\Get(
      *     path="/api/admin/users",
      *     tags={"Admin Users"},
-     *     summary="Get all admin users",
+     *     summary="Get all admin users with optional pagination",
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(
      *         name="search",
@@ -40,6 +40,18 @@ class AdminUserController extends Controller
      *         description="Filter by status (active/inactive)",
      *         @OA\Schema(type="string", enum={"active", "inactive"})
      *     ),
+     *     @OA\Parameter(
+     *         name="page",
+     *         in="query",
+     *         description="Page number",
+     *         @OA\Schema(type="integer", example=1)
+     *     ),
+     *     @OA\Parameter(
+     *         name="per_page",
+     *         in="query",
+     *         description="Items per page (if not provided, returns all items)",
+     *         @OA\Schema(type="integer", example=15)
+     *     ),
      *     @OA\Response(
      *         response=200,
      *         description="List of admin users",
@@ -51,7 +63,15 @@ class AdminUserController extends Controller
      *                 @OA\Property(property="email", type="string", example="john@example.com"),
      *                 @OA\Property(property="status", type="string", example="active"),
      *                 @OA\Property(property="role", type="object")
-     *             ))
+     *             )),
+     *             @OA\Property(
+     *                 property="meta",
+     *                 type="object",
+     *                 @OA\Property(property="current_page", type="integer", example=1),
+     *                 @OA\Property(property="last_page", type="integer", example=5),
+     *                 @OA\Property(property="per_page", type="integer", example=15),
+     *                 @OA\Property(property="total", type="integer", example=73)
+     *             )
      *         )
      *     ),
      *     @OA\Response(response=401, description="Unauthenticated"),
@@ -62,11 +82,28 @@ class AdminUserController extends Controller
     public function index(Request $request): JsonResponse
     {
         $filters = $request->only(['search', 'role', 'status']);
-        $users = $this->adminUserService->getAllAdmins($filters);
+        $filters['page'] = $request->query('page', 1);
+        $filters['per_page'] = $request->query('per_page');
+
+        $result = $this->adminUserService->getAllAdmins($filters);
+
+        // If pagination is used (per_page is provided)
+        if ($filters['per_page']) {
+            return response()->json([
+                'success' => true,
+                'data' => $result->items(),
+                'meta' => [
+                    'current_page' => $result->currentPage(),
+                    'last_page' => $result->lastPage(),
+                    'per_page' => $result->perPage(),
+                    'total' => $result->total(),
+                ],
+            ]);
+        }
 
         return response()->json([
             'success' => true,
-            'data' => $users,
+            'data' => $result,
         ]);
     }
 
@@ -205,11 +242,12 @@ class AdminUserController extends Controller
     public function update(Request $request, User $user): JsonResponse
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
-            'role_id' => 'required|exists:roles,id',
+            'name' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|string|email|max:255|unique:users,email,' . $user->id,
+            'role_id' => 'sometimes|required|exists:roles,id',
             'status' => 'nullable|in:active,inactive',
             'password' => 'nullable|string|min:8',
+            'avatar_file_id' => 'nullable|exists:files,id',
         ]);
 
         $user = $this->adminUserService->updateAdmin($user, $validated);

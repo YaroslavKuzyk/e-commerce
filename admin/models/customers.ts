@@ -1,8 +1,10 @@
+import type { IPaginationMeta } from "~/composables/usePaginationList";
+
 export interface ICustomerProvider {
   getAllCustomers(
     filters?: ICustomerFilters
   ): ReturnType<typeof useAsyncData<ICustomer[] | undefined>>;
-  getAllCustomersPromise(filters?: ICustomerFilters): Promise<ICustomer[]>;
+  getAllCustomersPromise(filters?: ICustomerFilters): Promise<ICustomersListResponse>;
   getCustomerById(id: number): ReturnType<typeof useAsyncData<ICustomer | undefined>>;
   createCustomer(
     payload: ICreateCustomer
@@ -25,6 +27,14 @@ export interface ICustomer {
 export interface ICustomerFilters {
   search?: string;
   status?: "active" | "inactive" | null;
+  page?: number;
+  per_page?: number;
+}
+
+export interface ICustomersListResponse {
+  success: boolean;
+  data: ICustomer[];
+  meta?: IPaginationMeta;
 }
 
 export interface ICreateCustomer {

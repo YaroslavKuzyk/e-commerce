@@ -10,6 +10,7 @@ export interface IFile {
     id: number;
     name: string;
     email: string;
+    avatar_file_id: number | null;
   };
   created_at: string;
   updated_at: string;
@@ -23,19 +24,30 @@ export interface IFileFilters {
   search?: string;
   user_search?: string;
   types?: string[];
+  page?: number;
+  per_page?: number;
+}
+
+export interface IPaginationMeta {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
 }
 
 export interface IFileProvider {
-  getFiles(filters?: IFileFilters): Promise<IFile[]>;
+  getFiles(filters?: IFileFilters): Promise<IFilesListResponse>;
   getFile(id: number): Promise<IFile>;
   uploadFile(payload: IFileUploadPayload): Promise<IFile>;
   deleteFile(id: number): Promise<void>;
+  deleteFiles(ids: number[]): Promise<void>;
   getFileBlob(id: number): Promise<Blob>;
 }
 
 export interface IFilesListResponse {
   success: boolean;
   data: IFile[];
+  meta?: IPaginationMeta;
 }
 
 export interface IFileResponse {

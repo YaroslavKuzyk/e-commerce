@@ -31,7 +31,10 @@
     <USeparator />
 
     <div class="flex justify-end gap-2">
-      <UButton type="button" variant="outline" @click="emits('close')">
+      <UButton type="button" variant="outline" color="neutral" @click="emits('close')">
+        <template #leading>
+          <X class="w-4 h-4" />
+        </template>
         Закрити
       </UButton>
     </div>
@@ -40,6 +43,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import { X } from "lucide-vue-next";
 import type { DeliveryMethod } from "~/models/deliveryMethod";
 import type { PaymentMethod } from "~/models/paymentMethod";
 

@@ -105,11 +105,13 @@ const handleImageError = () => {
 };
 
 // Load image on mount and when fileId changes
-watch(() => props.fileId, () => {
+watch(() => props.fileId, (newFileId) => {
   if (imageUrl.value) {
     URL.revokeObjectURL(imageUrl.value);
   }
-  loadImage();
+  if (newFileId) {
+    loadImage();
+  }
 }, { immediate: true });
 
 // Cleanup on unmount

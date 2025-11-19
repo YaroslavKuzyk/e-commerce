@@ -8,7 +8,7 @@ import {
 } from "~/models/files";
 
 export class FileService implements IFileProvider {
-  async getFiles(filters?: IFileFilters): Promise<IFile[]> {
+  async getFiles(filters?: IFileFilters): Promise<IFilesListResponse> {
     const client = useSanctumClient();
 
     // Build query parameters
@@ -22,6 +22,12 @@ export class FileService implements IFileProvider {
     if (filters?.types && filters.types.length > 0) {
       params.append('types', filters.types.join(','));
     }
+    if (filters?.page) {
+      params.append('page', String(filters.page));
+    }
+    if (filters?.per_page) {
+      params.append('per_page', String(filters.per_page));
+    }
 
     const queryString = params.toString();
     const url = queryString ? `/api/admin/files?${queryString}` : '/api/admin/files';
@@ -29,7 +35,7 @@ export class FileService implements IFileProvider {
     const response = await client<IFilesListResponse>(url, {
       method: "GET",
     });
-    return response.data;
+    return response;
   }
 
   async getFile(id: number): Promise<IFile> {
@@ -56,6 +62,14 @@ export class FileService implements IFileProvider {
     const client = useSanctumClient();
     await client(`/api/admin/files/${id}`, {
       method: "DELETE",
+    });
+  }
+
+  async deleteFiles(ids: number[]): Promise<void> {
+    const client = useSanctumClient();
+    await client('/api/admin/files/bulk-delete', {
+      method: "POST",
+      body: { ids },
     });
   }
 

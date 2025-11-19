@@ -55,7 +55,23 @@
           </UButton>
         </div>
         <div class="flex items-center gap-2 shrink-0">
-          <UButton @click="openUploadModal">Завантажити файл</UButton>
+          <UButton
+            v-if="selectedFileIds.length > 0"
+            color="error"
+            variant="outline"
+            @click="openBulkDeleteModal"
+          >
+            <template #leading>
+              <Trash2 class="w-4 h-4" />
+            </template>
+            Видалити ({{ selectedFileIds.length }})
+          </UButton>
+          <UButton @click="openUploadModal">
+            <template #leading>
+              <Upload class="w-4 h-4" />
+            </template>
+            Завантажити файл
+          </UButton>
         </div>
       </div>
     </template>
@@ -72,6 +88,13 @@
         v-model:is-open="isDeleteModalOpen"
         :file="fileToDelete"
         @refresh="loadFiles"
+      />
+
+      <!-- Bulk Delete Modal -->
+      <VFileBulkDeleteModal
+        v-model:is-open="isBulkDeleteModalOpen"
+        :file-ids="selectedFileIds"
+        @refresh="handleBulkDeleteRefresh"
       />
 
       <!-- Files Grid -->
@@ -117,8 +140,16 @@
         <div
           v-for="file in files"
           :key="file.id"
-          class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow"
+          class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden hover:shadow-lg transition-shadow relative"
         >
+          <!-- Checkbox -->
+          <div class="absolute top-2 left-2 z-10">
+            <UCheckbox
+              :model-value="selectedFileIds.includes(file.id)"
+              @update:model-value="toggleFileSelection(file.id)"
+            />
+          </div>
+
           <!-- File Preview -->
           <div
             class="aspect-square bg-gray-100 dark:bg-gray-700 flex items-center justify-center overflow-hidden"
@@ -157,6 +188,7 @@
               <VAvatar
                 v-if="file.user"
                 :name="file.user.name"
+                :file-id="file.user.avatar_file_id"
                 size="xs"
                 shape="circle"
               />
@@ -196,6 +228,14 @@
         </div>
       </div>
     </div>
+
+    <template #pagination>
+      <VPagination
+        :meta="meta"
+        @update:page="(page) => { console.log('Files page: update:page', page); filters.page = page; }"
+        @update:per-page="(perPage) => { console.log('Files page: update:per-page', perPage); filters.per_page = perPage; }"
+      />
+    </template>
   </VSidebarContent>
 </template>
 
@@ -223,6 +263,8 @@ import type { IFile, IFileFilters } from "~/models/files";
 import VSidebarContent from "~/components/sidebar/VSidebarContent.vue";
 import UploadFileModal from "~/components/files/modals/UploadFileModal.vue";
 import VFileDeleteModal from "~/components/files/modals/VFileDeleteModal.vue";
+import VFileBulkDeleteModal from "~/components/files/modals/VFileBulkDeleteModal.vue";
+import VPagination from "~/components/common/VPagination.vue";
 
 definePageMeta({
   middleware: ["sanctum:auth"],
@@ -233,7 +275,9 @@ const toast = useToast();
 
 const isUploadModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
+const isBulkDeleteModalOpen = ref(false);
 const fileToDelete = ref<IFile | null>(null);
+const selectedFileIds = ref<number[]>([]);
 
 // Filters - internal state for USelectMenu (uses strings directly)
 const selectedTypesObjects = ref<string[]>([]);
@@ -243,6 +287,8 @@ const filters = ref({
   search: "",
   user_search: "",
   types: [] as string[],
+  page: 1,
+  per_page: 15,
 });
 
 const fileTypeOptions = [
@@ -268,6 +314,7 @@ watch(
 // Use pagination list composable
 const {
   data: files,
+  meta,
   pending: isLoading,
   hasActiveFilters,
   clearFilters,
@@ -374,5 +421,23 @@ const formatDate = (dateString: string): string => {
     hour: "2-digit",
     minute: "2-digit",
   });
+};
+
+const toggleFileSelection = (fileId: number) => {
+  const index = selectedFileIds.value.indexOf(fileId);
+  if (index > -1) {
+    selectedFileIds.value.splice(index, 1);
+  } else {
+    selectedFileIds.value.push(fileId);
+  }
+};
+
+const openBulkDeleteModal = () => {
+  isBulkDeleteModalOpen.value = true;
+};
+
+const handleBulkDeleteRefresh = () => {
+  selectedFileIds.value = [];
+  loadFiles();
 };
 </script>

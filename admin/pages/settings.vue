@@ -31,7 +31,7 @@
               <div
                 class="absolute -bottom-16 left-1/2 transform -translate-x-1/2"
               >
-                <VAvatar :name="previewData.name" size="2xl" :border="true" />
+                <VAvatar :name="previewData.name" :file-id="user.avatar_file_id" size="2xl" :border="true" />
               </div>
             </div>
 
@@ -140,11 +140,14 @@
                 <div class="flex justify-end space-x-3 pt-2">
                   <UButton
                     type="button"
+                    variant="outline"
                     color="neutral"
-                    variant="ghost"
                     @click="resetProfileForm"
                     :disabled="isUpdatingProfile"
                   >
+                    <template #leading>
+                      <Ban class="w-4 h-4" />
+                    </template>
                     Скасувати
                   </UButton>
                   <UButton
@@ -152,7 +155,10 @@
                     color="primary"
                     :loading="isUpdatingProfile"
                   >
-                    Зберегти зміни
+                    <template #leading>
+                      <Send class="w-4 h-4" />
+                    </template>
+                    Підтвердити
                   </UButton>
                 </div>
               </UForm>
@@ -185,9 +191,22 @@
                   <UInput
                     class="w-full mb-2"
                     v-model="passwordForm.password"
-                    type="password"
+                    :type="showPassword ? 'text' : 'password'"
                     placeholder="Введіть новий пароль"
-                  />
+                  >
+                    <template #trailing>
+                      <UButton
+                        color="neutral"
+                        variant="link"
+                        size="xs"
+                        @click="showPassword = !showPassword"
+                        tabindex="-1"
+                      >
+                        <Eye v-if="!showPassword" class="w-4 h-4" />
+                        <EyeOff v-else class="w-4 h-4" />
+                      </UButton>
+                    </template>
+                  </UInput>
                 </UFormGroup>
 
                 <UFormGroup
@@ -198,19 +217,35 @@
                   <UInput
                     class="w-full"
                     v-model="passwordForm.password_confirmation"
-                    type="password"
+                    :type="showPasswordConfirmation ? 'text' : 'password'"
                     placeholder="Підтвердіть новий пароль"
-                  />
+                  >
+                    <template #trailing>
+                      <UButton
+                        color="neutral"
+                        variant="link"
+                        size="xs"
+                        @click="showPasswordConfirmation = !showPasswordConfirmation"
+                        tabindex="-1"
+                      >
+                        <Eye v-if="!showPasswordConfirmation" class="w-4 h-4" />
+                        <EyeOff v-else class="w-4 h-4" />
+                      </UButton>
+                    </template>
+                  </UInput>
                 </UFormGroup>
 
                 <div class="flex justify-end space-x-3 pt-2">
                   <UButton
                     type="button"
+                    variant="outline"
                     color="neutral"
-                    variant="ghost"
                     @click="resetPasswordForm"
                     :disabled="isUpdatingPassword"
                   >
+                    <template #leading>
+                      <Ban class="w-4 h-4" />
+                    </template>
                     Скасувати
                   </UButton>
                   <UButton
@@ -218,7 +253,10 @@
                     color="primary"
                     :loading="isUpdatingPassword"
                   >
-                    Змінити пароль
+                    <template #leading>
+                      <Send class="w-4 h-4" />
+                    </template>
+                    Підтвердити
                   </UButton>
                 </div>
               </UForm>
@@ -241,16 +279,43 @@
             </div>
 
             <div class="p-6">
-              <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                Наразі використовується аватар з ініціалами. Завантаження
-                власних зображень буде доступне в наступних версіях.
-              </p>
-              <UButton color="neutral" variant="outline" disabled>
-                <template #leading>
-                  <Upload class="w-4 h-4" />
-                </template>
-                Завантажити фото (скоро)
-              </UButton>
+              <div class="flex items-center gap-4 mb-4">
+                <VAvatar
+                  :name="user.name"
+                  :file-id="user.avatar_file_id"
+                  size="xl"
+                />
+                <div class="flex-1">
+                  <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                    {{ user.avatar_file_id ? 'Завантажте нове зображення або видаліть поточне' : 'Завантажте зображення для вашого аватара' }}
+                  </p>
+                  <div class="flex gap-2">
+                    <UButton
+                      color="primary"
+                      variant="outline"
+                      @click="openAvatarPicker"
+                      :loading="isUpdatingAvatar"
+                    >
+                      <template #leading>
+                        <Upload class="w-4 h-4" />
+                      </template>
+                      Завантажити фото
+                    </UButton>
+                    <UButton
+                      v-if="user.avatar_file_id"
+                      color="error"
+                      variant="outline"
+                      @click="removeAvatar"
+                      :loading="isUpdatingAvatar"
+                    >
+                      <template #leading>
+                        <Trash2 class="w-4 h-4" />
+                      </template>
+                      Видалити
+                    </UButton>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -260,14 +325,24 @@
         Не вдалося завантажити дані профілю
       </div>
     </div>
+
+    <!-- Avatar Picker Modal -->
+    <VFilePickerModal
+      v-model:is-open="isAvatarPickerOpen"
+      file-type="image"
+      :max-files="1"
+      @select="handleAvatarSelect"
+    />
   </VSidebarContent>
 </template>
 
 <script setup lang="ts">
 import { z } from "zod";
-import { ArrowLeft, User, Lock, Image as ImageIcon, Upload } from "lucide-vue-next";
+import { ArrowLeft, User, Lock, Image as ImageIcon, Upload, X, Eye, EyeOff, Send, Ban, Trash2 } from "lucide-vue-next";
 import type { IUser } from "~/models/auth";
+import type { IFile } from "~/models/files";
 import VSidebarContent from "~/components/sidebar/VSidebarContent.vue";
+import VFilePickerModal from "~/components/files/modals/VFilePickerModal.vue";
 
 definePageMeta({
   middleware: ["sanctum:auth"],
@@ -279,6 +354,7 @@ const user = computed(() => userData.value?.data);
 const {
   updateProfile: updateProfileService,
   updatePassword: updatePasswordService,
+  updateAvatar: updateAvatarService,
 } = useAuth();
 const toast = useToast();
 
@@ -318,6 +394,66 @@ const passwordForm = ref({
 
 const isUpdatingPassword = ref(false);
 
+// Password visibility
+const showPassword = ref(false);
+const showPasswordConfirmation = ref(false);
+
+// Avatar picker
+const isAvatarPickerOpen = ref(false);
+const isUpdatingAvatar = ref(false);
+
+const openAvatarPicker = () => {
+  isAvatarPickerOpen.value = true;
+};
+
+const handleAvatarSelect = async (files: IFile[]) => {
+  if (files.length === 0 || !user.value) return;
+
+  isUpdatingAvatar.value = true;
+
+  try {
+    await updateAvatarService(files[0].id);
+
+    toast.add({
+      title: "Успішно",
+      description: "Аватар успішно оновлено",
+    });
+  } catch (error: any) {
+    const errorMessage = error?.data?.message || "Не вдалося оновити аватар";
+    toast.add({
+      title: "Помилка",
+      description: errorMessage,
+      color: "error",
+    });
+  } finally {
+    isUpdatingAvatar.value = false;
+  }
+};
+
+const removeAvatar = async () => {
+  if (!user.value) return;
+
+  isUpdatingAvatar.value = true;
+
+  try {
+    await updateAvatarService(null);
+
+    toast.add({
+      title: "Успішно",
+      description: "Аватар успішно видалено",
+    });
+  } catch (error: any) {
+    const errorMessage = error?.data?.message || "Не вдалося видалити аватар";
+    toast.add({
+      title: "Помилка",
+      description: errorMessage,
+      color: "error",
+    });
+  } finally {
+    isUpdatingAvatar.value = false;
+  }
+};
+
 // Watch for user data changes
 watch(
   user,
@@ -350,6 +486,8 @@ const resetPasswordForm = () => {
     password: "",
     password_confirmation: "",
   };
+  showPassword.value = false;
+  showPasswordConfirmation.value = false;
 };
 
 const updateProfile = async () => {

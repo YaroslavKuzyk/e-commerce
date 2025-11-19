@@ -4,6 +4,7 @@ import type {
   ICreateCustomer,
   IUpdateCustomer,
   ICustomerFilters,
+  ICustomersListResponse,
 } from "~/models/customers";
 
 export class CustomerService implements ICustomerProvider {
@@ -28,20 +29,22 @@ export class CustomerService implements ICustomerProvider {
     );
   }
 
-  async getAllCustomersPromise(filters?: ICustomerFilters): Promise<ICustomer[]> {
+  async getAllCustomersPromise(filters?: ICustomerFilters): Promise<ICustomersListResponse> {
     const client = useSanctumClient();
 
     const queryParams = new URLSearchParams();
     if (filters?.search) queryParams.append("search", filters.search);
     if (filters?.status) queryParams.append("status", filters.status);
+    if (filters?.page) queryParams.append("page", String(filters.page));
+    if (filters?.per_page) queryParams.append("per_page", String(filters.per_page));
 
     const queryString = queryParams.toString();
     const url = queryString
       ? `/api/admin/customers?${queryString}`
       : "/api/admin/customers";
 
-    const response = await client<{ success: boolean; data: ICustomer[] }>(url);
-    return response.data;
+    const response = await client<ICustomersListResponse>(url);
+    return response;
   }
 
   getCustomerById(id: number) {

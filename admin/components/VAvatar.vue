@@ -1,20 +1,29 @@
 <template>
   <div
     :class="[
-      'flex items-center justify-center font-bold',
+      'flex items-center justify-center font-bold overflow-hidden',
       sizeClasses,
       shapeClasses,
-      'bg-gradient-to-br from-primary-400 to-primary-600 text-white',
+      fileId ? '' : 'bg-gradient-to-br from-primary-400 to-primary-600 text-white',
       borderClasses,
     ]"
   >
-    {{ initials }}
+    <VSecureImage
+      v-if="fileId"
+      :file-id="fileId"
+      :alt="name"
+      width="w-full"
+      height="h-full"
+      object-fit="cover"
+    />
+    <span v-else>{{ initials }}</span>
   </div>
 </template>
 
 <script setup lang="ts">
 interface Props {
   name: string;
+  fileId?: number | null;
   size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl";
   shape?: "circle" | "square";
   border?: boolean;
