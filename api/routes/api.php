@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\AdminUserController;
 use App\Http\Controllers\Admin\AdminCustomerController;
 use App\Http\Controllers\Admin\AdminDeliveryMethodController;
 use App\Http\Controllers\Admin\AdminPaymentMethodController;
+use App\Http\Controllers\Admin\AdminProductCategoryController;
 use App\Http\Controllers\Admin\AdminFileController;
 use Illuminate\Support\Facades\Route;
 
@@ -65,6 +66,15 @@ Route::prefix('admin')->group(function () {
         Route::put('payment-methods/{id}', [AdminPaymentMethodController::class, 'update'])->middleware('permission:Update Payment Method');
         Route::patch('payment-methods/{id}', [AdminPaymentMethodController::class, 'update'])->middleware('permission:Update Payment Method');
         Route::patch('payment-methods/{id}/toggle-active', [AdminPaymentMethodController::class, 'toggleActive'])->middleware('permission:Update Payment Method');
+
+        // Product categories management routes with permissions
+        Route::get('product-categories', [AdminProductCategoryController::class, 'index'])->middleware('permission:Read Product Categories');
+        Route::get('product-categories/{id}', [AdminProductCategoryController::class, 'show'])->middleware('permission:Read Product Categories');
+        Route::post('product-categories', [AdminProductCategoryController::class, 'store'])->middleware('permission:Create Product Category');
+        Route::put('product-categories/{id}', [AdminProductCategoryController::class, 'update'])->middleware('permission:Update Product Category');
+        Route::patch('product-categories/{id}', [AdminProductCategoryController::class, 'update'])->middleware('permission:Update Product Category');
+        Route::delete('product-categories/{id}', [AdminProductCategoryController::class, 'destroy'])->middleware('permission:Delete Product Category');
+        Route::post('product-categories/generate-slug', [AdminProductCategoryController::class, 'generateSlug'])->middleware('permission:Create Product Category');
 
         // File management routes
         Route::get('files', [AdminFileController::class, 'index']);

@@ -88,6 +88,8 @@ import {
   User,
   Settings,
   LogOut,
+  Package,
+  FolderTree,
 } from "lucide-vue-next";
 import type { Component } from "vue";
 
@@ -147,6 +149,18 @@ const menus = computed(() => {
           icon: ContactRound,
           to: "/users/roles",
           requiredPermissions: ["Read Roles", "Read Permissions"],
+        },
+      ],
+    },
+    {
+      label: "Продукти",
+      icon: Package,
+      children: [
+        {
+          label: "Категорії",
+          icon: FolderTree,
+          to: "/products/categories",
+          requiredPermissions: ["Read Product Categories"],
         },
       ],
     },
