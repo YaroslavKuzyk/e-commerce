@@ -1,0 +1,308 @@
+<template>
+  <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
+    <UFormField label="Батьківська категорія" name="parent_id">
+      <USelect
+        v-model="state.parent_id"
+        :items="parentCategoryItems"
+        placeholder="Оберіть батьківську категорію (або залиште порожнім для кореневої)"
+        class="w-full"
+      />
+    </UFormField>
+
+    <UFormField label="Назва" name="name">
+      <UInput
+        v-model="state.name"
+        placeholder="Електроніка"
+        class="w-full"
+        @blur="handleNameBlur"
+      />
+    </UFormField>
+
+    <UFormField label="Slug" name="slug">
+      <div class="flex gap-2">
+        <UInput
+          v-model="state.slug"
+          placeholder="elektronika"
+          class="flex-1"
+        />
+        <UButton
+          type="button"
+          variant="outline"
+          icon="i-heroicons-sparkles"
+          @click="generateSlugFromName"
+        >
+          Згенерувати
+        </UButton>
+      </div>
+    </UFormField>
+
+    <UFormField label="Статус" name="status">
+      <USelect
+        v-model="state.status"
+        :items="statusItems"
+        class="w-full"
+      />
+    </UFormField>
+
+    <UFormField label="Опис" name="body_description">
+      <VWysiwygEditor v-model="state.body_description" />
+    </UFormField>
+
+    <UFormField label="Логотип" name="logo_file_id">
+      <div class="space-y-2">
+        <div v-if="state.logo_file_id" class="flex items-center gap-2">
+          <VSecureImage
+            :file-id="state.logo_file_id"
+            alt="Logo"
+            width="w-20"
+            height="h-20"
+            object-fit="cover"
+            class="rounded border"
+          />
+          <UButton
+            type="button"
+            size="sm"
+            variant="ghost"
+            color="error"
+            icon="i-heroicons-trash"
+            @click="state.logo_file_id = null"
+          />
+        </div>
+        <UButton
+          type="button"
+          variant="outline"
+          icon="i-heroicons-photo"
+          @click="openLogoFilePicker"
+        >
+          {{ state.logo_file_id ? 'Змінити логотип' : 'Вибрати логотип' }}
+        </UButton>
+      </div>
+    </UFormField>
+
+    <UFormField label="Меню зображення" name="menu_image_file_id">
+      <div class="space-y-2">
+        <div v-if="state.menu_image_file_id" class="flex items-center gap-2">
+          <VSecureImage
+            :file-id="state.menu_image_file_id"
+            alt="Menu image"
+            width="w-20"
+            height="h-20"
+            object-fit="cover"
+            class="rounded border"
+          />
+          <UButton
+            type="button"
+            size="sm"
+            variant="ghost"
+            color="error"
+            icon="i-heroicons-trash"
+            @click="state.menu_image_file_id = null"
+          />
+        </div>
+        <UButton
+          type="button"
+          variant="outline"
+          icon="i-heroicons-photo"
+          @click="openMenuImageFilePicker"
+        >
+          {{ state.menu_image_file_id ? 'Змінити зображення' : 'Вибрати зображення' }}
+        </UButton>
+      </div>
+    </UFormField>
+
+    <USeparator />
+
+    <div class="flex justify-end gap-2">
+      <UButton
+        type="button"
+        variant="outline"
+        color="neutral"
+        @click="emits('cancel')"
+      >
+        <template #leading>
+          <Ban class="w-4 h-4" />
+        </template>
+        Скасувати
+      </UButton>
+      <UButton
+        type="submit"
+        :loading="loading"
+      >
+        <template #leading>
+          <Send class="w-4 h-4" />
+        </template>
+        Підтвердити
+      </UButton>
+    </div>
+  </UForm>
+
+  <!-- File Picker Modals -->
+  <VFilePickerModal
+    v-model:is-open="isLogoFilePickerOpen"
+    :max-files="1"
+    file-type="image"
+    @select="handleLogoFileSelect"
+  />
+
+  <VFilePickerModal
+    v-model:is-open="isMenuImageFilePickerOpen"
+    :max-files="1"
+    file-type="image"
+    @select="handleMenuImageFileSelect"
+  />
+</template>
+
+<script setup lang="ts">
+import { z } from "zod";
+import { Ban, Send } from "lucide-vue-next";
+import type { ProductCategory } from "~/models/productCategory";
+import VFilePickerModal from "~/components/files/modals/VFilePickerModal.vue";
+import VWysiwygEditor from "~/components/common/VWysiwygEditor.vue";
+import type { IFile } from "~/models/files";
+
+interface Props {
+  category: ProductCategory | null;
+  allCategories: ProductCategory[];
+  initialParentId?: number | null;
+}
+
+interface Emits {
+  (e: "cancel"): void;
+  (e: "success"): void;
+}
+
+const props = defineProps<Props>();
+const emits = defineEmits<Emits>();
+const toast = useToast();
+const productCategoryStore = useProductCategoryStore();
+
+const schema = z.object({
+  parent_id: z.number().nullable().optional(),
+  name: z.string().min(1, "Назва є обов'язковою"),
+  slug: z.string().min(1, "Slug є обов'язковим"),
+  status: z.enum(["draft", "published"]),
+  body_description: z.string().optional().nullable(),
+  logo_file_id: z.number().nullable().optional(),
+  menu_image_file_id: z.number().nullable().optional(),
+});
+
+const state = reactive({
+  parent_id: props.category?.parent_id ?? props.initialParentId ?? null,
+  name: props.category?.name || "",
+  slug: props.category?.slug || "",
+  status: (props.category?.status || "draft") as "draft" | "published",
+  body_description: props.category?.body_description || null,
+  logo_file_id: props.category?.logo_file_id || null,
+  menu_image_file_id: props.category?.menu_image_file_id || null,
+});
+
+const statusItems = [
+  { label: "Чернетка", value: "draft" },
+  { label: "Опубліковано", value: "published" },
+];
+
+const parentCategoryItems = computed(() => {
+  return [
+    { label: "Немає (кореневий рівень)", value: null },
+    ...props.allCategories.map((cat) => ({
+      label: cat.name,
+      value: cat.id,
+    })),
+  ];
+});
+
+// File picker state
+const isLogoFilePickerOpen = ref(false);
+const isMenuImageFilePickerOpen = ref(false);
+
+const openLogoFilePicker = () => {
+  isLogoFilePickerOpen.value = true;
+};
+
+const openMenuImageFilePicker = () => {
+  isMenuImageFilePickerOpen.value = true;
+};
+
+const handleLogoFileSelect = (files: IFile[]) => {
+  if (files.length > 0 && files[0]) {
+    state.logo_file_id = files[0].id;
+  }
+  isLogoFilePickerOpen.value = false;
+};
+
+const handleMenuImageFileSelect = (files: IFile[]) => {
+  if (files.length > 0 && files[0]) {
+    state.menu_image_file_id = files[0].id;
+  }
+  isMenuImageFilePickerOpen.value = false;
+};
+
+// Slug generation
+const handleNameBlur = () => {
+  if (!state.slug && state.name) {
+    generateSlugFromName();
+  }
+};
+
+const generateSlugFromName = async () => {
+  if (!state.name) return;
+
+  try {
+    const { data, error } = await productCategoryStore.onGenerateSlug(state.name);
+    if (!error.value && data.value) {
+      state.slug = data.value.slug;
+    }
+  } catch (err) {
+    console.error("Failed to generate slug:", err);
+  }
+};
+
+// Form submission
+const loading = ref(false);
+
+const onSubmit = async () => {
+  loading.value = true;
+
+  try {
+    let result;
+    if (props.category) {
+      result = await productCategoryStore.onUpdateProductCategory(
+        props.category.id,
+        state
+      );
+    } else {
+      result = await productCategoryStore.onCreateProductCategory(state);
+    }
+
+    if (result.error.value) {
+      toast.add({
+        title: "Помилка",
+        description: "Не вдалося зберегти категорію",
+        color: "error",
+      });
+      return;
+    }
+
+    toast.add({
+      title: "Успіх",
+      description: props.category
+        ? "Категорію успішно оновлено"
+        : "Категорію успішно створено",
+      color: "success",
+    });
+
+    // Invalidate product-categories cache
+    await refreshNuxtData('product-categories');
+
+    emits("success");
+  } catch (error) {
+    toast.add({
+      title: "Помилка",
+      description: "Не вдалося зберегти категорію",
+      color: "error",
+    });
+  } finally {
+    loading.value = false;
+  }
+};
+</script>

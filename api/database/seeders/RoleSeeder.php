@@ -129,13 +129,38 @@ class RoleSeeder extends Seeder
             ],
         ];
 
+        // Створюємо permissions для управління категоріями продуктів
+        $productCategoryPermissions = [
+            [
+                'name' => 'Read Product Categories',
+                'type' => Permission::TYPE_READ,
+                'group' => 'Product Categories',
+            ],
+            [
+                'name' => 'Create Product Category',
+                'type' => Permission::TYPE_CREATE,
+                'group' => 'Product Categories',
+            ],
+            [
+                'name' => 'Update Product Category',
+                'type' => Permission::TYPE_UPDATE,
+                'group' => 'Product Categories',
+            ],
+            [
+                'name' => 'Delete Product Category',
+                'type' => Permission::TYPE_DELETE,
+                'group' => 'Product Categories',
+            ],
+        ];
+
         // Об'єднуємо всі permissions
         $allPermissions = array_merge(
             $rolePermissions,
             $adminUserPermissions,
             $customerPermissions,
             $deliveryMethodPermissions,
-            $paymentMethodPermissions
+            $paymentMethodPermissions,
+            $productCategoryPermissions
         );
 
         $createdPermissions = [];
