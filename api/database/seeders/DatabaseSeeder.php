@@ -18,7 +18,6 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             DeliveryMethodSeeder::class,
             PaymentMethodSeeder::class,
-            ProductCategoryPermissionsSeeder::class,
         ]);
     }
 }

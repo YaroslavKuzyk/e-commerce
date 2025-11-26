@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\AdminCustomerController;
 use App\Http\Controllers\Admin\AdminDeliveryMethodController;
 use App\Http\Controllers\Admin\AdminPaymentMethodController;
 use App\Http\Controllers\Admin\AdminProductCategoryController;
+use App\Http\Controllers\Admin\AdminProductBrandController;
 use App\Http\Controllers\Admin\AdminFileController;
 use Illuminate\Support\Facades\Route;
 
@@ -75,6 +76,15 @@ Route::prefix('admin')->group(function () {
         Route::patch('product-categories/{id}', [AdminProductCategoryController::class, 'update'])->middleware('permission:Update Product Category');
         Route::delete('product-categories/{id}', [AdminProductCategoryController::class, 'destroy'])->middleware('permission:Delete Product Category');
         Route::post('product-categories/generate-slug', [AdminProductCategoryController::class, 'generateSlug'])->middleware('permission:Create Product Category');
+
+        // Product brands management routes with permissions
+        Route::get('product-brands', [AdminProductBrandController::class, 'index'])->middleware('permission:Read Product Brands');
+        Route::get('product-brands/{id}', [AdminProductBrandController::class, 'show'])->middleware('permission:Read Product Brands');
+        Route::post('product-brands', [AdminProductBrandController::class, 'store'])->middleware('permission:Create Product Brand');
+        Route::put('product-brands/{id}', [AdminProductBrandController::class, 'update'])->middleware('permission:Update Product Brand');
+        Route::patch('product-brands/{id}', [AdminProductBrandController::class, 'update'])->middleware('permission:Update Product Brand');
+        Route::delete('product-brands/{id}', [AdminProductBrandController::class, 'destroy'])->middleware('permission:Delete Product Brand');
+        Route::post('product-brands/generate-slug', [AdminProductBrandController::class, 'generateSlug'])->middleware('permission:Create Product Brand');
 
         // File management routes
         Route::get('files', [AdminFileController::class, 'index']);

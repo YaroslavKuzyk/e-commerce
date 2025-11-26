@@ -90,6 +90,7 @@ import {
   LogOut,
   Package,
   FolderTree,
+  Tag,
 } from "lucide-vue-next";
 import type { Component } from "vue";
 
@@ -161,6 +162,12 @@ const menus = computed(() => {
           icon: FolderTree,
           to: "/products/categories",
           requiredPermissions: ["Read Product Categories"],
+        },
+        {
+          label: "Бренди",
+          icon: Tag,
+          to: "/products/brands",
+          requiredPermissions: ["Read Product Brands"],
         },
       ],
     },

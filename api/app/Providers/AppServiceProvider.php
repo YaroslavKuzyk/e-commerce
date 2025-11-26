@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Contracts\DeliveryMethodRepositoryInterface;
 use App\Contracts\PaymentMethodRepositoryInterface;
 use App\Contracts\ProductCategoryRepositoryInterface;
+use App\Contracts\ProductBrandRepositoryInterface;
 use App\Contracts\FileRepositoryInterface;
 use App\Contracts\Repositories\PermissionRepositoryInterface;
 use App\Contracts\Repositories\RoleRepositoryInterface;
@@ -12,6 +13,7 @@ use App\Contracts\Repositories\UserRepositoryInterface;
 use App\Contracts\AdminDeliveryMethodServiceInterface;
 use App\Contracts\AdminPaymentMethodServiceInterface;
 use App\Contracts\AdminProductCategoryServiceInterface;
+use App\Contracts\AdminProductBrandServiceInterface;
 use App\Contracts\Services\Admin\AdminAuthServiceInterface;
 use App\Contracts\Services\Admin\AdminRoleServiceInterface;
 use App\Contracts\Services\Admin\AdminPermissionServiceInterface;
@@ -20,6 +22,7 @@ use App\Contracts\Services\Admin\AdminCustomerServiceInterface;
 use App\Repositories\DeliveryMethodRepository;
 use App\Repositories\PaymentMethodRepository;
 use App\Repositories\ProductCategoryRepository;
+use App\Repositories\ProductBrandRepository;
 use App\Repositories\FileRepository;
 use App\Repositories\PermissionRepository;
 use App\Repositories\RoleRepository;
@@ -27,6 +30,7 @@ use App\Repositories\UserRepository;
 use App\Services\Admin\AdminDeliveryMethodService;
 use App\Services\Admin\AdminPaymentMethodService;
 use App\Services\Admin\AdminProductCategoryService;
+use App\Services\Admin\AdminProductBrandService;
 use App\Services\Admin\AdminAuthService;
 use App\Services\Admin\AdminRoleService;
 use App\Services\Admin\AdminPermissionService;
@@ -48,6 +52,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(DeliveryMethodRepositoryInterface::class, DeliveryMethodRepository::class);
         $this->app->bind(PaymentMethodRepositoryInterface::class, PaymentMethodRepository::class);
         $this->app->bind(ProductCategoryRepositoryInterface::class, ProductCategoryRepository::class);
+        $this->app->bind(ProductBrandRepositoryInterface::class, ProductBrandRepository::class);
         $this->app->bind(FileRepositoryInterface::class, FileRepository::class);
 
         // Register Admin Service bindings
@@ -59,6 +64,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AdminDeliveryMethodServiceInterface::class, AdminDeliveryMethodService::class);
         $this->app->bind(AdminPaymentMethodServiceInterface::class, AdminPaymentMethodService::class);
         $this->app->bind(AdminProductCategoryServiceInterface::class, AdminProductCategoryService::class);
+        $this->app->bind(AdminProductBrandServiceInterface::class, AdminProductBrandService::class);
     }
 
     /**

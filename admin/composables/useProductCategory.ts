@@ -1,4 +1,4 @@
-import ProductCategoryService from '~/services/ProductCategoryService';
+import { ProductCategoryService } from '~/services/ProductCategoryService';
 
 export const useProductCategory = () => {
   const provider = new ProductCategoryService();
