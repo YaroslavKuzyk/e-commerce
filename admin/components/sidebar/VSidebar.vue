@@ -91,6 +91,8 @@ import {
   Package,
   FolderTree,
   Tag,
+  List,
+  SlidersHorizontal,
 } from "lucide-vue-next";
 import type { Component } from "vue";
 
@@ -154,9 +156,21 @@ const menus = computed(() => {
       ],
     },
     {
-      label: "Продукти",
+      label: "Магазин",
       icon: Package,
       children: [
+        {
+          label: "Продукти",
+          icon: List,
+          to: "/products/list",
+          requiredPermissions: ["Read Products"],
+        },
+        {
+          label: "Атрибути",
+          icon: SlidersHorizontal,
+          to: "/products/attributes",
+          requiredPermissions: ["Read Attributes"],
+        },
         {
           label: "Категорії",
           icon: FolderTree,

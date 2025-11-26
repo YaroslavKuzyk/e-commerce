@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\AdminPaymentMethodController;
 use App\Http\Controllers\Admin\AdminProductCategoryController;
 use App\Http\Controllers\Admin\AdminProductBrandController;
 use App\Http\Controllers\Admin\AdminFileController;
+use App\Http\Controllers\Admin\AdminAttributeController;
+use App\Http\Controllers\Admin\AdminProductController;
 use Illuminate\Support\Facades\Route;
 
 // Admin routes group with /admin prefix
@@ -93,5 +95,42 @@ Route::prefix('admin')->group(function () {
         Route::post('files/bulk-delete', [AdminFileController::class, 'bulkDelete']);
         Route::delete('files/{id}', [AdminFileController::class, 'destroy']);
         Route::get('files/{id}/download', [AdminFileController::class, 'download']);
+
+        // Attributes management routes with permissions
+        Route::get('attributes', [AdminAttributeController::class, 'index'])->middleware('permission:Read Attributes');
+        Route::get('attributes/{id}', [AdminAttributeController::class, 'show'])->middleware('permission:Read Attributes');
+        Route::post('attributes', [AdminAttributeController::class, 'store'])->middleware('permission:Create Attribute');
+        Route::put('attributes/{id}', [AdminAttributeController::class, 'update'])->middleware('permission:Update Attribute');
+        Route::patch('attributes/{id}', [AdminAttributeController::class, 'update'])->middleware('permission:Update Attribute');
+        Route::delete('attributes/{id}', [AdminAttributeController::class, 'destroy'])->middleware('permission:Delete Attribute');
+        Route::post('attributes/generate-slug', [AdminAttributeController::class, 'generateSlug'])->middleware('permission:Create Attribute');
+        Route::post('attributes/{id}/values', [AdminAttributeController::class, 'addValue'])->middleware('permission:Update Attribute');
+        Route::put('attributes/{id}/values/{valueId}', [AdminAttributeController::class, 'updateValue'])->middleware('permission:Update Attribute');
+        Route::delete('attributes/{id}/values/{valueId}', [AdminAttributeController::class, 'deleteValue'])->middleware('permission:Update Attribute');
+
+        // Products management routes with permissions
+        Route::get('products', [AdminProductController::class, 'index'])->middleware('permission:Read Products');
+        Route::get('products/{id}', [AdminProductController::class, 'show'])->middleware('permission:Read Products');
+        Route::post('products', [AdminProductController::class, 'store'])->middleware('permission:Create Product');
+        Route::put('products/{id}', [AdminProductController::class, 'update'])->middleware('permission:Update Product');
+        Route::patch('products/{id}', [AdminProductController::class, 'update'])->middleware('permission:Update Product');
+        Route::delete('products/{id}', [AdminProductController::class, 'destroy'])->middleware('permission:Delete Product');
+        Route::post('products/generate-slug', [AdminProductController::class, 'generateSlug'])->middleware('permission:Create Product');
+
+        // Product variants routes
+        Route::get('products/{id}/variants', [AdminProductController::class, 'getVariants'])->middleware('permission:Read Products');
+        Route::post('products/{id}/variants', [AdminProductController::class, 'addVariant'])->middleware('permission:Update Product');
+        Route::put('products/{productId}/variants/{variantId}', [AdminProductController::class, 'updateVariant'])->middleware('permission:Update Product');
+        Route::delete('products/{productId}/variants/{variantId}', [AdminProductController::class, 'deleteVariant'])->middleware('permission:Update Product');
+
+        // Product attributes management
+        Route::post('products/{id}/attributes', [AdminProductController::class, 'syncAttributes'])->middleware('permission:Update Product');
+
+        // Product specifications routes
+        Route::get('products/{id}/specifications', [AdminProductController::class, 'getSpecifications'])->middleware('permission:Read Products');
+        Route::post('products/{id}/specifications', [AdminProductController::class, 'addSpecification'])->middleware('permission:Update Product');
+        Route::put('products/{productId}/specifications/{specificationId}', [AdminProductController::class, 'updateSpecification'])->middleware('permission:Update Product');
+        Route::delete('products/{productId}/specifications/{specificationId}', [AdminProductController::class, 'deleteSpecification'])->middleware('permission:Update Product');
+        Route::post('products/{id}/specifications/reorder', [AdminProductController::class, 'reorderSpecifications'])->middleware('permission:Update Product');
     });
 });

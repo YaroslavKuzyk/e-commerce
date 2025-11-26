@@ -14,6 +14,10 @@ use App\Contracts\AdminDeliveryMethodServiceInterface;
 use App\Contracts\AdminPaymentMethodServiceInterface;
 use App\Contracts\AdminProductCategoryServiceInterface;
 use App\Contracts\AdminProductBrandServiceInterface;
+use App\Contracts\AttributeRepositoryInterface;
+use App\Contracts\AdminAttributeServiceInterface;
+use App\Contracts\ProductRepositoryInterface;
+use App\Contracts\AdminProductServiceInterface;
 use App\Contracts\Services\Admin\AdminAuthServiceInterface;
 use App\Contracts\Services\Admin\AdminRoleServiceInterface;
 use App\Contracts\Services\Admin\AdminPermissionServiceInterface;
@@ -31,6 +35,10 @@ use App\Services\Admin\AdminDeliveryMethodService;
 use App\Services\Admin\AdminPaymentMethodService;
 use App\Services\Admin\AdminProductCategoryService;
 use App\Services\Admin\AdminProductBrandService;
+use App\Repositories\AttributeRepository;
+use App\Services\Admin\AdminAttributeService;
+use App\Repositories\ProductRepository;
+use App\Services\Admin\AdminProductService;
 use App\Services\Admin\AdminAuthService;
 use App\Services\Admin\AdminRoleService;
 use App\Services\Admin\AdminPermissionService;
@@ -54,6 +62,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ProductCategoryRepositoryInterface::class, ProductCategoryRepository::class);
         $this->app->bind(ProductBrandRepositoryInterface::class, ProductBrandRepository::class);
         $this->app->bind(FileRepositoryInterface::class, FileRepository::class);
+        $this->app->bind(AttributeRepositoryInterface::class, AttributeRepository::class);
+        $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
 
         // Register Admin Service bindings
         $this->app->bind(AdminAuthServiceInterface::class, AdminAuthService::class);
@@ -65,6 +75,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AdminPaymentMethodServiceInterface::class, AdminPaymentMethodService::class);
         $this->app->bind(AdminProductCategoryServiceInterface::class, AdminProductCategoryService::class);
         $this->app->bind(AdminProductBrandServiceInterface::class, AdminProductBrandService::class);
+        $this->app->bind(AdminAttributeServiceInterface::class, AdminAttributeService::class);
+        $this->app->bind(AdminProductServiceInterface::class, AdminProductService::class);
     }
 
     /**
