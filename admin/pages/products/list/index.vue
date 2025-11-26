@@ -166,7 +166,7 @@ const { data: categoriesData } = await productCategoryStore.fetchProductCategori
 const { data: brandsData } = await productBrandStore.fetchProductBrands();
 
 const categoryOptions = computed(() => {
-  return (categoriesData.value?.data || []).map(cat => ({
+  return (categoriesData.value || []).map(cat => ({
     label: cat.name,
     value: cat.id,
   }));
