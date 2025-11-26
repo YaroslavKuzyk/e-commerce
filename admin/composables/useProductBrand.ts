@@ -1,10 +1,12 @@
 import { ProductBrandService } from '~/services/ProductBrandService';
+import type { ProductBrandFilters } from '~/models/productBrand';
 
 export const useProductBrand = () => {
   const provider = new ProductBrandService();
 
   return {
-    getAllProductBrands: () => provider.getAllProductBrands(),
+    getAllProductBrands: (filters?: ProductBrandFilters) => provider.getAllProductBrands(filters),
+    getAllProductBrandsPromise: (filters?: ProductBrandFilters) => provider.getAllProductBrandsPromise(filters),
     getProductBrandById: (id: number) => provider.getProductBrandById(id),
     createProductBrand: (payload: any) => provider.createProductBrand(payload),
     updateProductBrand: (id: number, payload: any) => provider.updateProductBrand(id, payload),

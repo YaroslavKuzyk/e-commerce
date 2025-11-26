@@ -1,18 +1,55 @@
 import type {
   ProductBrand,
   ProductBrandFormData,
+  ProductBrandFilters,
+  ProductBrandPaginatedResponse,
   IProductBrandProvider,
 } from '~/models/productBrand';
 
 export class ProductBrandService implements IProductBrandProvider {
-  getAllProductBrands() {
+  getAllProductBrands(filters?: ProductBrandFilters) {
     const client = useSanctumClient();
 
-    return useAsyncData<ProductBrand[]>('product-brands', () =>
-      client<{ success: boolean; data: ProductBrand[] }>(
-        '/api/admin/product-brands'
-      ).then((res) => res.data)
+    const params = new URLSearchParams();
+    if (filters?.name) params.append('name', filters.name);
+    if (filters?.slug) params.append('slug', filters.slug);
+    if (filters?.status) params.append('status', filters.status);
+    if (filters?.page) params.append('page', filters.page.toString());
+    if (filters?.per_page) params.append('per_page', filters.per_page.toString());
+
+    const queryString = params.toString();
+    const url = `/api/admin/product-brands${queryString ? `?${queryString}` : ''}`;
+
+    return useAsyncData<ProductBrandPaginatedResponse>(
+      'product-brands',
+      async (): Promise<ProductBrandPaginatedResponse> => {
+        const res = await client<{ success: boolean; data: ProductBrand[]; meta?: ProductBrandPaginatedResponse['meta'] }>(url);
+        return {
+          data: res.data,
+          meta: res.meta,
+        };
+      }
     );
+  }
+
+  async getAllProductBrandsPromise(filters?: ProductBrandFilters): Promise<ProductBrandPaginatedResponse> {
+    const client = useSanctumClient();
+
+    const params = new URLSearchParams();
+    if (filters?.name) params.append('name', filters.name);
+    if (filters?.slug) params.append('slug', filters.slug);
+    if (filters?.status) params.append('status', filters.status);
+    if (filters?.page) params.append('page', filters.page.toString());
+    if (filters?.per_page) params.append('per_page', filters.per_page.toString());
+
+    const queryString = params.toString();
+    const url = `/api/admin/product-brands${queryString ? `?${queryString}` : ''}`;
+
+    const res = await client<{ success: boolean; data: ProductBrand[]; meta?: ProductBrandPaginatedResponse['meta'] }>(url);
+    return {
+      data: res.data,
+      meta: res.meta,
+    };
   }
 
   getProductBrandById(id: number) {

@@ -3,11 +3,12 @@
 namespace App\Contracts;
 
 use App\Models\ProductBrand;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
 interface AdminProductBrandServiceInterface
 {
-    public function getAllBrands(): Collection;
+    public function getAllBrands(array $filters = []): Collection|LengthAwarePaginator;
 
     public function getBrandById(int $id): ProductBrand;
 

@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia';
-import type { ProductBrand, ProductBrandFormData } from '~/models/productBrand';
+import type { ProductBrandFormData, ProductBrandFilters } from '~/models/productBrand';
 
 export const useProductBrandStore = defineStore('productBrand', () => {
   const {
     getAllProductBrands,
+    getAllProductBrandsPromise,
     getProductBrandById,
     createProductBrand,
     updateProductBrand,
@@ -12,7 +13,8 @@ export const useProductBrandStore = defineStore('productBrand', () => {
   } = useProductBrand();
 
   return {
-    fetchProductBrands: async () => await getAllProductBrands(),
+    fetchProductBrands: async (filters?: ProductBrandFilters) => await getAllProductBrands(filters),
+    fetchProductBrandsPromise: (filters?: ProductBrandFilters) => getAllProductBrandsPromise(filters),
     fetchProductBrandById: async (id: number) => await getProductBrandById(id),
     onCreateProductBrand: async (payload: ProductBrandFormData) => await createProductBrand(payload),
     onUpdateProductBrand: async (id: number, payload: ProductBrandFormData) => await updateProductBrand(id, payload),

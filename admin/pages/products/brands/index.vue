@@ -4,16 +4,16 @@
       <div class="flex items-center justify-between w-full gap-2">
         <div class="flex items-center gap-2 w-full">
           <UInput
-            v-model="filters.search"
+            v-model="filters.name"
             placeholder="Пошук за назвою"
-            class="w-[250px]"
+            class="w-[200px]"
           >
             <template #leading>
               <Search class="w-5 h-5" />
             </template>
           </UInput>
           <UInput
-            v-model="filters.slugSearch"
+            v-model="filters.slug"
             placeholder="Пошук за slug"
             class="w-[200px]"
           >
@@ -21,16 +21,31 @@
               <Hash class="w-5 h-5" />
             </template>
           </UInput>
-          <USelect
+          <USelectMenu
             v-model="filters.status"
             :items="statusOptions"
             placeholder="Статус"
+            value-key="value"
+            label-key="label"
             class="w-[150px]"
-          />
+          >
+            <template #trailing>
+              <UButton
+                v-if="filters.status"
+                size="sm"
+                variant="link"
+                aria-label="Очистити"
+                @click.stop="filters.status = null"
+                color="neutral"
+              >
+                <CircleX class="w-4 h-4" />
+              </UButton>
+            </template>
+          </USelectMenu>
           <UButton
             v-if="hasActiveFilters"
             variant="ghost"
-            @click="resetFilters"
+            @click="clearFilters"
           >
             <template #leading>
               <X class="w-5 h-5" />
@@ -60,22 +75,31 @@
       />
 
       <ProductBrandsTable
-        :brands="filteredBrands"
-        :loading="loading"
+        :brands="brandsData || []"
+        :loading="pending"
         @edit="handleEdit"
         @delete="handleDelete"
       />
     </HasPermissions>
+
+    <template #pagination>
+      <VPagination
+        :meta="meta"
+        @update:page="(page) => filters.page = page"
+        @update:per-page="(perPage) => filters.per_page = perPage"
+      />
+    </template>
   </VSidebarContent>
 </template>
 
 <script setup lang="ts">
+import { Search, Hash, CircleX, X, Plus } from "lucide-vue-next";
 import HasPermissions from "~/components/common/VHasPermissions.vue";
 import VSidebarContent from "~/components/sidebar/VSidebarContent.vue";
 import ProductBrandsTable from "~/components/products/brands/tables/ProductBrandsTable.vue";
 import VProductBrandDeleteModal from "~/components/products/brands/modals/VProductBrandDeleteModal.vue";
-import type { ProductBrand } from "~/models/productBrand";
-import { Plus, Search, Hash, X } from "lucide-vue-next";
+import VPagination from "~/components/common/VPagination.vue";
+import type { ProductBrand, ProductBrandFilters, ProductBrandStatus } from "~/models/productBrand";
 
 definePageMeta({
   middleware: ["sanctum:auth", "permissions"],
@@ -88,11 +112,12 @@ const productBrandStore = useProductBrandStore();
 const isDeleteModalOpen = ref(false);
 const brandToDelete = ref<ProductBrand | null>(null);
 
-// Filters
 const filters = ref({
-  search: "",
-  slugSearch: "",
-  status: null as string | null,
+  name: "",
+  slug: "",
+  status: null as ProductBrandStatus | null,
+  page: 1,
+  per_page: 15,
 });
 
 const statusOptions = [
@@ -100,47 +125,23 @@ const statusOptions = [
   { label: "Чернетка", value: "draft" },
 ];
 
-const hasActiveFilters = computed(() => {
-  return filters.value.search !== "" ||
-         filters.value.slugSearch !== "" ||
-         filters.value.status !== null;
-});
-
-const resetFilters = () => {
-  filters.value.search = "";
-  filters.value.slugSearch = "";
-  filters.value.status = null;
-};
-
 const {
   data: brandsData,
-  refresh: refreshBrandsData,
-  status,
-} = await productBrandStore.fetchProductBrands();
-
-// Filter brands
-const filteredBrands = computed(() => {
-  if (!brandsData.value) return [];
-
-  if (!hasActiveFilters.value) {
-    return brandsData.value;
-  }
-
-  return brandsData.value.filter(brand => {
-    const matchesSearch = !filters.value.search ||
-      brand.name.toLowerCase().includes(filters.value.search.toLowerCase());
-
-    const matchesSlug = !filters.value.slugSearch ||
-      brand.slug.toLowerCase().includes(filters.value.slugSearch.toLowerCase());
-
-    const matchesStatus = !filters.value.status ||
-      brand.status === filters.value.status;
-
-    return matchesSearch && matchesSlug && matchesStatus;
-  });
+  meta,
+  pending,
+  hasActiveFilters,
+  clearFilters,
+  refresh: internalRefresh,
+} = await usePaginationList<typeof filters.value, ProductBrand>({
+  key: 'product-brands-list',
+  filters,
+  fetchFunction: (filters?: ProductBrandFilters) => productBrandStore.fetchProductBrandsPromise(filters),
+  debounceFields: ["name", "slug"],
 });
 
-const loading = computed(() => status.value === "pending");
+const refreshBrands = async () => {
+  await internalRefresh();
+};
 
 const handleEdit = (brand: ProductBrand) => {
   router.push(`/products/brands/${brand.id}/edit`);
@@ -149,9 +150,5 @@ const handleEdit = (brand: ProductBrand) => {
 const handleDelete = (brand: ProductBrand) => {
   brandToDelete.value = brand;
   isDeleteModalOpen.value = true;
-};
-
-const refreshBrands = async () => {
-  await refreshBrandsData();
 };
 </script>

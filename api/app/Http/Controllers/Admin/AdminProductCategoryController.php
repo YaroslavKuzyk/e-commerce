@@ -18,6 +18,30 @@ class AdminProductCategoryController extends Controller
 
     /**
      * Display a listing of product categories with tree structure.
+     *
+     * @OA\Get(
+     *     path="/api/admin/product-categories",
+     *     tags={"Admin Product Categories"},
+     *     summary="Get all product categories with tree structure",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Response(
+     *         response=200,
+     *         description="List of product categories",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="array", @OA\Items(
+     *                 @OA\Property(property="id", type="integer", example=1),
+     *                 @OA\Property(property="name", type="string", example="Electronics"),
+     *                 @OA\Property(property="slug", type="string", example="electronics"),
+     *                 @OA\Property(property="status", type="string", example="published"),
+     *                 @OA\Property(property="parent_id", type="integer", nullable=true),
+     *                 @OA\Property(property="subcategories", type="array", @OA\Items(type="object"))
+     *             ))
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="Forbidden - Missing 'Read Product Categories' permission")
+     * )
      */
     public function index(): JsonResponse
     {
@@ -31,6 +55,30 @@ class AdminProductCategoryController extends Controller
 
     /**
      * Display the specified product category.
+     *
+     * @OA\Get(
+     *     path="/api/admin/product-categories/{id}",
+     *     tags={"Admin Product Categories"},
+     *     summary="Get product category by ID",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Product category found",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="Forbidden - Missing 'Read Product Categories' permission"),
+     *     @OA\Response(response=404, description="Product category not found")
+     * )
      */
     public function show(int $id): JsonResponse
     {
@@ -51,6 +99,39 @@ class AdminProductCategoryController extends Controller
 
     /**
      * Store a newly created product category.
+     *
+     * @OA\Post(
+     *     path="/api/admin/product-categories",
+     *     tags={"Admin Product Categories"},
+     *     summary="Create a new product category",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name", "slug", "status"},
+     *             @OA\Property(property="parent_id", type="integer", nullable=true, example=null),
+     *             @OA\Property(property="name", type="string", example="Electronics"),
+     *             @OA\Property(property="slug", type="string", example="electronics"),
+     *             @OA\Property(property="status", type="string", enum={"draft", "published"}, example="published"),
+     *             @OA\Property(property="body_description", type="string", nullable=true),
+     *             @OA\Property(property="logo_file_id", type="integer", nullable=true),
+     *             @OA\Property(property="menu_image_file_id", type="integer", nullable=true)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=201,
+     *         description="Product category created successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Category created successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="Forbidden - Missing 'Create Product Category' permission"),
+     *     @OA\Response(response=422, description="Validation error"),
+     *     @OA\Response(response=500, description="Internal server error")
+     * )
      */
     public function store(Request $request): JsonResponse
     {
@@ -90,6 +171,45 @@ class AdminProductCategoryController extends Controller
 
     /**
      * Update the specified product category.
+     *
+     * @OA\Put(
+     *     path="/api/admin/product-categories/{id}",
+     *     tags={"Admin Product Categories"},
+     *     summary="Update a product category by ID",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             @OA\Property(property="parent_id", type="integer", nullable=true),
+     *             @OA\Property(property="name", type="string", example="Electronics"),
+     *             @OA\Property(property="slug", type="string", example="electronics"),
+     *             @OA\Property(property="status", type="string", enum={"draft", "published"}, example="published"),
+     *             @OA\Property(property="body_description", type="string", nullable=true),
+     *             @OA\Property(property="logo_file_id", type="integer", nullable=true),
+     *             @OA\Property(property="menu_image_file_id", type="integer", nullable=true)
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Product category updated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Category updated successfully"),
+     *             @OA\Property(property="data", type="object")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="Forbidden - Missing 'Update Product Category' permission"),
+     *     @OA\Response(response=404, description="Product category not found"),
+     *     @OA\Response(response=422, description="Validation error"),
+     *     @OA\Response(response=500, description="Internal server error")
+     * )
      */
     public function update(Request $request, int $id): JsonResponse
     {
@@ -129,6 +249,31 @@ class AdminProductCategoryController extends Controller
 
     /**
      * Remove the specified product category.
+     *
+     * @OA\Delete(
+     *     path="/api/admin/product-categories/{id}",
+     *     tags={"Admin Product Categories"},
+     *     summary="Delete a product category by ID",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="path",
+     *         required=true,
+     *         @OA\Schema(type="integer")
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Product category deleted successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="message", type="string", example="Category deleted successfully")
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="Forbidden - Missing 'Delete Product Category' permission"),
+     *     @OA\Response(response=404, description="Product category not found"),
+     *     @OA\Response(response=500, description="Internal server error")
+     * )
      */
     public function destroy(int $id): JsonResponse
     {
@@ -149,6 +294,33 @@ class AdminProductCategoryController extends Controller
 
     /**
      * Generate slug from name.
+     *
+     * @OA\Post(
+     *     path="/api/admin/product-categories/generate-slug",
+     *     tags={"Admin Product Categories"},
+     *     summary="Generate slug from name",
+     *     security={{"bearerAuth":{}}},
+     *     @OA\RequestBody(
+     *         required=true,
+     *         @OA\JsonContent(
+     *             required={"name"},
+     *             @OA\Property(property="name", type="string", example="Electronics")
+     *         )
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Slug generated successfully",
+     *         @OA\JsonContent(
+     *             @OA\Property(property="success", type="boolean", example=true),
+     *             @OA\Property(property="data", type="object",
+     *                 @OA\Property(property="slug", type="string", example="electronics")
+     *             )
+     *         )
+     *     ),
+     *     @OA\Response(response=401, description="Unauthenticated"),
+     *     @OA\Response(response=403, description="Forbidden - Missing 'Create Product Category' permission"),
+     *     @OA\Response(response=422, description="Validation error")
+     * )
      */
     public function generateSlug(Request $request): JsonResponse
     {

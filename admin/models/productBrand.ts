@@ -21,8 +21,26 @@ export interface ProductBrandFormData {
   menu_image_file_id?: number | null;
 }
 
+export interface ProductBrandFilters {
+  name?: string;
+  slug?: string;
+  status?: ProductBrandStatus | null;
+  page?: number;
+  per_page?: number;
+}
+
+export interface ProductBrandPaginatedResponse {
+  data: ProductBrand[];
+  meta?: {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+  };
+}
+
 export interface IProductBrandProvider {
-  getAllProductBrands: () => ReturnType<typeof useAsyncData<ProductBrand[]>>;
+  getAllProductBrands: (filters?: ProductBrandFilters) => ReturnType<typeof useAsyncData<ProductBrandPaginatedResponse | undefined>>;
   getProductBrandById: (id: number) => ReturnType<typeof useAsyncData<ProductBrand>>;
   createProductBrand: (payload: ProductBrandFormData) => ReturnType<typeof useAsyncData<ProductBrand>>;
   updateProductBrand: (id: number, payload: ProductBrandFormData) => ReturnType<typeof useAsyncData<ProductBrand>>;

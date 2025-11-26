@@ -5,6 +5,7 @@ namespace App\Services\Admin;
 use App\Contracts\AdminProductBrandServiceInterface;
 use App\Contracts\ProductBrandRepositoryInterface;
 use App\Models\ProductBrand;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
 class AdminProductBrandService implements AdminProductBrandServiceInterface
@@ -14,13 +15,18 @@ class AdminProductBrandService implements AdminProductBrandServiceInterface
     ) {}
 
     /**
-     * Get all brands.
+     * Get all brands with optional filters and pagination.
      *
-     * @return Collection
+     * @param array $filters
+     * @return Collection|LengthAwarePaginator
      */
-    public function getAllBrands(): Collection
+    public function getAllBrands(array $filters = []): Collection|LengthAwarePaginator
     {
-        return $this->productBrandRepository->getAll();
+        if (empty($filters)) {
+            return $this->productBrandRepository->getAll();
+        }
+
+        return $this->productBrandRepository->getAllWithFilters($filters);
     }
 
     /**
