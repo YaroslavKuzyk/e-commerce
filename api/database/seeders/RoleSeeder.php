@@ -177,6 +177,54 @@ class RoleSeeder extends Seeder
             ],
         ];
 
+        // Створюємо permissions для управління атрибутами
+        $attributePermissions = [
+            [
+                'name' => 'Read Attributes',
+                'type' => Permission::TYPE_READ,
+                'group' => 'Attributes',
+            ],
+            [
+                'name' => 'Create Attribute',
+                'type' => Permission::TYPE_CREATE,
+                'group' => 'Attributes',
+            ],
+            [
+                'name' => 'Update Attribute',
+                'type' => Permission::TYPE_UPDATE,
+                'group' => 'Attributes',
+            ],
+            [
+                'name' => 'Delete Attribute',
+                'type' => Permission::TYPE_DELETE,
+                'group' => 'Attributes',
+            ],
+        ];
+
+        // Створюємо permissions для управління продуктами
+        $productPermissions = [
+            [
+                'name' => 'Read Products',
+                'type' => Permission::TYPE_READ,
+                'group' => 'Products',
+            ],
+            [
+                'name' => 'Create Product',
+                'type' => Permission::TYPE_CREATE,
+                'group' => 'Products',
+            ],
+            [
+                'name' => 'Update Product',
+                'type' => Permission::TYPE_UPDATE,
+                'group' => 'Products',
+            ],
+            [
+                'name' => 'Delete Product',
+                'type' => Permission::TYPE_DELETE,
+                'group' => 'Products',
+            ],
+        ];
+
         // Об'єднуємо всі permissions
         $allPermissions = array_merge(
             $rolePermissions,
@@ -185,7 +233,9 @@ class RoleSeeder extends Seeder
             $deliveryMethodPermissions,
             $paymentMethodPermissions,
             $productCategoryPermissions,
-            $productBrandPermissions
+            $productBrandPermissions,
+            $attributePermissions,
+            $productPermissions
         );
 
         $createdPermissions = [];
