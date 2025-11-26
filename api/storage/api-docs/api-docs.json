@@ -230,7 +230,7 @@
                 "tags": [
                     "Admin Customers"
                 ],
-                "summary": "Get all customers",
+                "summary": "Get all customers with optional pagination",
                 "description": "Display a listing of the resource.",
                 "operationId": "6210e98145b05af35faedfdd5e4e7094",
                 "parameters": [
@@ -252,6 +252,24 @@
                                 "active",
                                 "inactive"
                             ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Items per page (if not provided, returns all items)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
                         }
                     }
                 ],
@@ -289,6 +307,27 @@
                                                 },
                                                 "type": "object"
                                             }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 15
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 73
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -615,12 +654,557 @@
                 ]
             }
         },
+        "/api/admin/delivery-methods": {
+            "get": {
+                "tags": [
+                    "Admin Delivery Methods"
+                ],
+                "summary": "Get all delivery methods",
+                "description": "Display a listing of delivery methods.",
+                "operationId": "dd8bb8d4920a54aba722dfb75ea6162d",
+                "responses": {
+                    "200": {
+                        "description": "List of delivery methods",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Nova Poshta"
+                                                    },
+                                                    "code": {
+                                                        "type": "string",
+                                                        "example": "nova_poshta"
+                                                    },
+                                                    "is_active": {
+                                                        "type": "boolean",
+                                                        "example": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Read Delivery Methods' permission"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin Delivery Methods"
+                ],
+                "summary": "Create a new delivery method",
+                "description": "Store a newly created delivery method.",
+                "operationId": "0ef5279d7f3cca15ff16daa48551ee0b",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "code"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Nova Poshta"
+                                    },
+                                    "name_uk": {
+                                        "type": "string",
+                                        "example": "Нова Пошта"
+                                    },
+                                    "code": {
+                                        "type": "string",
+                                        "example": "nova_poshta"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "description_uk": {
+                                        "type": "string"
+                                    },
+                                    "has_api": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "api_config": {
+                                        "type": "object"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "sort_order": {
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "payment_method_ids": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Delivery method created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Delivery method created successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Create Delivery Method' permission"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/delivery-methods/{id}": {
+            "get": {
+                "tags": [
+                    "Admin Delivery Methods"
+                ],
+                "summary": "Get delivery method by ID",
+                "description": "Display the specified delivery method.",
+                "operationId": "848b1d1b631ab43c037d89cd2e656498",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Delivery method found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Read Delivery Methods' permission"
+                    },
+                    "404": {
+                        "description": "Delivery method not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Admin Delivery Methods"
+                ],
+                "summary": "Update a delivery method by ID",
+                "description": "Update the specified delivery method.",
+                "operationId": "7f18839853632612ee53b9864f54d2aa",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Nova Poshta"
+                                    },
+                                    "name_uk": {
+                                        "type": "string",
+                                        "example": "Нова Пошта"
+                                    },
+                                    "code": {
+                                        "type": "string",
+                                        "example": "nova_poshta"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "description_uk": {
+                                        "type": "string"
+                                    },
+                                    "has_api": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "api_config": {
+                                        "type": "object"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "sort_order": {
+                                        "type": "integer",
+                                        "example": 0
+                                    },
+                                    "payment_method_ids": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Delivery method updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Delivery method updated successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Update Delivery Method' permission"
+                    },
+                    "404": {
+                        "description": "Delivery method not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/delivery-methods/{id}/toggle-active": {
+            "patch": {
+                "tags": [
+                    "Admin Delivery Methods"
+                ],
+                "summary": "Toggle active status of a delivery method",
+                "description": "Toggle active status of a delivery method.",
+                "operationId": "c1d8fcea7168bc4fc61927e4a523d329",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Delivery method status toggled successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Delivery method status toggled successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Update Delivery Method' permission"
+                    },
+                    "404": {
+                        "description": "Delivery method not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/delivery-methods/{id}/payment-methods": {
+            "post": {
+                "tags": [
+                    "Admin Delivery Methods"
+                ],
+                "summary": "Sync payment methods for a delivery method",
+                "description": "Sync payment methods for a delivery method.",
+                "operationId": "85c31ca162462c124f4c7b78c2e33c82",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "payment_method_ids"
+                                ],
+                                "properties": {
+                                    "payment_method_ids": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            1,
+                                            2,
+                                            3
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Payment methods synced successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Payment methods synced successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Update Delivery Method' permission"
+                    },
+                    "404": {
+                        "description": "Delivery method not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/delivery-methods/{deliveryMethodId}/payment-methods/{paymentMethodId}/toggle-active": {
+            "patch": {
+                "tags": [
+                    "Admin Delivery Methods"
+                ],
+                "summary": "Toggle payment method active status for a delivery method",
+                "description": "Toggle payment method active status for a delivery method.",
+                "operationId": "68f37d1ce7c0ef821746491ed8f1d23d",
+                "parameters": [
+                    {
+                        "name": "deliveryMethodId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "paymentMethodId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Payment method status toggled successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Payment method status toggled successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Update Delivery Method' permission"
+                    },
+                    "404": {
+                        "description": "Delivery or payment method not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/admin/files": {
             "get": {
                 "tags": [
                     "Admin Files"
                 ],
-                "summary": "Get all files with optional filters",
+                "summary": "Get all files with optional filters and pagination",
                 "description": "Display a listing of files.",
                 "operationId": "c1b74913715b8663c35b8b34bb8105e9",
                 "parameters": [
@@ -652,6 +1236,26 @@
                         "schema": {
                             "type": "string",
                             "example": "image,video"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Items per page (if not provided, returns all items)",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
                         }
                     }
                 ],
@@ -728,6 +1332,27 @@
                                                 },
                                                 "type": "object"
                                             }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 15
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 73
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -1160,6 +1785,510 @@
                 ]
             }
         },
+        "/api/admin/files/bulk-delete": {
+            "post": {
+                "tags": [
+                    "Admin Files"
+                ],
+                "summary": "Delete multiple files by IDs",
+                "description": "Remove multiple files.",
+                "operationId": "2c8d9788e6ec3721889a2f5e164a30e6",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "ids"
+                                ],
+                                "properties": {
+                                    "ids": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "integer"
+                                        },
+                                        "example": [
+                                            1,
+                                            2,
+                                            3
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Files deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Files deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "The ids field is required."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Server error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": false
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Failed to delete files: Error message"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/payment-methods": {
+            "get": {
+                "tags": [
+                    "Admin Payment Methods"
+                ],
+                "summary": "Get all payment methods",
+                "description": "Display a listing of payment methods.",
+                "operationId": "48018dc50a7162af8621df109e2b8f4c",
+                "responses": {
+                    "200": {
+                        "description": "List of payment methods",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Cash on Delivery"
+                                                    },
+                                                    "code": {
+                                                        "type": "string",
+                                                        "example": "cod"
+                                                    },
+                                                    "type": {
+                                                        "type": "string",
+                                                        "example": "cash_on_delivery"
+                                                    },
+                                                    "is_active": {
+                                                        "type": "boolean",
+                                                        "example": true
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Read Payment Methods' permission"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin Payment Methods"
+                ],
+                "summary": "Create a new payment method",
+                "description": "Store a newly created payment method.",
+                "operationId": "4f918c7608f667ab5ed77a0bd9ebe26d",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "code",
+                                    "type"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Cash on Delivery"
+                                    },
+                                    "name_uk": {
+                                        "type": "string",
+                                        "example": "Оплата при отриманні"
+                                    },
+                                    "code": {
+                                        "type": "string",
+                                        "example": "cod"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "description_uk": {
+                                        "type": "string"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "cash_on_delivery",
+                                            "online"
+                                        ],
+                                        "example": "cash_on_delivery"
+                                    },
+                                    "provider": {
+                                        "type": "string",
+                                        "example": "liqpay"
+                                    },
+                                    "provider_config": {
+                                        "type": "object"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "sort_order": {
+                                        "type": "integer",
+                                        "example": 0
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Payment method created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Payment method created successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Create Payment Method' permission"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/payment-methods/{id}": {
+            "get": {
+                "tags": [
+                    "Admin Payment Methods"
+                ],
+                "summary": "Get payment method by ID",
+                "description": "Display the specified payment method.",
+                "operationId": "d1681252a8c6954d6b700aeb613a1cc5",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Payment method found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Read Payment Methods' permission"
+                    },
+                    "404": {
+                        "description": "Payment method not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Admin Payment Methods"
+                ],
+                "summary": "Update a payment method by ID",
+                "description": "Update the specified payment method.",
+                "operationId": "7f40162293f0aa8f1696abf1aeb3a839",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Cash on Delivery"
+                                    },
+                                    "name_uk": {
+                                        "type": "string",
+                                        "example": "Оплата при отриманні"
+                                    },
+                                    "code": {
+                                        "type": "string",
+                                        "example": "cod"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "description_uk": {
+                                        "type": "string"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "cash_on_delivery",
+                                            "online"
+                                        ],
+                                        "example": "cash_on_delivery"
+                                    },
+                                    "provider": {
+                                        "type": "string",
+                                        "example": "liqpay"
+                                    },
+                                    "provider_config": {
+                                        "type": "object"
+                                    },
+                                    "is_active": {
+                                        "type": "boolean",
+                                        "example": true
+                                    },
+                                    "sort_order": {
+                                        "type": "integer",
+                                        "example": 0
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Payment method updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Payment method updated successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Update Payment Method' permission"
+                    },
+                    "404": {
+                        "description": "Payment method not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/payment-methods/{id}/toggle-active": {
+            "patch": {
+                "tags": [
+                    "Admin Payment Methods"
+                ],
+                "summary": "Toggle active status of a payment method",
+                "description": "Toggle active status of a payment method.",
+                "operationId": "f8d61e80db87395f62fe117e882483c9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Payment method status toggled successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Payment method status toggled successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Update Payment Method' permission"
+                    },
+                    "404": {
+                        "description": "Payment method not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/admin/permissions": {
             "get": {
                 "tags": [
@@ -1220,6 +2349,980 @@
                     },
                     "500": {
                         "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/product-brands": {
+            "get": {
+                "tags": [
+                    "Admin Product Brands"
+                ],
+                "summary": "Get all product brands with optional pagination",
+                "description": "Display a listing of product brands.",
+                "operationId": "9e2378a48e7786617068ed81072837ff",
+                "parameters": [
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "Search by name",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "slug",
+                        "in": "query",
+                        "description": "Search by slug",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Filter by status (draft/published)",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "draft",
+                                "published"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Items per page (if not provided, returns all items)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of product brands",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Apple"
+                                                    },
+                                                    "slug": {
+                                                        "type": "string",
+                                                        "example": "apple"
+                                                    },
+                                                    "status": {
+                                                        "type": "string",
+                                                        "example": "published"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 15
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 73
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Read Product Brands' permission"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin Product Brands"
+                ],
+                "summary": "Create a new product brand",
+                "description": "Store a newly created product brand.",
+                "operationId": "ecfd287a61d92e30fb02b30c9ba49d6a",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "slug",
+                                    "status"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Apple"
+                                    },
+                                    "slug": {
+                                        "type": "string",
+                                        "example": "apple"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "draft",
+                                            "published"
+                                        ],
+                                        "example": "published"
+                                    },
+                                    "body_description": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "logo_file_id": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "menu_image_file_id": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Product brand created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Brand created successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Create Product Brand' permission"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/product-brands/{id}": {
+            "get": {
+                "tags": [
+                    "Admin Product Brands"
+                ],
+                "summary": "Get product brand by ID",
+                "description": "Display the specified product brand.",
+                "operationId": "e45bdd585f90350ab5231cc7deda9c90",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product brand found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Read Product Brands' permission"
+                    },
+                    "404": {
+                        "description": "Product brand not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Admin Product Brands"
+                ],
+                "summary": "Update a product brand by ID",
+                "description": "Update the specified product brand.",
+                "operationId": "aa7e4b7a664282edb78b1cb13cf9926e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Apple"
+                                    },
+                                    "slug": {
+                                        "type": "string",
+                                        "example": "apple"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "draft",
+                                            "published"
+                                        ],
+                                        "example": "published"
+                                    },
+                                    "body_description": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "logo_file_id": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "menu_image_file_id": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Product brand updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Brand updated successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Update Product Brand' permission"
+                    },
+                    "404": {
+                        "description": "Product brand not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin Product Brands"
+                ],
+                "summary": "Delete a product brand by ID",
+                "description": "Remove the specified product brand.",
+                "operationId": "7f3d9a66690891e42e40340944be2694",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product brand deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Brand deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Delete Product Brand' permission"
+                    },
+                    "404": {
+                        "description": "Product brand not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/product-brands/generate-slug": {
+            "post": {
+                "tags": [
+                    "Admin Product Brands"
+                ],
+                "summary": "Generate slug from name",
+                "description": "Generate slug from name.",
+                "operationId": "913b4699f5d2445496d6340800d641c1",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Apple"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Slug generated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "slug": {
+                                                    "type": "string",
+                                                    "example": "apple"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Create Product Brand' permission"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/product-categories": {
+            "get": {
+                "tags": [
+                    "Admin Product Categories"
+                ],
+                "summary": "Get all product categories with tree structure",
+                "description": "Display a listing of product categories with tree structure.",
+                "operationId": "4c5001044696465cacbcc40c69c70dd3",
+                "responses": {
+                    "200": {
+                        "description": "List of product categories",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "id": {
+                                                        "type": "integer",
+                                                        "example": 1
+                                                    },
+                                                    "name": {
+                                                        "type": "string",
+                                                        "example": "Electronics"
+                                                    },
+                                                    "slug": {
+                                                        "type": "string",
+                                                        "example": "electronics"
+                                                    },
+                                                    "status": {
+                                                        "type": "string",
+                                                        "example": "published"
+                                                    },
+                                                    "parent_id": {
+                                                        "type": "integer",
+                                                        "nullable": true
+                                                    },
+                                                    "subcategories": {
+                                                        "type": "array",
+                                                        "items": {
+                                                            "type": "object"
+                                                        }
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Read Product Categories' permission"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "tags": [
+                    "Admin Product Categories"
+                ],
+                "summary": "Create a new product category",
+                "description": "Store a newly created product category.",
+                "operationId": "5461b5c83cd479aa144da4ae627daa28",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "slug",
+                                    "status"
+                                ],
+                                "properties": {
+                                    "parent_id": {
+                                        "type": "integer",
+                                        "example": null,
+                                        "nullable": true
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Electronics"
+                                    },
+                                    "slug": {
+                                        "type": "string",
+                                        "example": "electronics"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "draft",
+                                            "published"
+                                        ],
+                                        "example": "published"
+                                    },
+                                    "body_description": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "logo_file_id": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "menu_image_file_id": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Product category created successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Category created successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Create Product Category' permission"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/product-categories/{id}": {
+            "get": {
+                "tags": [
+                    "Admin Product Categories"
+                ],
+                "summary": "Get product category by ID",
+                "description": "Display the specified product category.",
+                "operationId": "ced5339408239c849e721b4bc2268bbd",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product category found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Read Product Categories' permission"
+                    },
+                    "404": {
+                        "description": "Product category not found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Admin Product Categories"
+                ],
+                "summary": "Update a product category by ID",
+                "description": "Update the specified product category.",
+                "operationId": "87ec1115bea2a0055c9b60c184b26a41",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "parent_id": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Electronics"
+                                    },
+                                    "slug": {
+                                        "type": "string",
+                                        "example": "electronics"
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "draft",
+                                            "published"
+                                        ],
+                                        "example": "published"
+                                    },
+                                    "body_description": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "logo_file_id": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    },
+                                    "menu_image_file_id": {
+                                        "type": "integer",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Product category updated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Category updated successfully"
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Update Product Category' permission"
+                    },
+                    "404": {
+                        "description": "Product category not found"
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Admin Product Categories"
+                ],
+                "summary": "Delete a product category by ID",
+                "description": "Remove the specified product category.",
+                "operationId": "d258b52ab0e39d3d8ac5a94f2d0805bf",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Product category deleted successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Category deleted successfully"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Delete Product Category' permission"
+                    },
+                    "404": {
+                        "description": "Product category not found"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/admin/product-categories/generate-slug": {
+            "post": {
+                "tags": [
+                    "Admin Product Categories"
+                ],
+                "summary": "Generate slug from name",
+                "description": "Generate slug from name.",
+                "operationId": "eda21e97b8f446303e902596acee8f02",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Electronics"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Slug generated successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "slug": {
+                                                    "type": "string",
+                                                    "example": "electronics"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated"
+                    },
+                    "403": {
+                        "description": "Forbidden - Missing 'Create Product Category' permission"
+                    },
+                    "422": {
+                        "description": "Validation error"
                     }
                 },
                 "security": [
@@ -1739,7 +3842,7 @@
                 "tags": [
                     "Admin Users"
                 ],
-                "summary": "Get all admin users",
+                "summary": "Get all admin users with optional pagination",
                 "description": "Display a listing of the resource.",
                 "operationId": "895101ef1a579f1e11fb7d2ffac04d5b",
                 "parameters": [
@@ -1769,6 +3872,24 @@
                                 "active",
                                 "inactive"
                             ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "schema": {
+                            "type": "integer",
+                            "example": 1
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Items per page (if not provided, returns all items)",
+                        "schema": {
+                            "type": "integer",
+                            "example": 15
                         }
                     }
                 ],
@@ -1809,6 +3930,27 @@
                                                 },
                                                 "type": "object"
                                             }
+                                        },
+                                        "meta": {
+                                            "properties": {
+                                                "current_page": {
+                                                    "type": "integer",
+                                                    "example": 1
+                                                },
+                                                "last_page": {
+                                                    "type": "integer",
+                                                    "example": 5
+                                                },
+                                                "per_page": {
+                                                    "type": "integer",
+                                                    "example": 15
+                                                },
+                                                "total": {
+                                                    "type": "integer",
+                                                    "example": 73
+                                                }
+                                            },
+                                            "type": "object"
                                         }
                                     },
                                     "type": "object"
@@ -2165,12 +4307,28 @@
             "description": "Admin Customers"
         },
         {
+            "name": "Admin Delivery Methods",
+            "description": "Admin Delivery Methods"
+        },
+        {
             "name": "Admin Files",
             "description": "Admin Files"
         },
         {
+            "name": "Admin Payment Methods",
+            "description": "Admin Payment Methods"
+        },
+        {
             "name": "Admin Permissions",
             "description": "Admin Permissions"
+        },
+        {
+            "name": "Admin Product Brands",
+            "description": "Admin Product Brands"
+        },
+        {
+            "name": "Admin Product Categories",
+            "description": "Admin Product Categories"
         },
         {
             "name": "Admin Roles",

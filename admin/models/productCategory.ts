@@ -30,3 +30,12 @@ export interface ProductCategoryTreeNode extends ProductCategory {
   children?: ProductCategoryTreeNode[];
   expanded?: boolean;
 }
+
+export interface IProductCategoryProvider {
+  getAllProductCategories: () => ReturnType<typeof useAsyncData<ProductCategory[]>>;
+  getProductCategoryById: (id: number) => ReturnType<typeof useAsyncData<ProductCategory>>;
+  createProductCategory: (payload: ProductCategoryFormData) => ReturnType<typeof useAsyncData<ProductCategory>>;
+  updateProductCategory: (id: number, payload: ProductCategoryFormData) => ReturnType<typeof useAsyncData<ProductCategory>>;
+  deleteProductCategory: (id: number) => ReturnType<typeof useAsyncData<{ success: boolean; message: string }>>;
+  generateSlug: (name: string) => ReturnType<typeof useAsyncData<{ slug: string }>>;
+}
