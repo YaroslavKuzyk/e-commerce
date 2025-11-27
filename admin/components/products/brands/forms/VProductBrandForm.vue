@@ -139,6 +139,7 @@ import type { ProductBrand } from "~/models/productBrand";
 import VFilePickerModal from "~/components/files/modals/VFilePickerModal.vue";
 import VWysiwygEditor from "~/components/common/VWysiwygEditor.vue";
 import type { IFile } from "~/models/files";
+import VSecureImage from "~/components/common/VSecureImage.vue";
 
 interface Props {
   brand: ProductBrand | null;

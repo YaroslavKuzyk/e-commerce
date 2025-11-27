@@ -1,5 +1,5 @@
 <template>
-  <VSidebarContent title="Ролі">
+  <VSidebarContent :title="$t('roles.title')">
     <template #toolbar>
       <div class="flex items-center justify-between w-full gap-2">
         <HasPermissions :required-permissions="['Read Roles']">
@@ -7,7 +7,7 @@
             v-model="selectedRole"
             :items="rolesData"
             class="max-w-[300px] w-[100%]"
-            placeholder="Обрати роль"
+            :placeholder="$t('roles.select')"
             value-key="id"
             label-key="name"
           >
@@ -16,7 +16,7 @@
                 v-if="selectedRole"
                 size="sm"
                 variant="link"
-                aria-label="Очистити"
+                :aria-label="$t('common.clearFilters')"
                 @click.stop="selectedRole = null"
                 color="neutral"
               >
@@ -31,7 +31,7 @@
               <template #leading>
                 <Trash2 class="w-4 h-4" />
               </template>
-              Видалити роль
+              {{ $t("roles.delete") }}
             </UButton>
           </HasPermissions>
           <HasPermissions
@@ -41,7 +41,7 @@
               <template #leading>
                 <Plus class="w-4 h-4" />
               </template>
-              Додати роль
+              {{ $t("roles.add") }}
             </UButton>
           </HasPermissions>
         </div>

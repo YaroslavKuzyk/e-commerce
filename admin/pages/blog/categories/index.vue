@@ -1,11 +1,11 @@
 <template>
-  <VSidebarContent title="Категорії блогу">
+  <VSidebarContent :title="$t('blog.categories.title')">
     <template #toolbar>
       <div class="flex items-center justify-between w-full gap-2">
         <div class="flex items-center gap-2 w-full flex-wrap">
           <UInput
             v-model="filters.name"
-            placeholder="Пошук за назвою"
+            :placeholder="$t('blog.categories.searchByName')"
             class="w-[200px]"
           >
             <template #leading>
@@ -15,7 +15,7 @@
           <USelectMenu
             v-model="filters.status"
             :items="statusOptions"
-            placeholder="Статус"
+            :placeholder="$t('common.status')"
             value-key="value"
             label-key="label"
             class="w-[150px]"
@@ -25,7 +25,7 @@
                 v-if="filters.status"
                 size="sm"
                 variant="link"
-                aria-label="Очистити"
+                :aria-label="$t('common.clear')"
                 @click.stop="filters.status = null"
                 color="neutral"
               >
@@ -41,7 +41,7 @@
             <template #leading>
               <X class="w-5 h-5" />
             </template>
-            Очистити фільтри
+            {{ $t("common.clearFilters") }}
           </UButton>
         </div>
         <div class="flex items-center gap-2 shrink-0">
@@ -50,7 +50,7 @@
               <template #leading>
                 <Plus class="w-4 h-4" />
               </template>
-              Додати категорію
+              {{ $t("blog.categories.add") }}
             </UButton>
           </HasPermissions>
         </div>
@@ -59,18 +59,18 @@
 
     <HasPermissions :required-permissions="['Read Blog Categories']">
       <!-- Delete Modal -->
-      <UModal v-model:open="isDeleteModalOpen" title="Видалити категорію">
+      <UModal v-model:open="isDeleteModalOpen" :title="$t('blog.categories.deleteTitle')">
         <template #body>
           <div class="space-y-4 p-4">
             <div v-if="categoryToDelete" class="p-4 bg-error-50 dark:bg-error-900/20 rounded-lg">
               <p class="text-sm text-error-600 dark:text-error-400">
-                Ви збираєтеся видалити категорію:
+                {{ $t("blog.categories.deleteConfirm") }}
               </p>
               <p class="font-semibold mt-2">{{ categoryToDelete.name }}</p>
             </div>
 
             <p class="text-sm text-gray-600 dark:text-gray-400">
-              Ця дія незворотна. Категорію неможливо видалити, якщо в ній є статті.
+              {{ $t("blog.categories.deleteWarning") }}
             </p>
 
             <div class="flex justify-end gap-2">
@@ -79,14 +79,14 @@
                 color="neutral"
                 @click="isDeleteModalOpen = false"
               >
-                Скасувати
+                {{ $t("common.cancel") }}
               </UButton>
               <UButton
                 color="error"
                 :loading="deleteLoading"
                 @click="handleDeleteCategory"
               >
-                Видалити
+                {{ $t("common.delete") }}
               </UButton>
             </div>
           </div>
@@ -115,7 +115,7 @@
             :color="row.original.status === 'published' ? 'success' : 'neutral'"
             variant="subtle"
           >
-            {{ row.original.status === 'published' ? 'Опубліковано' : 'Чернетка' }}
+            {{ row.original.status === 'published' ? $t('common.published') : $t('common.draft') }}
           </UBadge>
         </template>
 
@@ -169,6 +169,7 @@ definePageMeta({
   requiredPermissions: ["Read Blog Categories"],
 });
 
+const { t } = useI18n();
 const router = useRouter();
 const blogCategoryStore = useBlogCategoryStore();
 const toast = useToast();
@@ -184,19 +185,19 @@ const filters = ref({
   per_page: 15,
 });
 
-const statusOptions = [
-  { label: "Опубліковано", value: "published" },
-  { label: "Чернетка", value: "draft" },
-];
+const statusOptions = computed(() => [
+  { label: t("common.published"), value: "published" },
+  { label: t("common.draft"), value: "draft" },
+]);
 
-const columns = [
+const columns = computed(() => [
   { id: 'sort_order', header: '#', meta: { class: { th: 'w-16' } } },
-  { id: 'name', header: 'Назва' },
-  { id: 'slug', header: 'Slug' },
-  { id: 'status', header: 'Статус', meta: { class: { th: 'w-[120px]' } } },
-  { id: 'posts_count', header: 'Статей', meta: { class: { th: 'w-[100px]' } } },
+  { id: 'name', header: t('table.name') },
+  { id: 'slug', header: t('table.slug') },
+  { id: 'status', header: t('common.status'), meta: { class: { th: 'w-[120px]' } } },
+  { id: 'posts_count', header: t('blog.categories.postsCount'), meta: { class: { th: 'w-[100px]' } } },
   { id: 'actions', header: '', meta: { class: { th: 'w-24' } } },
-];
+]);
 
 const {
   data: categoriesData,
@@ -234,16 +235,16 @@ const handleDeleteCategory = async () => {
 
     if (error.value) {
       toast.add({
-        title: "Помилка",
-        description: error.value.message || "Не вдалося видалити категорію",
+        title: t("common.error"),
+        description: error.value.message || t("blog.categories.deleteError"),
         color: "error",
       });
       return;
     }
 
     toast.add({
-      title: "Успішно",
-      description: "Категорію видалено",
+      title: t("common.success"),
+      description: t("blog.categories.deleteSuccess"),
       color: "success",
     });
 
@@ -252,8 +253,8 @@ const handleDeleteCategory = async () => {
     await refreshCategories();
   } catch (error) {
     toast.add({
-      title: "Помилка",
-      description: "Не вдалося видалити категорію",
+      title: t("common.error"),
+      description: t("blog.categories.deleteError"),
       color: "error",
     });
   } finally {

@@ -1,18 +1,13 @@
 <template>
-  <UDashboardPanel resizable>
-    <template #header>
-      <UDashboardNavbar title="Inbox">
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
-      </UDashboardNavbar>
-      <UDashboardToolbar />
+  <VSidebarContent :title="$t('common.main')">
+    <template #toolbar>
     </template>
-    <template #body> </template>
-  </UDashboardPanel>
+  </VSidebarContent>
 </template>
 
 <script setup lang="ts">
+import VSidebarContent from "~/components/sidebar/VSidebarContent.vue";
+
 definePageMeta({
   middleware: ["sanctum:auth"],
 });

@@ -1,5 +1,5 @@
 <template>
-  <VSidebarContent title="Профіль">
+  <VSidebarContent :title="$t('profile.title')">
     <template #toolbar>
       <div class="flex items-center justify-end gap-2 w-full">
         <UButton
@@ -10,7 +10,7 @@
           <template #leading>
             <Settings class="w-5 h-5" />
           </template>
-          Налаштування профілю
+          {{ $t("profile.settings") }}
         </UButton>
       </div>
     </template>
@@ -58,14 +58,14 @@
               <h3
                 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4"
               >
-                Деталі
+                {{ $t("profile.details") }}
               </h3>
               <dl class="space-y-3">
                 <div>
                   <dt
                     class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1"
                   >
-                    Ім'я:
+                    {{ $t("profile.name") }}:
                   </dt>
                   <dd class="text-sm text-gray-900 dark:text-white">
                     {{ user.name }}
@@ -75,7 +75,7 @@
                   <dt
                     class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1"
                   >
-                    Email:
+                    {{ $t("auth.email") }}:
                   </dt>
                   <dd class="text-sm text-gray-900 dark:text-white">
                     {{ user.email }}
@@ -85,10 +85,10 @@
                   <dt
                     class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1"
                   >
-                    Роль:
+                    {{ $t("profile.role") }}:
                   </dt>
                   <dd class="text-sm text-gray-900 dark:text-white">
-                    {{ user.role?.name || "Не призначена" }}
+                    {{ user.role?.name || $t("common.notAssigned") }}
                   </dd>
                 </div>
               </dl>
@@ -110,7 +110,7 @@
                   />
                 </div>
                 <h2 class="text-xl font-semibold text-gray-900 dark:text-white">
-                  Мої дозволи
+                  {{ $t("profile.myPermissions") }}
                 </h2>
               </div>
             </div>
@@ -140,7 +140,7 @@
                   name="i-heroicons-lock-open"
                   class="w-12 h-12 mx-auto mb-3 opacity-50"
                 />
-                <p>Немає призначених дозволів</p>
+                <p>{{ $t("profile.noPermissions") }}</p>
               </div>
             </div>
           </div>
@@ -148,7 +148,7 @@
       </div>
 
       <div v-else class="text-center text-gray-500 dark:text-gray-400">
-        Не вдалося завантажити дані профілю
+        {{ $t("profile.loadError") }}
       </div>
     </div>
   </VSidebarContent>
@@ -158,6 +158,8 @@
 import { Settings } from "lucide-vue-next";
 import type { IUser } from "~/models/auth";
 import VSidebarContent from "~/components/sidebar/VSidebarContent.vue";
+import VAvatar from "@/components/common/VAvatar.vue";
+
 
 definePageMeta({
   middleware: ["sanctum:auth"],

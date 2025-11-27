@@ -3,9 +3,9 @@
     <!-- Left side: Per page selector and info -->
     <div class="flex items-center gap-4">
       <div class="flex items-center gap-2">
-        <span class="text-sm text-gray-600 dark:text-gray-400"
-          >Показувати:</span
-        >
+        <span class="text-sm text-gray-600 dark:text-gray-400">
+          {{ $t("common.show") }}:
+        </span>
         <USelect
           :model-value="meta.per_page"
           :items="perPageOptions"
@@ -14,7 +14,7 @@
         />
       </div>
       <span class="text-sm text-gray-600 dark:text-gray-400">
-        Показано з {{ from }} по {{ to }} з {{ meta.total }} записів
+        {{ $t("common.showingFromTo", { from, to, total: meta.total }) }}
       </span>
     </div>
 
@@ -23,24 +23,8 @@
       v-model:page="page"
       :items-per-page="meta?.per_page || 15"
       :total="meta?.total || 0"
-      :ui="{
-        wrapper: 'flex items-center gap-1',
-        rounded: 'first:rounded-l-md last:rounded-r-md',
-        default: {
-          activeButton: {
-            variant: 'outline',
-          },
-          inactiveButton: {
-            variant: 'outline',
-          },
-          prevButton: {
-            variant: 'outline',
-          },
-          nextButton: {
-            variant: 'outline',
-          },
-        },
-      }"
+      color="neutral"
+      variant="ghost"
     />
   </div>
 </template>

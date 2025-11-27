@@ -1,11 +1,11 @@
 <template>
-  <VSidebarContent title="Покупці">
+  <VSidebarContent :title="$t('customers.title')">
     <template #toolbar>
       <div class="flex items-center justify-between w-full gap-2">
         <div class="flex items-center gap-2 w-full">
           <UInput
             v-model="filters.search"
-            placeholder="Пошук за ім'ям або email"
+            :placeholder="$t('customers.searchPlaceholder')"
             class="w-[250px]"
           >
             <template #leading>
@@ -15,7 +15,7 @@
           <USelectMenu
             v-model="filters.status"
             :items="statusOptions"
-            placeholder="Статус"
+            :placeholder="$t('common.status')"
             value-key="value"
             label-key="label"
             class="w-[150px]"
@@ -25,7 +25,7 @@
                 v-if="filters.status"
                 size="sm"
                 variant="link"
-                aria-label="Очистити"
+                :aria-label="$t('common.clearFilters')"
                 @click.stop="filters.status = null"
                 color="neutral"
               >
@@ -41,7 +41,7 @@
             <template #leading>
               <X class="w-5 h-5" />
             </template>
-            Очистити фільтри
+            {{ $t("common.clearFilters") }}
           </UButton>
         </div>
         <div class="flex items-center gap-2 shrink-0">
@@ -50,7 +50,7 @@
               <template #leading>
                 <Plus class="w-4 h-4" />
               </template>
-              Додати покупця
+              {{ $t("customers.add") }}
             </UButton>
           </HasPermissions>
         </div>
@@ -65,7 +65,7 @@
               :color="row.original.status === 'active' ? 'success' : 'error'"
               variant="subtle"
             >
-              {{ row.original.status === "active" ? "Активний" : "Неактивний" }}
+              {{ row.original.status === "active" ? $t("common.active") : $t("common.inactive") }}
             </UBadge>
           </template>
 
@@ -136,6 +136,7 @@ definePageMeta({
   requiredPermissions: ["Read Customers"],
 });
 
+const { t } = useI18n();
 const customerStore = useCustomerStore();
 
 const filters = ref({
@@ -145,31 +146,31 @@ const filters = ref({
   per_page: 15,
 });
 
-const statusOptions = [
-  { label: "Активний", value: "active" },
-  { label: "Неактивний", value: "inactive" },
-];
+const statusOptions = computed(() => [
+  { label: t("common.active"), value: "active" },
+  { label: t("common.inactive"), value: "inactive" },
+]);
 
-const columns = [
+const columns = computed(() => [
   {
-    header: "ID",
+    header: t("table.id"),
     accessorKey: "id",
   },
   {
-    header: "Ім'я",
+    header: t("table.name"),
     accessorKey: "name",
   },
   {
-    header: "Email",
+    header: t("table.email"),
     accessorKey: "email",
   },
   {
     id: "status",
-    header: "Статус",
+    header: t("table.status"),
   },
   {
     id: "actions",
-    header: "Дії",
+    header: t("table.actions"),
     meta: {
       class: {
         th: "w-[120px] text-right",
@@ -177,7 +178,7 @@ const columns = [
       },
     },
   },
-];
+]);
 
 const {
   data: customersData,

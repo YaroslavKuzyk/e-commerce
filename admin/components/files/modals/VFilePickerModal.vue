@@ -457,6 +457,8 @@ import type { Component } from "vue";
 import type { IFile, IFileFilters } from "~/models/files";
 import VFileDeleteModal from "@/components/files/modals/VFileDeleteModal.vue";
 import VPagination from "@/components/common/VPagination.vue";
+import VAvatar from "@/components/common/VAvatar.vue";
+import VSecureImage from "~/components/common/VSecureImage.vue";
 
 interface IProps {
   fileType?: "image" | "video" | "audio" | "pdf" | "archive" | "other";

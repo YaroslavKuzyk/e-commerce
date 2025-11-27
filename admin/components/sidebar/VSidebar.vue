@@ -5,12 +5,14 @@
     resizable
   >
     <template #header="{ collapsed }">
-      <div v-if="!collapsed" class="flex items-center gap-2">
-        <Slack class="h-5 w-auto shrink-0" />
-        Admin E-Commerce
+      <div v-if="!collapsed" class="flex items-center justify-between">
+        <div class="flex items-center gap-2 ">
+          <img src="@/assets/images/logo.png" alt="logo" class="h-7 w-auto shrink-0 rounded" />
+          Admin iD
+        </div>
       </div>
-      <div v-else class="flex items-center justify-center w-full">
-        <Slack class="h-5 w-auto shrink-0" />
+      <div v-else class="flex flex-col items-center gap-2 w-full">
+        <img src="@/assets/images/logo.png" alt="logo" class="h-7 w-auto shrink-0 rounded" />
       </div>
     </template>
 
@@ -97,7 +99,10 @@ import {
   FileText,
 } from "lucide-vue-next";
 import type { Component } from "vue";
+import VAvatar from "@/components/common/VAvatar.vue";
 
+
+const { t } = useI18n();
 const authStore = useAuthStore();
 
 interface MenuItem {
@@ -129,28 +134,28 @@ const hasPermissions = (requiredPermissions: string[]): boolean => {
 const menus = computed(() => {
   const allMenus: MenuItem[] = [
     {
-      label: "Головна",
+      label: t("nav.main"),
       icon: Home,
       to: "/",
     },
     {
-      label: "Користувачі",
+      label: t("nav.users"),
       icon: Users,
       children: [
         {
-          label: "Адміністратори",
+          label: t("nav.administrators"),
           icon: ShieldCheck,
           to: "/users/administrators",
           requiredPermissions: ["Read Admin Users"],
         },
         {
-          label: "Покупці",
+          label: t("nav.customers"),
           icon: ShoppingBag,
           to: "/users/customers",
           requiredPermissions: ["Read Customers"],
         },
         {
-          label: "Ролі",
+          label: t("nav.roles"),
           icon: ContactRound,
           to: "/users/roles",
           requiredPermissions: ["Read Roles", "Read Permissions"],
@@ -158,29 +163,29 @@ const menus = computed(() => {
       ],
     },
     {
-      label: "Магазин",
+      label: t("nav.shop"),
       icon: Package,
       children: [
         {
-          label: "Продукти",
+          label: t("nav.products"),
           icon: List,
           to: "/products/list",
           requiredPermissions: ["Read Products"],
         },
         {
-          label: "Атрибути",
+          label: t("nav.attributes"),
           icon: SlidersHorizontal,
           to: "/products/attributes",
           requiredPermissions: ["Read Attributes"],
         },
         {
-          label: "Категорії",
+          label: t("nav.categories"),
           icon: FolderTree,
           to: "/products/categories",
           requiredPermissions: ["Read Product Categories"],
         },
         {
-          label: "Бренди",
+          label: t("nav.brands"),
           icon: Tag,
           to: "/products/brands",
           requiredPermissions: ["Read Product Brands"],
@@ -188,17 +193,17 @@ const menus = computed(() => {
       ],
     },
     {
-      label: "Блог",
+      label: t("nav.blog"),
       icon: Newspaper,
       children: [
         {
-          label: "Категорії",
+          label: t("nav.categories"),
           icon: FolderTree,
           to: "/blog/categories",
           requiredPermissions: ["Read Blog Categories"],
         },
         {
-          label: "Статті",
+          label: t("nav.posts"),
           icon: FileText,
           to: "/blog/posts",
           requiredPermissions: ["Read Blog Posts"],
@@ -206,13 +211,13 @@ const menus = computed(() => {
       ],
     },
     {
-      label: "Оплата та Доставка",
+      label: t("nav.deliveryPayment"),
       icon: Truck,
       to: "/delivery-payment",
       requiredPermissions: ["Read Delivery Methods", "Read Payment Methods"],
     },
     {
-      label: "Файли",
+      label: t("nav.files"),
       icon: Folder,
       to: "/files",
     },
@@ -267,19 +272,19 @@ const dropdownItems = computed(() => {
     ],
     [
       {
-        label: "Профіль",
+        label: t("nav.profile"),
         icon: User,
         to: "/profile",
       },
       {
-        label: "Налаштування",
+        label: t("nav.settings"),
         icon: Settings,
         to: "/settings",
       },
     ],
     [
       {
-        label: "Вихід",
+        label: t("nav.logout"),
         icon: LogOut,
         onClick: handleLogout,
       },

@@ -1,11 +1,11 @@
 <template>
-  <VSidebarContent title="Атрибути продуктів">
+  <VSidebarContent :title="$t('attributes.title')">
     <template #toolbar>
       <div class="flex items-center justify-between w-full gap-2">
         <div class="flex items-center gap-2 w-full">
           <UInput
             v-model="filters.name"
-            placeholder="Пошук за назвою"
+            :placeholder="$t('attributes.searchByName')"
             class="w-[200px]"
           >
             <template #leading>
@@ -14,7 +14,7 @@
           </UInput>
           <UInput
             v-model="filters.slug"
-            placeholder="Пошук за slug"
+            :placeholder="$t('attributes.searchBySlug')"
             class="w-[200px]"
           >
             <template #leading>
@@ -24,7 +24,7 @@
           <USelectMenu
             v-model="filters.type"
             :items="typeOptions"
-            placeholder="Тип"
+            :placeholder="$t('attributes.type')"
             value-key="value"
             label-key="label"
             class="w-[180px]"
@@ -34,7 +34,7 @@
                 v-if="filters.type"
                 size="sm"
                 variant="link"
-                aria-label="Очистити"
+                :aria-label="$t('common.clear')"
                 @click.stop="filters.type = null"
                 color="neutral"
               >
@@ -45,7 +45,7 @@
           <USelectMenu
             v-model="filters.status"
             :items="statusOptions"
-            placeholder="Статус"
+            :placeholder="$t('common.status')"
             value-key="value"
             label-key="label"
             class="w-[150px]"
@@ -55,7 +55,7 @@
                 v-if="filters.status"
                 size="sm"
                 variant="link"
-                aria-label="Очистити"
+                :aria-label="$t('common.clear')"
                 @click.stop="filters.status = null"
                 color="neutral"
               >
@@ -71,7 +71,7 @@
             <template #leading>
               <X class="w-5 h-5" />
             </template>
-            Очистити фільтри
+            {{ $t("common.clearFilters") }}
           </UButton>
         </div>
         <div class="flex items-center gap-2 shrink-0">
@@ -80,7 +80,7 @@
               <template #leading>
                 <Plus class="w-4 h-4" />
               </template>
-              Додати атрибут
+              {{ $t("attributes.add") }}
             </UButton>
           </HasPermissions>
         </div>
@@ -127,6 +127,7 @@ definePageMeta({
   requiredPermissions: ["Read Attributes"],
 });
 
+const { t } = useI18n();
 const router = useRouter();
 const attributeStore = useAttributeStore();
 
@@ -142,17 +143,17 @@ const filters = ref({
   per_page: 15,
 });
 
-const typeOptions = [
-  { label: "Вибір", value: "select" },
-  { label: "Множинний вибір", value: "multi_select" },
-  { label: "Чекбокс", value: "checkbox" },
-  { label: "Перемикач", value: "switch" },
-];
+const typeOptions = computed(() => [
+  { label: t("attributes.typeSelect"), value: "select" },
+  { label: t("attributes.typeMultiSelect"), value: "multi_select" },
+  { label: t("attributes.typeCheckbox"), value: "checkbox" },
+  { label: t("attributes.typeSwitch"), value: "switch" },
+]);
 
-const statusOptions = [
-  { label: "Опубліковано", value: "published" },
-  { label: "Чернетка", value: "draft" },
-];
+const statusOptions = computed(() => [
+  { label: t("common.published"), value: "published" },
+  { label: t("common.draft"), value: "draft" },
+]);
 
 const {
   data: attributesData,

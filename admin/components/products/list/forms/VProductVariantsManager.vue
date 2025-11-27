@@ -243,6 +243,7 @@
 <script setup lang="ts">
 import type { Product, ProductVariant, ProductVariantFilters, ProductVariantStatus } from "~/models/product";
 import VProductVariantForm from "./VProductVariantForm.vue";
+import VSecureImage from "~/components/common/VSecureImage.vue";
 
 interface Props {
   product: Product;
@@ -272,7 +273,6 @@ const filters = reactive({
 });
 
 const statusOptions = [
-  { label: 'Усі статуси', value: 'all' },
   { label: 'Опубліковано', value: 'published' },
   { label: 'Чернетка', value: 'draft' },
 ];

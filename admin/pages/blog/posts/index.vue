@@ -1,11 +1,11 @@
 <template>
-  <VSidebarContent title="Статті блогу">
+  <VSidebarContent :title="$t('blog.posts.title')">
     <template #toolbar>
       <div class="flex items-center justify-between w-full gap-2">
         <div class="flex items-center gap-2 w-full flex-wrap">
           <UInput
             v-model="filters.title"
-            placeholder="Пошук за назвою"
+            :placeholder="$t('blog.posts.searchByTitle')"
             class="w-[200px]"
           >
             <template #leading>
@@ -15,7 +15,7 @@
           <USelectMenu
             v-model="filters.status"
             :items="statusOptions"
-            placeholder="Статус"
+            :placeholder="$t('common.status')"
             value-key="value"
             label-key="label"
             class="w-[150px]"
@@ -25,7 +25,7 @@
                 v-if="filters.status"
                 size="sm"
                 variant="link"
-                aria-label="Очистити"
+                :aria-label="$t('common.clear')"
                 @click.stop="filters.status = null"
                 color="neutral"
               >
@@ -36,7 +36,7 @@
           <USelectMenu
             v-model="filters.blog_category_id"
             :items="categoryOptions"
-            placeholder="Категорія"
+            :placeholder="$t('blog.posts.category')"
             value-key="value"
             label-key="label"
             class="w-[180px]"
@@ -46,7 +46,7 @@
                 v-if="filters.blog_category_id"
                 size="sm"
                 variant="link"
-                aria-label="Очистити"
+                :aria-label="$t('common.clear')"
                 @click.stop="filters.blog_category_id = null"
                 color="neutral"
               >
@@ -62,7 +62,7 @@
             <template #leading>
               <X class="w-5 h-5" />
             </template>
-            Очистити фільтри
+            {{ $t("common.clearFilters") }}
           </UButton>
         </div>
         <div class="flex items-center gap-2 shrink-0">
@@ -71,7 +71,7 @@
               <template #leading>
                 <Plus class="w-4 h-4" />
               </template>
-              Додати статтю
+              {{ $t("blog.posts.add") }}
             </UButton>
           </HasPermissions>
         </div>
@@ -80,18 +80,18 @@
 
     <HasPermissions :required-permissions="['Read Blog Posts']">
       <!-- Delete Modal -->
-      <UModal v-model:open="isDeleteModalOpen" title="Видалити статтю">
+      <UModal v-model:open="isDeleteModalOpen" :title="$t('blog.posts.deleteTitle')">
         <template #body>
           <div class="space-y-4 p-4">
             <div v-if="postToDelete" class="p-4 bg-error-50 dark:bg-error-900/20 rounded-lg">
               <p class="text-sm text-error-600 dark:text-error-400">
-                Ви збираєтеся видалити статтю:
+                {{ $t("blog.posts.deleteConfirm") }}
               </p>
               <p class="font-semibold mt-2">{{ postToDelete.title }}</p>
             </div>
 
             <p class="text-sm text-gray-600 dark:text-gray-400">
-              Ця дія незворотна.
+              {{ $t("blog.posts.deleteWarning") }}
             </p>
 
             <div class="flex justify-end gap-2">
@@ -100,14 +100,14 @@
                 color="neutral"
                 @click="isDeleteModalOpen = false"
               >
-                Скасувати
+                {{ $t("common.cancel") }}
               </UButton>
               <UButton
                 color="error"
                 :loading="deleteLoading"
                 @click="handleDeletePost"
               >
-                Видалити
+                {{ $t("common.delete") }}
               </UButton>
             </div>
           </div>
@@ -158,7 +158,7 @@
             :color="row.original.status === 'published' ? 'success' : 'neutral'"
             variant="subtle"
           >
-            {{ row.original.status === 'published' ? 'Опубліковано' : 'Чернетка' }}
+            {{ row.original.status === 'published' ? $t('common.published') : $t('common.draft') }}
           </UBadge>
         </template>
 
@@ -209,12 +209,14 @@ import HasPermissions from "~/components/common/VHasPermissions.vue";
 import VSidebarContent from "~/components/sidebar/VSidebarContent.vue";
 import VPagination from "~/components/common/VPagination.vue";
 import type { BlogPost, BlogPostFilters, BlogPostStatus } from "~/models/blogPost";
+import VSecureImage from "~/components/common/VSecureImage.vue";
 
 definePageMeta({
   middleware: ["sanctum:auth", "permissions"],
   requiredPermissions: ["Read Blog Posts"],
 });
 
+const { t } = useI18n();
 const router = useRouter();
 const blogPostStore = useBlogPostStore();
 const blogCategoryStore = useBlogCategoryStore();
@@ -232,10 +234,10 @@ const filters = ref({
   per_page: 15,
 });
 
-const statusOptions = [
-  { label: "Опубліковано", value: "published" },
-  { label: "Чернетка", value: "draft" },
-];
+const statusOptions = computed(() => [
+  { label: t("common.published"), value: "published" },
+  { label: t("common.draft"), value: "draft" },
+]);
 
 // Fetch categories for filter
 const { data: categoriesData } = await blogCategoryStore.fetchBlogCategories();
@@ -247,13 +249,13 @@ const categoryOptions = computed(() => {
   }));
 });
 
-const columns = [
-  { id: 'title', header: 'Назва' },
-  { id: 'category', header: 'Категорія', meta: { class: { th: 'w-[150px]' } } },
-  { id: 'status', header: 'Статус', meta: { class: { th: 'w-[120px]' } } },
-  { id: 'publication_date', header: 'Дата публікації', meta: { class: { th: 'w-[150px]' } } },
+const columns = computed(() => [
+  { id: 'title', header: t('table.name') },
+  { id: 'category', header: t('blog.posts.category'), meta: { class: { th: 'w-[150px]' } } },
+  { id: 'status', header: t('common.status'), meta: { class: { th: 'w-[120px]' } } },
+  { id: 'publication_date', header: t('blog.posts.publicationDate'), meta: { class: { th: 'w-[150px]' } } },
   { id: 'actions', header: '', meta: { class: { th: 'w-24' } } },
-];
+]);
 
 const {
   data: postsData,
@@ -299,16 +301,16 @@ const handleDeletePost = async () => {
 
     if (error.value) {
       toast.add({
-        title: "Помилка",
-        description: "Не вдалося видалити статтю",
+        title: t("common.error"),
+        description: t("blog.posts.deleteError"),
         color: "error",
       });
       return;
     }
 
     toast.add({
-      title: "Успішно",
-      description: "Статтю видалено",
+      title: t("common.success"),
+      description: t("blog.posts.deleteSuccess"),
       color: "success",
     });
 
@@ -317,8 +319,8 @@ const handleDeletePost = async () => {
     await refreshPosts();
   } catch (error) {
     toast.add({
-      title: "Помилка",
-      description: "Не вдалося видалити статтю",
+      title: t("common.error"),
+      description: t("blog.posts.deleteError"),
       color: "error",
     });
   } finally {
