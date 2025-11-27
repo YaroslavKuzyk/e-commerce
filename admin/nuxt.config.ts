@@ -4,6 +4,15 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: true,
 
+  app: {
+    head: {
+      title: "Admin iD",
+      link: [
+        { rel: "icon", type: "image/png", href: "/favicon.png" },
+      ],
+    },
+  },
+
   modules: [
     "@pinia/nuxt",
     "nuxt-auth-sanctum",

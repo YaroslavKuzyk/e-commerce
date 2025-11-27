@@ -5,12 +5,14 @@
     resizable
   >
     <template #header="{ collapsed }">
-      <div v-if="!collapsed" class="flex items-center gap-2">
-        <Slack class="h-5 w-auto shrink-0" />
-        Admin E-Commerce
+      <div v-if="!collapsed" class="flex items-center justify-between">
+        <div class="flex items-center gap-2 ">
+          <img src="@/assets/images/logo.png" alt="logo" class="h-7 w-auto shrink-0 rounded" />
+          Admin iD
+        </div>
       </div>
-      <div v-else class="flex items-center justify-center w-full">
-        <Slack class="h-5 w-auto shrink-0" />
+      <div v-else class="flex flex-col items-center gap-2 w-full">
+        <img src="@/assets/images/logo.png" alt="logo" class="h-7 w-auto shrink-0 rounded" />
       </div>
     </template>
 
@@ -96,6 +98,7 @@ import {
   Newspaper,
   FileText,
 } from "lucide-vue-next";
+import VColorModeSwitch from "~/components/common/VColorModeSwitch.vue";
 import type { Component } from "vue";
 
 const authStore = useAuthStore();

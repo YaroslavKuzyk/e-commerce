@@ -23,24 +23,8 @@
       v-model:page="page"
       :items-per-page="meta?.per_page || 15"
       :total="meta?.total || 0"
-      :ui="{
-        wrapper: 'flex items-center gap-1',
-        rounded: 'first:rounded-l-md last:rounded-r-md',
-        default: {
-          activeButton: {
-            variant: 'outline',
-          },
-          inactiveButton: {
-            variant: 'outline',
-          },
-          prevButton: {
-            variant: 'outline',
-          },
-          nextButton: {
-            variant: 'outline',
-          },
-        },
-      }"
+      color="neutral"
+      variant="ghost"
     />
   </div>
 </template>

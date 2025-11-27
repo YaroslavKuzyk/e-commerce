@@ -1,7 +1,10 @@
 <template>
   <div
-    class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4 py-12"
+    class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4 py-12 relative"
   >
+    <div class="absolute top-4 right-4">
+      <VColorModeSwitch />
+    </div>
     <div class="w-full max-w-md">
       <!-- Logo and Title -->
       <div class="text-center mb-8">
@@ -67,16 +70,6 @@
             </UInput>
           </UFormGroup>
 
-          <!-- Remember Me & Forgot Password -->
-          <div class="flex items-center justify-end w-full">
-            <NuxtLink
-              to="/forgot-password"
-              class="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 transition-colors flex-shrink-0"
-            >
-              Забули пароль?
-            </NuxtLink>
-          </div>
-
           <!-- Error Alert -->
           <UAlert
             v-if="error"
@@ -118,13 +111,14 @@
 
       <!-- Footer -->
       <div class="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
-        <p>© 2025 E-Commerce Admin. Всі права захищені.</p>
+        <p>© {{ currentYear }} Admin iD. Всі права захищені.</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import VColorModeSwitch from '~/components/common/VColorModeSwitch.vue';
 import { ShoppingCart, Mail, Lock, Eye, EyeOff, AlertCircle, X, LogIn, CheckCircle } from 'lucide-vue-next';
 
 definePageMeta({
@@ -182,4 +176,6 @@ onMounted(() => {
     };
   }
 });
+
+const currentYear = new Date().getFullYear();
 </script>

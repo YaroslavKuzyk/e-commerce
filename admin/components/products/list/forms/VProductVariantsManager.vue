@@ -272,7 +272,6 @@ const filters = reactive({
 });
 
 const statusOptions = [
-  { label: 'Усі статуси', value: 'all' },
   { label: 'Опубліковано', value: 'published' },
   { label: 'Чернетка', value: 'draft' },
 ];
