@@ -18,6 +18,8 @@ use App\Contracts\AttributeRepositoryInterface;
 use App\Contracts\AdminAttributeServiceInterface;
 use App\Contracts\ProductRepositoryInterface;
 use App\Contracts\AdminProductServiceInterface;
+use App\Contracts\AdminBlogCategoryServiceInterface;
+use App\Contracts\AdminBlogPostServiceInterface;
 use App\Contracts\Services\Admin\AdminAuthServiceInterface;
 use App\Contracts\Services\Admin\AdminRoleServiceInterface;
 use App\Contracts\Services\Admin\AdminPermissionServiceInterface;
@@ -39,6 +41,8 @@ use App\Repositories\AttributeRepository;
 use App\Services\Admin\AdminAttributeService;
 use App\Repositories\ProductRepository;
 use App\Services\Admin\AdminProductService;
+use App\Services\Admin\AdminBlogCategoryService;
+use App\Services\Admin\AdminBlogPostService;
 use App\Services\Admin\AdminAuthService;
 use App\Services\Admin\AdminRoleService;
 use App\Services\Admin\AdminPermissionService;
@@ -77,6 +81,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AdminProductBrandServiceInterface::class, AdminProductBrandService::class);
         $this->app->bind(AdminAttributeServiceInterface::class, AdminAttributeService::class);
         $this->app->bind(AdminProductServiceInterface::class, AdminProductService::class);
+        $this->app->bind(AdminBlogCategoryServiceInterface::class, AdminBlogCategoryService::class);
+        $this->app->bind(AdminBlogPostServiceInterface::class, AdminBlogPostService::class);
     }
 
     /**
