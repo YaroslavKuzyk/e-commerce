@@ -411,15 +411,34 @@ class AdminProductController extends Controller
      *     summary="Get all variants for a product",
      *     security={{"bearerAuth":{}}},
      *     @OA\Parameter(name="id", in="path", required=true, @OA\Schema(type="integer")),
+     *     @OA\Parameter(
+     *         name="search",
+     *         in="query",
+     *         description="Search by SKU or name",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="slug",
+     *         in="query",
+     *         description="Filter by slug",
+     *         @OA\Schema(type="string")
+     *     ),
+     *     @OA\Parameter(
+     *         name="status",
+     *         in="query",
+     *         description="Filter by status",
+     *         @OA\Schema(type="string", enum={"draft", "published"})
+     *     ),
      *     @OA\Response(response=200, description="List of variants"),
      *     @OA\Response(response=401, description="Unauthenticated"),
      *     @OA\Response(response=404, description="Product not found")
      * )
      */
-    public function getVariants(int $id): JsonResponse
+    public function getVariants(Request $request, int $id): JsonResponse
     {
         try {
-            $variants = $this->adminProductService->getVariants($id);
+            $filters = $request->only(['search', 'slug', 'status']);
+            $variants = $this->adminProductService->getVariants($id, $filters);
 
             return response()->json([
                 'success' => true,

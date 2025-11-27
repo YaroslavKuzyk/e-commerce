@@ -15,7 +15,7 @@
     </UTable>
     <HasPermissions :required-permissions="['Update Role']">
       <div v-if="selectedRole" class="flex justify-end items-end gap-2">
-        <UFormField label="Назва" name="name">
+        <UFormField label="Назва" name="name" required>
           <UInput v-model="state.name" class="w-[100%]" />
         </UFormField>
         <UButton type="submit">

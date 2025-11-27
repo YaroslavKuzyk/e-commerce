@@ -1,6 +1,6 @@
 <template>
   <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-    <UFormField label="Назва" name="name">
+    <UFormField label="Назва" name="name" required>
       <UInput v-model="state.name" class="w-[100%]" />
     </UFormField>
 

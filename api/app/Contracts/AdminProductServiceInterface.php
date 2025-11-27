@@ -22,7 +22,7 @@ interface AdminProductServiceInterface
 
     public function syncAttributes(int $productId, array $attributeIds): Product;
 
-    public function getVariants(int $productId): Collection;
+    public function getVariants(int $productId, array $filters = []): Collection;
 
     public function addVariant(int $productId, array $data): ProductVariant;
 

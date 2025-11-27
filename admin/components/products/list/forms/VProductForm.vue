@@ -4,31 +4,20 @@
     <div class="space-y-4">
       <h3 class="font-medium text-lg pb-2 border-b border-gray-200 dark:border-gray-700">Основна інформація</h3>
 
-      <UFormField label="Назва" name="name">
+      <UFormField label="Назва" name="name" required>
         <UInput
           v-model="state.name"
           placeholder="iPhone 15 Pro"
           class="w-full"
-          @blur="handleNameBlur"
         />
       </UFormField>
 
-      <UFormField label="Slug" name="slug">
-        <div class="flex gap-2">
-          <UInput
-            v-model="state.slug"
-            placeholder="iphone-15-pro"
-            class="flex-1"
-          />
-          <UButton
-            type="button"
-            variant="outline"
-            icon="i-heroicons-sparkles"
-            @click="generateSlugFromName"
-          >
-            Згенерувати
-          </UButton>
-        </div>
+      <UFormField label="Slug" name="slug" required>
+        <UInput
+          v-model="state.slug"
+          placeholder="iphone-15-pro"
+          class="w-full"
+        />
       </UFormField>
 
       <div class="grid grid-cols-2 gap-4">
@@ -66,7 +55,7 @@
           />
         </UFormField>
 
-        <UFormField label="Статус" name="status">
+        <UFormField label="Статус" name="status" required>
           <USelect
             v-model="state.status"
             :items="statusItems"
@@ -340,26 +329,6 @@ const toggleAttribute = (attributeId: number, checked: boolean) => {
 
 const removeAttribute = (attributeId: number) => {
   state.attribute_ids = state.attribute_ids.filter(id => id !== attributeId);
-};
-
-// Slug generation
-const handleNameBlur = () => {
-  if (!state.slug && state.name) {
-    generateSlugFromName();
-  }
-};
-
-const generateSlugFromName = async () => {
-  if (!state.name) return;
-
-  try {
-    const { data, error } = await productStore.onGenerateSlug(state.name);
-    if (!error.value && data.value) {
-      state.slug = data.value.slug;
-    }
-  } catch (err) {
-    console.error("Failed to generate slug:", err);
-  }
 };
 
 // Form submission

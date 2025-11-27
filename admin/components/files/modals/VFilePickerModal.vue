@@ -390,15 +390,17 @@
     </template>
 
     <template #footer>
-      <div class="flex items-center justify-between gap-10 w-full">
-        <VPagination
-          v-if="meta"
-          :meta="meta"
-          @update:page="(page) => (filters.page = page)"
-          @update:per-page="(perPage) => (filters.per_page = perPage)"
-        />
-        <div class="flex justify-between items-center">
-          <div class="text-sm text-gray-600 dark:text-gray-400">
+      <div class="flex items-center justify-between gap-4 w-full">
+        <div class="flex-1 min-w-0">
+          <VPagination
+            v-if="meta"
+            :meta="meta"
+            @update:page="(page) => (filters.page = page)"
+            @update:per-page="(perPage) => (filters.per_page = perPage)"
+          />
+        </div>
+        <div class="flex items-center gap-4 shrink-0">
+          <div class="text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap">
             <span v-if="selectedFiles.length > 0">
               Вибрано: {{ selectedFiles.length }} з {{ maxFiles }}
             </span>

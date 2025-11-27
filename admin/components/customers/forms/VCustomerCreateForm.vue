@@ -1,10 +1,10 @@
 <template>
   <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-    <UFormField label="Ім'я" name="name">
+    <UFormField label="Ім'я" name="name" required>
       <UInput v-model="state.name" placeholder="Введіть ім'я" class="w-full" />
     </UFormField>
 
-    <UFormField label="Email" name="email">
+    <UFormField label="Email" name="email" required>
       <UInput
         v-model="state.email"
         type="email"
@@ -13,7 +13,7 @@
       />
     </UFormField>
 
-    <UFormField label="Статус" name="status">
+    <UFormField label="Статус" name="status" required>
       <USelectMenu
         v-model="state.status"
         :items="statusOptions"
@@ -24,7 +24,7 @@
       />
     </UFormField>
 
-    <UFormField label="Пароль" name="password">
+    <UFormField label="Пароль" name="password" required>
       <UInput
         v-model="state.password"
         type="password"

@@ -5,6 +5,7 @@ import type {
   ProductPaginatedResponse,
   ProductVariant,
   ProductVariantFormData,
+  ProductVariantFilters,
   ProductSpecification,
   ProductSpecificationFormData,
   IProductProvider,
@@ -151,16 +152,37 @@ export class ProductService implements IProductProvider {
     );
   }
 
-  getVariants(productId: number) {
+  getVariants(productId: number, filters?: ProductVariantFilters) {
     const client = useSanctumClient();
 
+    const params = new URLSearchParams();
+    if (filters?.search) params.append('search', filters.search);
+    if (filters?.slug) params.append('slug', filters.slug);
+    if (filters?.status) params.append('status', filters.status);
+
+    const queryString = params.toString();
+    const url = `/api/admin/products/${productId}/variants${queryString ? `?${queryString}` : ''}`;
+
     return useAsyncData<ProductVariant[]>(
-      `product-variants-${productId}`,
+      `product-variants-${productId}-${Date.now()}`,
       () =>
-        client<{ success: boolean; data: ProductVariant[] }>(
-          `/api/admin/products/${productId}/variants`
-        ).then((res) => res.data)
+        client<{ success: boolean; data: ProductVariant[] }>(url).then((res) => res.data)
     );
+  }
+
+  async getVariantsPromise(productId: number, filters?: ProductVariantFilters): Promise<ProductVariant[]> {
+    const client = useSanctumClient();
+
+    const params = new URLSearchParams();
+    if (filters?.search) params.append('search', filters.search);
+    if (filters?.slug) params.append('slug', filters.slug);
+    if (filters?.status) params.append('status', filters.status);
+
+    const queryString = params.toString();
+    const url = `/api/admin/products/${productId}/variants${queryString ? `?${queryString}` : ''}`;
+
+    const res = await client<{ success: boolean; data: ProductVariant[] }>(url);
+    return res.data;
   }
 
   addVariant(productId: number, payload: ProductVariantFormData) {

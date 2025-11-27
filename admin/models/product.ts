@@ -112,6 +112,12 @@ export interface ProductFilters {
   per_page?: number;
 }
 
+export interface ProductVariantFilters {
+  search?: string;
+  slug?: string;
+  status?: ProductVariantStatus | null;
+}
+
 export interface ProductPaginatedResponse {
   data: Product[];
   meta?: {
@@ -130,7 +136,7 @@ export interface IProductProvider {
   deleteProduct: (id: number) => ReturnType<typeof useAsyncData<{ success: boolean; message: string }>>;
   generateSlug: (name: string) => ReturnType<typeof useAsyncData<{ slug: string }>>;
   syncAttributes: (productId: number, attributeIds: number[]) => ReturnType<typeof useAsyncData<Product>>;
-  getVariants: (productId: number) => ReturnType<typeof useAsyncData<ProductVariant[]>>;
+  getVariants: (productId: number, filters?: ProductVariantFilters) => ReturnType<typeof useAsyncData<ProductVariant[]>>;
   addVariant: (productId: number, payload: ProductVariantFormData) => ReturnType<typeof useAsyncData<ProductVariant>>;
   updateVariant: (productId: number, variantId: number, payload: Partial<ProductVariantFormData>) => ReturnType<typeof useAsyncData<ProductVariant>>;
   deleteVariant: (productId: number, variantId: number) => ReturnType<typeof useAsyncData<{ success: boolean; message: string }>>;
