@@ -148,6 +148,7 @@ import type { ProductCategory } from "~/models/productCategory";
 import VFilePickerModal from "~/components/files/modals/VFilePickerModal.vue";
 import VWysiwygEditor from "~/components/common/VWysiwygEditor.vue";
 import type { IFile } from "~/models/files";
+import VSecureImage from "~/components/common/VSecureImage.vue";
 
 interface Props {
   category: ProductCategory | null;

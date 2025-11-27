@@ -1,5 +1,5 @@
 <template>
-  <VSidebarContent title="Налаштування профілю">
+  <VSidebarContent :title="$t('profile.settings')">
     <template #toolbar>
       <div class="flex items-center gap-2 w-full">
         <UButton
@@ -10,7 +10,7 @@
           <template #leading>
             <ArrowLeft class="w-5 h-5" />
           </template>
-          Повернутись до профілю
+          {{ $t("profile.backToProfile") }}
         </UButton>
       </div>
     </template>
@@ -58,14 +58,14 @@
               <h3
                 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4"
               >
-                Деталі
+                {{ $t("profile.details") }}
               </h3>
               <dl class="space-y-3">
                 <div>
                   <dt
                     class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1"
                   >
-                    Ім'я:
+                    {{ $t("profile.name") }}:
                   </dt>
                   <dd class="text-sm text-gray-900 dark:text-white">
                     {{ previewData.name }}
@@ -75,7 +75,7 @@
                   <dt
                     class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1"
                   >
-                    Email:
+                    {{ $t("auth.email") }}:
                   </dt>
                   <dd class="text-sm text-gray-900 dark:text-white">
                     {{ previewData.email }}
@@ -85,10 +85,10 @@
                   <dt
                     class="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1"
                   >
-                    Роль:
+                    {{ $t("profile.role") }}:
                   </dt>
                   <dd class="text-sm text-gray-900 dark:text-white">
-                    {{ user.role?.name || "Не призначена" }}
+                    {{ user.role?.name || $t("common.notAssigned") }}
                   </dd>
                 </div>
               </dl>
@@ -108,7 +108,7 @@
                   <User class="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 </div>
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                  Персональна інформація
+                  {{ $t("profile.personalInfo") }}
                 </h3>
               </div>
             </div>
@@ -120,20 +120,20 @@
                 @submit="updateProfile"
                 class="space-y-4"
               >
-                <UFormGroup label="Ім'я" name="name" required>
+                <UFormGroup :label="$t('profile.name')" name="name" required>
                   <UInput
                     class="w-full mb-2"
                     v-model="profileForm.name"
-                    placeholder="Введіть ваше ім'я"
+                    :placeholder="$t('profile.enterName')"
                   />
                 </UFormGroup>
 
-                <UFormGroup label="Email" name="email" required>
+                <UFormGroup :label="$t('auth.email')" name="email" required>
                   <UInput
                     class="w-full"
                     v-model="profileForm.email"
                     type="email"
-                    placeholder="Введіть ваш email"
+                    :placeholder="$t('auth.enterEmail')"
                   />
                 </UFormGroup>
 
@@ -148,7 +148,7 @@
                     <template #leading>
                       <Ban class="w-4 h-4" />
                     </template>
-                    Скасувати
+                    {{ $t("common.cancel") }}
                   </UButton>
                   <UButton
                     type="submit"
@@ -158,7 +158,7 @@
                     <template #leading>
                       <Send class="w-4 h-4" />
                     </template>
-                    Підтвердити
+                    {{ $t("common.confirm") }}
                   </UButton>
                 </div>
               </UForm>
@@ -175,7 +175,7 @@
                   <Lock class="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 </div>
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                  Зміна пароля
+                  {{ $t("profile.changePassword") }}
                 </h3>
               </div>
             </div>
@@ -187,12 +187,12 @@
                 @submit="updatePassword"
                 class="space-y-4"
               >
-                <UFormGroup label="Новий пароль" name="password" required>
+                <UFormGroup :label="$t('profile.newPassword')" name="password" required>
                   <UInput
                     class="w-full mb-2"
                     v-model="passwordForm.password"
                     :type="showPassword ? 'text' : 'password'"
-                    placeholder="Введіть новий пароль"
+                    :placeholder="$t('profile.enterNewPassword')"
                   >
                     <template #trailing>
                       <UButton
@@ -210,7 +210,7 @@
                 </UFormGroup>
 
                 <UFormGroup
-                  label="Підтвердження пароля"
+                  :label="$t('profile.confirmPassword')"
                   name="password_confirmation"
                   required
                 >
@@ -218,7 +218,7 @@
                     class="w-full"
                     v-model="passwordForm.password_confirmation"
                     :type="showPasswordConfirmation ? 'text' : 'password'"
-                    placeholder="Підтвердіть новий пароль"
+                    :placeholder="$t('profile.confirmNewPassword')"
                   >
                     <template #trailing>
                       <UButton
@@ -246,7 +246,7 @@
                     <template #leading>
                       <Ban class="w-4 h-4" />
                     </template>
-                    Скасувати
+                    {{ $t("common.cancel") }}
                   </UButton>
                   <UButton
                     type="submit"
@@ -256,7 +256,7 @@
                     <template #leading>
                       <Send class="w-4 h-4" />
                     </template>
-                    Підтвердити
+                    {{ $t("common.confirm") }}
                   </UButton>
                 </div>
               </UForm>
@@ -273,7 +273,7 @@
                   <ImageIcon class="w-5 h-5 text-primary-600 dark:text-primary-400" />
                 </div>
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                  Аватар
+                  {{ $t("profile.avatar") }}
                 </h3>
               </div>
             </div>
@@ -287,7 +287,7 @@
                 />
                 <div class="flex-1">
                   <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                    {{ user.avatar_file_id ? 'Завантажте нове зображення або видаліть поточне' : 'Завантажте зображення для вашого аватара' }}
+                    {{ user.avatar_file_id ? $t('profile.uploadNewOrRemove') : $t('profile.uploadForAvatar') }}
                   </p>
                   <div class="flex gap-2">
                     <UButton
@@ -299,7 +299,7 @@
                       <template #leading>
                         <Upload class="w-4 h-4" />
                       </template>
-                      Завантажити фото
+                      {{ $t("profile.uploadPhoto") }}
                     </UButton>
                     <UButton
                       v-if="user.avatar_file_id"
@@ -311,7 +311,7 @@
                       <template #leading>
                         <Trash2 class="w-4 h-4" />
                       </template>
-                      Видалити
+                      {{ $t("common.delete") }}
                     </UButton>
                   </div>
                 </div>
@@ -322,7 +322,7 @@
       </div>
 
       <div v-else class="text-center text-gray-500 dark:text-gray-400">
-        Не вдалося завантажити дані профілю
+        {{ $t("profile.loadError") }}
       </div>
     </div>
 
@@ -343,11 +343,13 @@ import type { IUser } from "~/models/auth";
 import type { IFile } from "~/models/files";
 import VSidebarContent from "~/components/sidebar/VSidebarContent.vue";
 import VFilePickerModal from "~/components/files/modals/VFilePickerModal.vue";
+import VAvatar from "@/components/common/VAvatar.vue";
 
 definePageMeta({
   middleware: ["sanctum:auth"],
 });
 
+const { t } = useI18n();
 const userData = useSanctumUser<{ data: IUser }>();
 const user = computed(() => userData.value?.data);
 
@@ -415,13 +417,13 @@ const handleAvatarSelect = async (files: IFile[]) => {
     await updateAvatarService(files[0].id);
 
     toast.add({
-      title: "Успішно",
-      description: "Аватар успішно оновлено",
+      title: t("common.success"),
+      description: t("profile.avatarSuccess"),
     });
   } catch (error: any) {
-    const errorMessage = error?.data?.message || "Не вдалося оновити аватар";
+    const errorMessage = error?.data?.message || t("profile.avatarError");
     toast.add({
-      title: "Помилка",
+      title: t("common.error"),
       description: errorMessage,
       color: "error",
     });
@@ -439,13 +441,13 @@ const removeAvatar = async () => {
     await updateAvatarService(null);
 
     toast.add({
-      title: "Успішно",
-      description: "Аватар успішно видалено",
+      title: t("common.success"),
+      description: t("profile.avatarRemoveSuccess"),
     });
   } catch (error: any) {
-    const errorMessage = error?.data?.message || "Не вдалося видалити аватар";
+    const errorMessage = error?.data?.message || t("profile.avatarRemoveError");
     toast.add({
-      title: "Помилка",
+      title: t("common.error"),
       description: errorMessage,
       color: "error",
     });
@@ -502,13 +504,13 @@ const updateProfile = async () => {
     });
 
     toast.add({
-      title: "Успішно",
-      description: "Профіль успішно оновлено",
+      title: t("common.success"),
+      description: t("profile.updateSuccess"),
     });
   } catch (error: any) {
-    const errorMessage = error?.data?.message || "Не вдалося оновити профіль";
+    const errorMessage = error?.data?.message || t("profile.updateError");
     toast.add({
-      title: "Помилка",
+      title: t("common.error"),
       description: errorMessage,
       color: "error",
     });
@@ -529,16 +531,16 @@ const updatePassword = async () => {
     });
 
     toast.add({
-      title: "Успішно",
-      description: "Пароль успішно змінено",
+      title: t("common.success"),
+      description: t("profile.passwordSuccess"),
     });
 
     // Reset password form
     resetPasswordForm();
   } catch (error: any) {
-    const errorMessage = error?.data?.message || "Не вдалося змінити пароль";
+    const errorMessage = error?.data?.message || t("profile.passwordError");
     toast.add({
-      title: "Помилка",
+      title: t("common.error"),
       description: errorMessage,
       color: "error",
     });

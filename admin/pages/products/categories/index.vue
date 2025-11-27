@@ -1,11 +1,11 @@
 <template>
-  <VSidebarContent title="Категорії продуктів">
+  <VSidebarContent :title="$t('productCategories.title')">
     <template #toolbar>
       <div class="flex items-center justify-between w-full gap-2">
         <div class="flex items-center gap-2 w-full">
           <UInput
             v-model="filters.search"
-            placeholder="Пошук за назвою"
+            :placeholder="$t('productCategories.searchByName')"
             class="w-[250px]"
           >
             <template #leading>
@@ -14,7 +14,7 @@
           </UInput>
           <UInput
             v-model="filters.slugSearch"
-            placeholder="Пошук за slug"
+            :placeholder="$t('productCategories.searchBySlug')"
             class="w-[200px]"
           >
             <template #leading>
@@ -24,7 +24,7 @@
           <USelect
             v-model="filters.status"
             :items="statusOptions"
-            placeholder="Статус"
+            :placeholder="$t('common.status')"
             class="w-[150px]"
           />
           <UButton
@@ -35,7 +35,7 @@
             <template #leading>
               <X class="w-5 h-5" />
             </template>
-            Очистити фільтри
+            {{ $t("common.clearFilters") }}
           </UButton>
         </div>
         <div class="flex items-center gap-2 shrink-0">
@@ -44,7 +44,7 @@
               <template #leading>
                 <Plus class="w-4 h-4" />
               </template>
-              Додати категорію
+              {{ $t("productCategories.add") }}
             </UButton>
           </HasPermissions>
         </div>
@@ -84,6 +84,7 @@ definePageMeta({
   requiredPermissions: ["Read Product Categories"],
 });
 
+const { t } = useI18n();
 const router = useRouter();
 const productCategoryStore = useProductCategoryStore();
 
@@ -97,10 +98,10 @@ const filters = ref({
   status: null as string | null,
 });
 
-const statusOptions = [
-  { label: "Опубліковано", value: "published" },
-  { label: "Чернетка", value: "draft" },
-];
+const statusOptions = computed(() => [
+  { label: t("common.published"), value: "published" },
+  { label: t("common.draft"), value: "draft" },
+]);
 
 const hasActiveFilters = computed(() => {
   return filters.value.search !== "" ||

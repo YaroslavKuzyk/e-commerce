@@ -265,6 +265,8 @@ import UploadFileModal from "~/components/files/modals/UploadFileModal.vue";
 import VFileDeleteModal from "~/components/files/modals/VFileDeleteModal.vue";
 import VFileBulkDeleteModal from "~/components/files/modals/VFileBulkDeleteModal.vue";
 import VPagination from "~/components/common/VPagination.vue";
+import VAvatar from "@/components/common/VAvatar.vue";
+import VSecureImage from "~/components/common/VSecureImage.vue";
 
 definePageMeta({
   middleware: ["sanctum:auth"],

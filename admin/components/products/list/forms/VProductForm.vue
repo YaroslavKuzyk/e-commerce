@@ -208,7 +208,7 @@
 import { z } from "zod";
 import { Ban, Send } from "lucide-vue-next";
 import type { Product, ProductStatus } from "~/models/product";
-import type { Attribute } from "~/models/attribute";
+import VSecureImage from "~/components/common/VSecureImage.vue";
 import VFilePickerModal from "~/components/files/modals/VFilePickerModal.vue";
 import VWysiwygEditor from "~/components/common/VWysiwygEditor.vue";
 import type { IFile } from "~/models/files";

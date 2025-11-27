@@ -2,7 +2,8 @@
   <div
     class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4 py-12 relative"
   >
-    <div class="absolute top-4 right-4">
+    <div class="absolute top-4 right-4 flex gap-2">
+      <VLangDropdown/>
       <VColorModeSwitch />
     </div>
     <div class="w-full max-w-md">
@@ -14,10 +15,10 @@
           <ShoppingCart class="w-8 h-8 text-primary-600 dark:text-primary-400" />
         </div>
         <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-          Ласкаво просимо
+          {{ $t("auth.welcome") }}
         </h1>
         <p class="text-gray-600 dark:text-gray-400">
-          Увійдіть до адміністративної панелі
+          {{ $t("auth.loginToAdmin") }}
         </p>
       </div>
 
@@ -25,12 +26,12 @@
       <UCard class="shadow-xl backdrop-blur-sm bg-white/90 dark:bg-gray-800/90">
         <form @submit.prevent="handleLogin" class="space-y-6">
           <!-- Email Field -->
-          <UFormGroup label="Email" name="email" required>
+          <UFormGroup :label="$t('auth.email')" name="email" required>
             <UInput
               class="w-full mb-4"
               v-model="credentials.email"
               type="email"
-              placeholder="Введіть ваш email"
+              :placeholder="$t('auth.enterEmail')"
               size="lg"
               :disabled="loading"
               autocomplete="email"
@@ -42,12 +43,12 @@
           </UFormGroup>
 
           <!-- Password Field -->
-          <UFormGroup label="Пароль" name="password" required>
+          <UFormGroup :label="$t('auth.password')" name="password" required>
             <UInput
               class="w-full mb-4"
               v-model="credentials.password"
               :type="showPassword ? 'text' : 'password'"
-              placeholder="Введіть ваш пароль"
+              :placeholder="$t('auth.enterPassword')"
               size="lg"
               :disabled="loading"
               autocomplete="current-password"
@@ -104,14 +105,14 @@
             <template #leading>
               <LogIn class="w-5 h-5" />
             </template>
-            {{ loading ? "Вхід..." : "Увійти" }}
+            {{ loading ? $t("auth.loggingIn") : $t("auth.login") }}
           </UButton>
         </form>
       </UCard>
 
       <!-- Footer -->
       <div class="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
-        <p>© {{ currentYear }} Admin iD. Всі права захищені.</p>
+        <p>© {{ currentYear }} Admin iD. {{ $t("auth.allRightsReserved") }}</p>
       </div>
     </div>
   </div>
@@ -119,12 +120,14 @@
 
 <script setup lang="ts">
 import VColorModeSwitch from '~/components/common/VColorModeSwitch.vue';
+import VLangDropdown from '~/components/common/VLangDropdown.vue';
 import { ShoppingCart, Mail, Lock, Eye, EyeOff, AlertCircle, X, LogIn, CheckCircle } from 'lucide-vue-next';
 
 definePageMeta({
   layout: "guest",
 });
 
+const { t } = useI18n();
 const authStore = useAuthStore();
 
 const credentials = ref({
@@ -145,8 +148,8 @@ const handleLogin = async () => {
 
     // Show success message
     useToast().add({
-      title: "Успішно!",
-      description: "Ви успішно увійшли в систему",
+      title: t("common.success"),
+      description: t("auth.loginSuccess"),
       color: "success",
     });
 
@@ -154,11 +157,11 @@ const handleLogin = async () => {
   } catch (err: any) {
     console.error("Login error:", err);
 
-    error.value = err.data?.message || "Помилка входу. Перевірте ваші дані.";
+    error.value = err.data?.message || t("auth.loginErrorMessage");
 
     // Show error toast
     useToast().add({
-      title: "Помилка входу",
+      title: t("auth.loginError"),
       description: error.value,
       color: "error",
     });

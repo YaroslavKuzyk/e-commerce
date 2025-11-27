@@ -1,11 +1,11 @@
 <template>
-  <VSidebarContent title="Продукти">
+  <VSidebarContent :title="$t('products.title')">
     <template #toolbar>
       <div class="flex items-center justify-between w-full gap-2">
         <div class="flex items-center gap-2 w-full flex-wrap">
           <UInput
             v-model="filters.name"
-            placeholder="Пошук за назвою"
+            :placeholder="$t('products.searchByName')"
             class="w-[200px]"
           >
             <template #leading>
@@ -15,7 +15,7 @@
           <USelectMenu
             v-model="filters.status"
             :items="statusOptions"
-            placeholder="Статус"
+            :placeholder="$t('common.status')"
             value-key="value"
             label-key="label"
             class="w-[150px]"
@@ -25,7 +25,7 @@
                 v-if="filters.status"
                 size="sm"
                 variant="link"
-                aria-label="Очистити"
+                :aria-label="$t('common.clearFilters')"
                 @click.stop="filters.status = null"
                 color="neutral"
               >
@@ -36,7 +36,7 @@
           <USelectMenu
             v-model="filters.category_id"
             :items="categoryOptions"
-            placeholder="Категорія"
+            :placeholder="$t('products.category')"
             value-key="value"
             label-key="label"
             class="w-[180px]"
@@ -46,7 +46,7 @@
                 v-if="filters.category_id"
                 size="sm"
                 variant="link"
-                aria-label="Очистити"
+                :aria-label="$t('common.clearFilters')"
                 @click.stop="filters.category_id = null"
                 color="neutral"
               >
@@ -57,7 +57,7 @@
           <USelectMenu
             v-model="filters.brand_id"
             :items="brandOptions"
-            placeholder="Бренд"
+            :placeholder="$t('products.brand')"
             value-key="value"
             label-key="label"
             class="w-[180px]"
@@ -67,7 +67,7 @@
                 v-if="filters.brand_id"
                 size="sm"
                 variant="link"
-                aria-label="Очистити"
+                :aria-label="$t('common.clearFilters')"
                 @click.stop="filters.brand_id = null"
                 color="neutral"
               >
@@ -83,7 +83,7 @@
             <template #leading>
               <X class="w-5 h-5" />
             </template>
-            Очистити фільтри
+            {{ $t("common.clearFilters") }}
           </UButton>
         </div>
         <div class="flex items-center gap-2 shrink-0">
@@ -92,7 +92,7 @@
               <template #leading>
                 <Plus class="w-4 h-4" />
               </template>
-              Додати продукт
+              {{ $t("products.add") }}
             </UButton>
           </HasPermissions>
         </div>
@@ -139,6 +139,7 @@ definePageMeta({
   requiredPermissions: ["Read Products"],
 });
 
+const { t } = useI18n();
 const router = useRouter();
 const productStore = useProductStore();
 const productCategoryStore = useProductCategoryStore();
@@ -156,10 +157,10 @@ const filters = ref({
   per_page: 15,
 });
 
-const statusOptions = [
-  { label: "Опубліковано", value: "published" },
-  { label: "Чернетка", value: "draft" },
-];
+const statusOptions = computed(() => [
+  { label: t("common.published"), value: "published" },
+  { label: t("common.draft"), value: "draft" },
+]);
 
 // Fetch categories and brands for filters
 const { data: categoriesData } = await productCategoryStore.fetchProductCategories();

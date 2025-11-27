@@ -3,9 +3,9 @@
     <!-- Left side: Per page selector and info -->
     <div class="flex items-center gap-4">
       <div class="flex items-center gap-2">
-        <span class="text-sm text-gray-600 dark:text-gray-400"
-          >Показувати:</span
-        >
+        <span class="text-sm text-gray-600 dark:text-gray-400">
+          {{ $t("common.show") }}:
+        </span>
         <USelect
           :model-value="meta.per_page"
           :items="perPageOptions"
@@ -14,7 +14,7 @@
         />
       </div>
       <span class="text-sm text-gray-600 dark:text-gray-400">
-        Показано з {{ from }} по {{ to }} з {{ meta.total }} записів
+        {{ $t("common.showingFromTo", { from, to, total: meta.total }) }}
       </span>
     </div>
 

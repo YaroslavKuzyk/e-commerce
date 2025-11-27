@@ -1,5 +1,5 @@
 <template>
-  <VSidebarContent title="Головна">
+  <VSidebarContent :title="$t('common.main')">
     <template #toolbar>
     </template>
   </VSidebarContent>

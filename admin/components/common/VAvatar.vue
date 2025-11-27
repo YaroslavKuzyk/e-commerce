@@ -21,6 +21,8 @@
 </template>
 
 <script setup lang="ts">
+import VSecureImage from "~/components/common/VSecureImage.vue";
+
 interface Props {
   name: string;
   fileId?: number | null;

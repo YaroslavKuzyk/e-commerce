@@ -190,6 +190,7 @@ import VWysiwygEditor from "~/components/common/VWysiwygEditor.vue";
 import VFilePickerModal from "~/components/files/modals/VFilePickerModal.vue";
 import type { BlogPost, BlogPostStatus } from "~/models/blogPost";
 import type { IFile } from "~/models/files";
+import VSecureImage from "~/components/common/VSecureImage.vue";
 
 interface Props {
   post?: BlogPost;

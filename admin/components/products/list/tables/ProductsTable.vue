@@ -75,6 +75,7 @@
 </template>
 
 <script setup lang="ts">
+import VSecureImage from "~/components/common/VSecureImage.vue";
 import HasPermissions from "~/components/common/VHasPermissions.vue";
 import type { Product } from "~/models/product";
 

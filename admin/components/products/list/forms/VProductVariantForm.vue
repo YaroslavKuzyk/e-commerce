@@ -170,6 +170,7 @@ import type { Product, ProductVariant, ProductVariantStatus, ProductVariantImage
 import type { Attribute } from "~/models/attribute";
 import VFilePickerModal from "~/components/files/modals/VFilePickerModal.vue";
 import type { IFile } from "~/models/files";
+import VSecureImage from "~/components/common/VSecureImage.vue";
 
 interface Props {
   product: Product;

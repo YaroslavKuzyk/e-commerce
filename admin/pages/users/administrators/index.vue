@@ -1,11 +1,11 @@
 <template>
-  <VSidebarContent title="Адміністратори">
+  <VSidebarContent :title="$t('administrators.title')">
     <template #toolbar>
       <div class="flex items-center justify-between w-full gap-2">
         <div class="flex items-center gap-2 w-full">
           <UInput
             v-model="filters.search"
-            placeholder="Пошук за ім'ям або email"
+            :placeholder="$t('administrators.searchPlaceholder')"
             class="w-[250px]"
           >
             <template #leading>
@@ -15,7 +15,7 @@
           <USelectMenu
             v-model="filters.status"
             :items="statusOptions"
-            placeholder="Статус"
+            :placeholder="$t('common.status')"
             value-key="value"
             label-key="label"
             class="w-[150px]"
@@ -25,7 +25,7 @@
                 v-if="filters.status"
                 size="sm"
                 variant="link"
-                aria-label="Очистити"
+                :aria-label="$t('common.clearFilters')"
                 @click.stop="filters.status = null"
                 color="neutral"
               >
@@ -36,7 +36,7 @@
           <USelectMenu
             v-model="filters.role"
             :items="rolesData || []"
-            placeholder="Роль"
+            :placeholder="$t('table.role')"
             value-key="id"
             label-key="name"
             class="w-[150px]"
@@ -46,7 +46,7 @@
                 v-if="filters.role"
                 size="sm"
                 variant="link"
-                aria-label="Очистити"
+                :aria-label="$t('common.clearFilters')"
                 @click.stop="filters.role = null"
                 color="neutral"
               >
@@ -62,7 +62,7 @@
             <template #leading>
               <X class="w-5 h-5" />
             </template>
-            Очистити фільтри
+            {{ $t("common.clearFilters") }}
           </UButton>
         </div>
         <div class="flex items-center gap-2 shrink-0">
@@ -71,7 +71,7 @@
               <template #leading>
                 <Plus class="w-4 h-4" />
               </template>
-              Додати адміністратора
+              {{ $t("administrators.add") }}
             </UButton>
           </HasPermissions>
         </div>
@@ -86,13 +86,13 @@
               :color="row.original.status === 'active' ? 'success' : 'error'"
               variant="subtle"
             >
-              {{ row.original.status === "active" ? "Активний" : "Неактивний" }}
+              {{ row.original.status === "active" ? $t("common.active") : $t("common.inactive") }}
             </UBadge>
           </template>
 
           <template #role-cell="{ row }">
             <span v-if="row.original.role">{{ row.original.role.name }}</span>
-            <span v-else class="text-gray-400">Немає ролі</span>
+            <span v-else class="text-gray-400">{{ $t("administrators.noRole") }}</span>
           </template>
 
           <template #actions-cell="{ row }">
@@ -100,7 +100,7 @@
               <HasPermissions :required-permissions="['Update Admin User']">
                 <UTooltip
                   v-if="isSuperAdmin(row.original)"
-                  text="Неможливо редагувати SuperAdmin"
+                  :text="$t('administrators.cannotEditSuperAdmin')"
                   :popper="{ placement: 'left' }"
                 >
                   <UButton
@@ -133,7 +133,7 @@
                 </UButton>
                 <UTooltip
                   v-else
-                  text="Неможливо видалити SuperAdmin"
+                  :text="$t('administrators.cannotDeleteSuperAdmin')"
                   :popper="{ placement: 'left' }"
                 >
                   <UButton
@@ -192,6 +192,7 @@ definePageMeta({
   requiredPermissions: ["Read Admin Users"],
 });
 
+const { t } = useI18n();
 const roleStore = useRoleStore();
 const adminStore = useAdminStore();
 
@@ -205,35 +206,35 @@ const filters = ref({
   per_page: 15,
 });
 
-const statusOptions = [
-  { label: "Активний", value: "active" },
-  { label: "Неактивний", value: "inactive" },
-];
+const statusOptions = computed(() => [
+  { label: t("common.active"), value: "active" },
+  { label: t("common.inactive"), value: "inactive" },
+]);
 
-const columns = [
+const columns = computed(() => [
   {
-    header: "ID",
+    header: t("table.id"),
     accessorKey: "id",
   },
   {
-    header: "Ім'я",
+    header: t("table.name"),
     accessorKey: "name",
   },
   {
-    header: "Email",
+    header: t("table.email"),
     accessorKey: "email",
   },
   {
     id: "status",
-    header: "Статус",
+    header: t("table.status"),
   },
   {
     id: "role",
-    header: "Роль",
+    header: t("table.role"),
   },
   {
     id: "actions",
-    header: "Дії",
+    header: t("table.actions"),
     meta: {
       class: {
         th: "w-[120px] text-right",
@@ -241,7 +242,7 @@ const columns = [
       },
     },
   },
-];
+]);
 
 const {
   data: adminsData,

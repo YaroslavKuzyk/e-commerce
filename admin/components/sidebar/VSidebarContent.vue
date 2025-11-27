@@ -12,7 +12,11 @@
         </template>
       </UDashboardNavbar>
 
-        <VColorModeSwitch />
+
+        <div class="flex items-center gap-2">
+          <VLangDropdown />
+          <VColorModeSwitch />
+        </div>
       </div>
 
 
@@ -35,6 +39,7 @@
 
 <script setup lang="ts">
 import VColorModeSwitch from "~/components/common/VColorModeSwitch.vue";
+import VLangDropdown from "~/components/common/VLangDropdown.vue";
 
 interface IProps {
   title: string;
