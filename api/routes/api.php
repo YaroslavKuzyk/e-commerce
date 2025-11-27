@@ -12,6 +12,8 @@ use App\Http\Controllers\Admin\AdminProductBrandController;
 use App\Http\Controllers\Admin\AdminFileController;
 use App\Http\Controllers\Admin\AdminAttributeController;
 use App\Http\Controllers\Admin\AdminProductController;
+use App\Http\Controllers\Admin\AdminBlogCategoryController;
+use App\Http\Controllers\Admin\AdminBlogPostController;
 use Illuminate\Support\Facades\Route;
 
 // Admin routes group with /admin prefix
@@ -132,5 +134,25 @@ Route::prefix('admin')->group(function () {
         Route::put('products/{productId}/specifications/{specificationId}', [AdminProductController::class, 'updateSpecification'])->middleware('permission:Update Product');
         Route::delete('products/{productId}/specifications/{specificationId}', [AdminProductController::class, 'deleteSpecification'])->middleware('permission:Update Product');
         Route::post('products/{id}/specifications/reorder', [AdminProductController::class, 'reorderSpecifications'])->middleware('permission:Update Product');
+
+        // Blog categories management routes with permissions
+        Route::get('blog-categories', [AdminBlogCategoryController::class, 'index'])->middleware('permission:Read Blog Categories');
+        Route::get('blog-categories/{id}', [AdminBlogCategoryController::class, 'show'])->middleware('permission:Read Blog Categories');
+        Route::post('blog-categories', [AdminBlogCategoryController::class, 'store'])->middleware('permission:Create Blog Category');
+        Route::put('blog-categories/{id}', [AdminBlogCategoryController::class, 'update'])->middleware('permission:Update Blog Category');
+        Route::patch('blog-categories/{id}', [AdminBlogCategoryController::class, 'update'])->middleware('permission:Update Blog Category');
+        Route::delete('blog-categories/{id}', [AdminBlogCategoryController::class, 'destroy'])->middleware('permission:Delete Blog Category');
+        Route::post('blog-categories/generate-slug', [AdminBlogCategoryController::class, 'generateSlug'])->middleware('permission:Create Blog Category');
+        Route::post('blog-categories/reorder', [AdminBlogCategoryController::class, 'reorder'])->middleware('permission:Update Blog Category');
+
+        // Blog posts management routes with permissions
+        Route::get('blog-posts', [AdminBlogPostController::class, 'index'])->middleware('permission:Read Blog Posts');
+        Route::get('blog-posts/{id}', [AdminBlogPostController::class, 'show'])->middleware('permission:Read Blog Posts');
+        Route::post('blog-posts', [AdminBlogPostController::class, 'store'])->middleware('permission:Create Blog Post');
+        Route::put('blog-posts/{id}', [AdminBlogPostController::class, 'update'])->middleware('permission:Update Blog Post');
+        Route::patch('blog-posts/{id}', [AdminBlogPostController::class, 'update'])->middleware('permission:Update Blog Post');
+        Route::delete('blog-posts/{id}', [AdminBlogPostController::class, 'destroy'])->middleware('permission:Delete Blog Post');
+        Route::post('blog-posts/generate-slug', [AdminBlogPostController::class, 'generateSlug'])->middleware('permission:Create Blog Post');
+        Route::post('blog-posts/{id}/products', [AdminBlogPostController::class, 'syncProducts'])->middleware('permission:Update Blog Post');
     });
 });

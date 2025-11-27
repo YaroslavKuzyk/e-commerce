@@ -93,6 +93,8 @@ import {
   Tag,
   List,
   SlidersHorizontal,
+  Newspaper,
+  FileText,
 } from "lucide-vue-next";
 import type { Component } from "vue";
 
@@ -182,6 +184,24 @@ const menus = computed(() => {
           icon: Tag,
           to: "/products/brands",
           requiredPermissions: ["Read Product Brands"],
+        },
+      ],
+    },
+    {
+      label: "Блог",
+      icon: Newspaper,
+      children: [
+        {
+          label: "Категорії",
+          icon: FolderTree,
+          to: "/blog/categories",
+          requiredPermissions: ["Read Blog Categories"],
+        },
+        {
+          label: "Статті",
+          icon: FileText,
+          to: "/blog/posts",
+          requiredPermissions: ["Read Blog Posts"],
         },
       ],
     },

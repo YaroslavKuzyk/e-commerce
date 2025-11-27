@@ -225,6 +225,54 @@ class RoleSeeder extends Seeder
             ],
         ];
 
+        // Створюємо permissions для управління категоріями блогу
+        $blogCategoryPermissions = [
+            [
+                'name' => 'Read Blog Categories',
+                'type' => Permission::TYPE_READ,
+                'group' => 'Blog Categories',
+            ],
+            [
+                'name' => 'Create Blog Category',
+                'type' => Permission::TYPE_CREATE,
+                'group' => 'Blog Categories',
+            ],
+            [
+                'name' => 'Update Blog Category',
+                'type' => Permission::TYPE_UPDATE,
+                'group' => 'Blog Categories',
+            ],
+            [
+                'name' => 'Delete Blog Category',
+                'type' => Permission::TYPE_DELETE,
+                'group' => 'Blog Categories',
+            ],
+        ];
+
+        // Створюємо permissions для управління статтями блогу
+        $blogPostPermissions = [
+            [
+                'name' => 'Read Blog Posts',
+                'type' => Permission::TYPE_READ,
+                'group' => 'Blog Posts',
+            ],
+            [
+                'name' => 'Create Blog Post',
+                'type' => Permission::TYPE_CREATE,
+                'group' => 'Blog Posts',
+            ],
+            [
+                'name' => 'Update Blog Post',
+                'type' => Permission::TYPE_UPDATE,
+                'group' => 'Blog Posts',
+            ],
+            [
+                'name' => 'Delete Blog Post',
+                'type' => Permission::TYPE_DELETE,
+                'group' => 'Blog Posts',
+            ],
+        ];
+
         // Об'єднуємо всі permissions
         $allPermissions = array_merge(
             $rolePermissions,
@@ -235,7 +283,9 @@ class RoleSeeder extends Seeder
             $productCategoryPermissions,
             $productBrandPermissions,
             $attributePermissions,
-            $productPermissions
+            $productPermissions,
+            $blogCategoryPermissions,
+            $blogPostPermissions
         );
 
         $createdPermissions = [];
