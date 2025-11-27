@@ -10,14 +10,42 @@
       </UButton>
     </div>
 
+    <!-- Filters -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <UInput
+        v-model="filters.search"
+        placeholder="Пошук по SKU або назві..."
+        icon="i-heroicons-magnifying-glass"
+        @update:model-value="debouncedFetchVariants"
+      />
+      <UInput
+        v-model="filters.slug"
+        placeholder="Фільтр по slug..."
+        icon="i-heroicons-link"
+        @update:model-value="debouncedFetchVariants"
+      />
+      <USelect
+        v-model="filters.status"
+        :items="statusOptions"
+        placeholder="Статус"
+        class="w-full"
+        @update:model-value="fetchVariantsData"
+      />
+    </div>
+
     <div v-if="product.attributes.length === 0" class="bg-warning-50 dark:bg-warning-900/20 p-4 rounded-lg">
       <p class="text-warning-600 dark:text-warning-400 text-sm">
         Спочатку додайте атрибути до продукту на вкладці "Основна інформація"
       </p>
     </div>
 
-    <div v-else-if="product.variants.length === 0" class="text-center py-8 text-gray-500">
-      <p>Немає варіацій. Додайте першу варіацію продукту.</p>
+    <div v-else-if="isLoading" class="text-center py-8">
+      <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 text-gray-400 animate-spin mx-auto" />
+      <p class="text-gray-500 mt-2">Завантаження...</p>
+    </div>
+
+    <div v-else-if="variants.length === 0" class="text-center py-8 text-gray-500">
+      <p>{{ hasActiveFilters ? 'Варіації не знайдено за заданими фільтрами' : 'Немає варіацій. Додайте першу варіацію продукту.' }}</p>
     </div>
 
     <div v-else class="space-y-4">
@@ -213,7 +241,7 @@
 </template>
 
 <script setup lang="ts">
-import type { Product, ProductVariant } from "~/models/product";
+import type { Product, ProductVariant, ProductVariantFilters, ProductVariantStatus } from "~/models/product";
 import VProductVariantForm from "./VProductVariantForm.vue";
 
 interface Props {
@@ -236,23 +264,75 @@ const isDeleteModalOpen = ref(false);
 const deletingVariant = ref<ProductVariant | null>(null);
 const deleteLoading = ref(false);
 
+// Filters
+const filters = reactive({
+  search: '',
+  slug: '',
+  status: 'all' as string,
+});
+
+const statusOptions = [
+  { label: 'Усі статуси', value: 'all' },
+  { label: 'Опубліковано', value: 'published' },
+  { label: 'Чернетка', value: 'draft' },
+];
+
+const hasActiveFilters = computed(() => {
+  return !!(filters.search || filters.slug || (filters.status && filters.status !== 'all'));
+});
+
+// Variants data
+const variants = ref<ProductVariant[]>([]);
+const isLoading = ref(false);
+
+// Debounce helper
+let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+const debouncedFetchVariants = () => {
+  if (debounceTimer) clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    fetchVariantsData();
+  }, 300);
+};
+
+const fetchVariantsData = async () => {
+  isLoading.value = true;
+  try {
+    const filterParams: ProductVariantFilters = {};
+    if (filters.search) filterParams.search = filters.search;
+    if (filters.slug) filterParams.slug = filters.slug;
+    if (filters.status && filters.status !== 'all') filterParams.status = filters.status as ProductVariantStatus;
+
+    const data = await productStore.fetchVariantsPromise(props.product.id, filterParams);
+    variants.value = data || [];
+  } catch (error) {
+    console.error('Failed to fetch variants:', error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// Initialize variants on mount and when product changes
+watch(() => props.product.id, () => {
+  fetchVariantsData();
+}, { immediate: true });
+
 // Pagination
 const currentPage = ref(1);
 const itemsPerPage = ref(5);
 
-const totalPages = computed(() => Math.ceil(props.product.variants.length / itemsPerPage.value));
+const totalPages = computed(() => Math.ceil(variants.value.length / itemsPerPage.value));
 const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage.value);
 const endIndex = computed(() => startIndex.value + itemsPerPage.value);
 
 const paginatedVariants = computed(() => {
-  return props.product.variants.slice(startIndex.value, endIndex.value);
+  return variants.value.slice(startIndex.value, endIndex.value);
 });
 
 // Pagination meta for parent component
 const paginationMeta = computed(() => ({
   current_page: currentPage.value,
   per_page: itemsPerPage.value,
-  total: props.product.variants.length,
+  total: variants.value.length,
 }));
 
 const updatePage = (page: number) => {
@@ -265,7 +345,7 @@ const updatePerPage = (perPage: number) => {
 };
 
 // Reset to page 1 when variants change
-watch(() => props.product.variants.length, () => {
+watch(() => variants.value.length, () => {
   if (currentPage.value > totalPages.value && totalPages.value > 0) {
     currentPage.value = totalPages.value;
   }
@@ -276,6 +356,7 @@ defineExpose({
   paginationMeta,
   updatePage,
   updatePerPage,
+  fetchVariantsData,
 });
 
 const formatPrice = (price: number) => {
@@ -345,6 +426,7 @@ const closeVariantModal = () => {
 
 const handleVariantSuccess = () => {
   closeVariantModal();
+  fetchVariantsData();
   emits("refresh");
 };
 
@@ -377,6 +459,7 @@ const handleDeleteVariant = async () => {
 
     isDeleteModalOpen.value = false;
     deletingVariant.value = null;
+    fetchVariantsData();
     emits("refresh");
   } catch (error) {
     toast.add({

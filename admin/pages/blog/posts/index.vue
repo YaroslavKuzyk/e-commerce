@@ -155,7 +155,7 @@
 
         <template #status-cell="{ row }">
           <UBadge
-            :color="row.original.status === 'published' ? 'success' : 'warning'"
+            :color="row.original.status === 'published' ? 'success' : 'neutral'"
             variant="subtle"
           >
             {{ row.original.status === 'published' ? 'Опубліковано' : 'Чернетка' }}

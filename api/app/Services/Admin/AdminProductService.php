@@ -122,14 +122,40 @@ class AdminProductService implements AdminProductServiceInterface
      * Get variants for a product.
      *
      * @param int $productId
+     * @param array $filters
      * @return Collection
      * @throws \Exception
      */
-    public function getVariants(int $productId): Collection
+    public function getVariants(int $productId, array $filters = []): Collection
     {
         $product = $this->getProductById($productId);
 
-        return $product->variants()->with(['attributeValues.attribute', 'images.file'])->get();
+        $query = $product->variants()
+            ->with(['attributeValues.attribute', 'images.file']);
+
+        // Search by SKU or name
+        if (!empty($filters['search'])) {
+            $search = $filters['search'];
+            $query->where(function ($q) use ($search) {
+                $q->where('sku', 'like', "%{$search}%")
+                  ->orWhere('name', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by slug
+        if (!empty($filters['slug'])) {
+            $query->where('slug', 'like', "%{$filters['slug']}%");
+        }
+
+        // Filter by status
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        return $query
+            ->orderBy('is_default', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->get();
     }
 
     /**

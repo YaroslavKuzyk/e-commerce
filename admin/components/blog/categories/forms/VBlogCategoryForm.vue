@@ -1,12 +1,11 @@
 <template>
-  <div class="max-w-2xl">
+  <div>
     <UForm :schema="schema" :state="formState" class="space-y-6" @submit="handleSubmit">
       <UFormField label="Назва" name="name" required>
         <UInput
           v-model="formState.name"
           placeholder="Введіть назву категорії"
           class="w-full"
-          @blur="generateSlugIfEmpty"
         />
       </UFormField>
 
@@ -15,21 +14,11 @@
       </UFormField>
 
       <UFormField label="Slug" name="slug" required>
-        <div class="flex gap-2">
-          <UInput
-            v-model="formState.slug"
-            placeholder="slug-kategoriyi"
-            class="flex-1"
-          />
-          <UButton
-            type="button"
-            variant="outline"
-            :loading="slugLoading"
-            @click="generateSlug"
-          >
-            Згенерувати
-          </UButton>
-        </div>
+        <UInput
+          v-model="formState.slug"
+          placeholder="slug-kategoriyi"
+          class="w-full"
+        />
       </UFormField>
 
       <UFormField label="Статус" name="status" required>
@@ -113,33 +102,6 @@ const formState = reactive({
 });
 
 const submitLoading = ref(false);
-const slugLoading = ref(false);
-
-const generateSlugIfEmpty = async () => {
-  if (!formState.slug && formState.name) {
-    await generateSlug();
-  }
-};
-
-const generateSlug = async () => {
-  if (!formState.name) return;
-
-  slugLoading.value = true;
-  try {
-    const { data, error } = await blogCategoryStore.onGenerateSlug(formState.name);
-    if (!error.value && data.value?.slug) {
-      formState.slug = data.value.slug;
-    }
-  } catch (error) {
-    toast.add({
-      title: "Помилка",
-      description: "Не вдалося згенерувати slug",
-      color: "error",
-    });
-  } finally {
-    slugLoading.value = false;
-  }
-};
 
 const handleSubmit = async () => {
   submitLoading.value = true;

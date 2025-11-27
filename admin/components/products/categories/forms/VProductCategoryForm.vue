@@ -9,34 +9,23 @@
       />
     </UFormField>
 
-    <UFormField label="Назва" name="name">
+    <UFormField label="Назва" name="name" required>
       <UInput
         v-model="state.name"
         placeholder="Електроніка"
         class="w-full"
-        @blur="handleNameBlur"
       />
     </UFormField>
 
-    <UFormField label="Slug" name="slug">
-      <div class="flex gap-2">
-        <UInput
-          v-model="state.slug"
-          placeholder="elektronika"
-          class="flex-1"
-        />
-        <UButton
-          type="button"
-          variant="outline"
-          icon="i-heroicons-sparkles"
-          @click="generateSlugFromName"
-        >
-          Згенерувати
-        </UButton>
-      </div>
+    <UFormField label="Slug" name="slug" required>
+      <UInput
+        v-model="state.slug"
+        placeholder="elektronika"
+        class="w-full"
+      />
     </UFormField>
 
-    <UFormField label="Статус" name="status">
+    <UFormField label="Статус" name="status" required>
       <USelect
         v-model="state.status"
         :items="statusItems"
@@ -235,26 +224,6 @@ const handleMenuImageFileSelect = (files: IFile[]) => {
     state.menu_image_file_id = files[0].id;
   }
   isMenuImageFilePickerOpen.value = false;
-};
-
-// Slug generation
-const handleNameBlur = () => {
-  if (!state.slug && state.name) {
-    generateSlugFromName();
-  }
-};
-
-const generateSlugFromName = async () => {
-  if (!state.name) return;
-
-  try {
-    const { data, error } = await productCategoryStore.onGenerateSlug(state.name);
-    if (!error.value && data.value) {
-      state.slug = data.value.slug;
-    }
-  } catch (err) {
-    console.error("Failed to generate slug:", err);
-  }
 };
 
 // Form submission

@@ -1,5 +1,5 @@
 import { ProductService } from '~/services/ProductService';
-import type { ProductFilters, ProductFormData, ProductVariantFormData, ProductSpecificationFormData } from '~/models/product';
+import type { ProductFilters, ProductFormData, ProductVariantFormData, ProductVariantFilters, ProductSpecificationFormData } from '~/models/product';
 
 export const useProduct = () => {
   const provider = new ProductService();
@@ -13,7 +13,8 @@ export const useProduct = () => {
     deleteProduct: (id: number) => provider.deleteProduct(id),
     generateSlug: (name: string) => provider.generateSlug(name),
     syncAttributes: (productId: number, attributeIds: number[]) => provider.syncAttributes(productId, attributeIds),
-    getVariants: (productId: number) => provider.getVariants(productId),
+    getVariants: (productId: number, filters?: ProductVariantFilters) => provider.getVariants(productId, filters),
+    getVariantsPromise: (productId: number, filters?: ProductVariantFilters) => provider.getVariantsPromise(productId, filters),
     addVariant: (productId: number, payload: ProductVariantFormData) => provider.addVariant(productId, payload),
     updateVariant: (productId: number, variantId: number, payload: Partial<ProductVariantFormData>) => provider.updateVariant(productId, variantId, payload),
     deleteVariant: (productId: number, variantId: number) => provider.deleteVariant(productId, variantId),

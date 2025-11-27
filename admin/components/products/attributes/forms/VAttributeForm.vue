@@ -1,33 +1,22 @@
 <template>
   <UForm :schema="schema" :state="state" class="space-y-4" @submit="onSubmit">
-    <UFormField label="Назва" name="name">
+    <UFormField label="Назва" name="name" required>
       <UInput
         v-model="state.name"
         placeholder="Колір"
         class="w-full"
-        @blur="handleNameBlur"
       />
     </UFormField>
 
-    <UFormField label="Slug" name="slug">
-      <div class="flex gap-2">
-        <UInput
-          v-model="state.slug"
-          placeholder="color"
-          class="flex-1"
-        />
-        <UButton
-          type="button"
-          variant="outline"
-          icon="i-heroicons-sparkles"
-          @click="generateSlugFromName"
-        >
-          Згенерувати
-        </UButton>
-      </div>
+    <UFormField label="Slug" name="slug" required>
+      <UInput
+        v-model="state.slug"
+        placeholder="color"
+        class="w-full"
+      />
     </UFormField>
 
-    <UFormField label="Тип" name="type">
+    <UFormField label="Тип" name="type" required>
       <USelect
         v-model="state.type"
         :items="typeItems"
@@ -35,7 +24,7 @@
       />
     </UFormField>
 
-    <UFormField label="Статус" name="status">
+    <UFormField label="Статус" name="status" required>
       <USelect
         v-model="state.status"
         :items="statusItems"
@@ -83,7 +72,6 @@
                 v-model="value.value"
                 placeholder="Значення (напр. Червоний)"
                 size="sm"
-                @blur="generateValueSlug(index)"
               />
               <UInput
                 v-model="value.slug"
@@ -236,40 +224,6 @@ const addValue = () => {
 
 const removeValue = (index: number) => {
   state.values.splice(index, 1);
-};
-
-const generateValueSlug = async (index: number) => {
-  const value = state.values[index];
-  if (!value.slug && value.value) {
-    try {
-      const { data, error } = await attributeStore.onGenerateSlug(value.value);
-      if (!error.value && data.value) {
-        value.slug = data.value.slug;
-      }
-    } catch (err) {
-      console.error("Failed to generate value slug:", err);
-    }
-  }
-};
-
-// Slug generation
-const handleNameBlur = () => {
-  if (!state.slug && state.name) {
-    generateSlugFromName();
-  }
-};
-
-const generateSlugFromName = async () => {
-  if (!state.name) return;
-
-  try {
-    const { data, error } = await attributeStore.onGenerateSlug(state.name);
-    if (!error.value && data.value) {
-      state.slug = data.value.slug;
-    }
-  } catch (err) {
-    console.error("Failed to generate slug:", err);
-  }
 };
 
 // Form submission

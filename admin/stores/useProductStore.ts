@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import type { ProductFormData, ProductFilters, ProductVariantFormData, ProductSpecificationFormData } from '~/models/product';
+import type { ProductFormData, ProductFilters, ProductVariantFormData, ProductVariantFilters, ProductSpecificationFormData } from '~/models/product';
 
 export const useProductStore = defineStore('product', () => {
   const {
@@ -12,6 +12,7 @@ export const useProductStore = defineStore('product', () => {
     generateSlug,
     syncAttributes,
     getVariants,
+    getVariantsPromise,
     addVariant,
     updateVariant,
     deleteVariant,
@@ -31,7 +32,8 @@ export const useProductStore = defineStore('product', () => {
     onDeleteProduct: async (id: number) => await deleteProduct(id),
     onGenerateSlug: async (name: string) => await generateSlug(name),
     onSyncAttributes: async (productId: number, attributeIds: number[]) => await syncAttributes(productId, attributeIds),
-    fetchVariants: async (productId: number) => await getVariants(productId),
+    fetchVariants: async (productId: number, filters?: ProductVariantFilters) => await getVariants(productId, filters),
+    fetchVariantsPromise: (productId: number, filters?: ProductVariantFilters) => getVariantsPromise(productId, filters),
     onAddVariant: async (productId: number, payload: ProductVariantFormData) => await addVariant(productId, payload),
     onUpdateVariant: async (productId: number, variantId: number, payload: Partial<ProductVariantFormData>) => await updateVariant(productId, variantId, payload),
     onDeleteVariant: async (productId: number, variantId: number) => await deleteVariant(productId, variantId),
