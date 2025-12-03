@@ -12,9 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('product_categories', function (Blueprint $table) {
-            $table->dropColumn(['logo_path', 'menu_image_path']);
-            $table->foreignId('logo_file_id')->nullable()->constrained('files')->nullOnDelete();
-            $table->foreignId('menu_image_file_id')->nullable()->constrained('files')->nullOnDelete();
+            if (Schema::hasColumn('product_categories', 'logo_path')) {
+                $table->dropColumn('logo_path');
+            }
+            if (Schema::hasColumn('product_categories', 'menu_image_path')) {
+                $table->dropColumn('menu_image_path');
+            }
+            if (!Schema::hasColumn('product_categories', 'logo_file_id')) {
+                $table->foreignId('logo_file_id')->nullable()->constrained('files')->nullOnDelete();
+            }
+            if (!Schema::hasColumn('product_categories', 'menu_image_file_id')) {
+                $table->foreignId('menu_image_file_id')->nullable()->constrained('files')->nullOnDelete();
+            }
         });
     }
 

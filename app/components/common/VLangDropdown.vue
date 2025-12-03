@@ -1,12 +1,16 @@
 <template>
-  <UPopover arrow :content="{ side: 'bottom', sideOffset: 0, align: 'end' }">
-    <UButton color="neutral" variant="ghost" size="sm">
-      <Languages class="size-5" />
+  <UPopover arrow :content="{ side: 'bottom', sideOffset: 0, align: 'start' }">
+    <UButton color="neutral" variant="ghost" class="gap-1">
+      <span class="uppercase">{{ locale }}</span>
+      <ChevronDown size="16" />
     </UButton>
     <template #content>
       <div class="p-1 w-30">
         <UButton
-          v-for="loc in [{ code: 'ua', name: 'Українська' }, { code: 'en', name: 'English' }]"
+          v-for="loc in [
+            { code: 'ua', name: 'Українська' },
+            { code: 'en', name: 'English' },
+          ]"
           :key="loc.code"
           color="neutral"
           variant="ghost"
@@ -26,16 +30,13 @@
 </template>
 
 <script setup lang="ts">
-import { Languages, Check } from "lucide-vue-next";
+import { Check, ChevronDown } from "lucide-vue-next";
 
-const locale = ref("ua");
-
-// const { locale, locales } = useI18n();
-// const switchLocalePath = useSwitchLocalePath();
-// const router = useRouter();
+const { locale, locales } = useI18n();
+const switchLocalePath = useSwitchLocalePath();
+const router = useRouter();
 
 const selectLang = (newLang: "ua" | "en") => {
-  // router.push(switchLocalePath(newLang));
-  locale.value = newLang;
+  router.push(switchLocalePath(newLang));
 };
 </script>

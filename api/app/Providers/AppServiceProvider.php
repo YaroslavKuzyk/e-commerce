@@ -25,6 +25,7 @@ use App\Contracts\Services\Admin\AdminRoleServiceInterface;
 use App\Contracts\Services\Admin\AdminPermissionServiceInterface;
 use App\Contracts\Services\Admin\AdminUserServiceInterface;
 use App\Contracts\Services\Admin\AdminCustomerServiceInterface;
+use App\Contracts\Services\CustomerAuthServiceInterface;
 use App\Repositories\DeliveryMethodRepository;
 use App\Repositories\PaymentMethodRepository;
 use App\Repositories\ProductCategoryRepository;
@@ -48,6 +49,7 @@ use App\Services\Admin\AdminRoleService;
 use App\Services\Admin\AdminPermissionService;
 use App\Services\Admin\AdminUserService;
 use App\Services\Admin\AdminCustomerService;
+use App\Services\CustomerAuthService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -83,6 +85,9 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AdminProductServiceInterface::class, AdminProductService::class);
         $this->app->bind(AdminBlogCategoryServiceInterface::class, AdminBlogCategoryService::class);
         $this->app->bind(AdminBlogPostServiceInterface::class, AdminBlogPostService::class);
+
+        // Register Customer Service bindings
+        $this->app->bind(CustomerAuthServiceInterface::class, CustomerAuthService::class);
     }
 
     /**

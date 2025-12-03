@@ -1,0 +1,21 @@
+{
+  "common": {
+    "search": "Пошук",
+    "searchPlaceholder": "Я хочу знайти...",
+    "catalog": "Каталог"
+  },
+  "header": {
+    "city": "Київ",
+    "telegram": "Telegram",
+    "viber": "Viber",
+    "callBack": "Передзвоніть"
+  },
+  "nav": {
+    "store": "Магазин",
+    "categories": "Категорії",
+    "promotions": "Акції",
+    "discount": "Уцінка",
+    "blog": "Блог",
+    "contacts": "Контакти"
+  }
+}

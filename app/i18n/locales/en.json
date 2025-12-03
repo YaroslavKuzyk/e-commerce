@@ -1,0 +1,21 @@
+{
+  "common": {
+    "search": "Search",
+    "searchPlaceholder": "I want to find...",
+    "catalog": "Catalog"
+  },
+  "header": {
+    "city": "Kyiv",
+    "telegram": "Telegram",
+    "viber": "Viber",
+    "callBack": "Call back"
+  },
+  "nav": {
+    "store": "Store",
+    "categories": "Categories",
+    "promotions": "Promotions",
+    "discount": "Discount",
+    "blog": "Blog",
+    "contacts": "Contacts"
+  }
+}
