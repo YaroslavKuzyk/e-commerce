@@ -32,7 +32,7 @@
       <div class="flex items-center gap-4">
         <IconLogo />
 
-        <UButton>
+        <UButton @click="isCatalogModalOpen = true">
           <template #leading>
             <Menu class="w-5 h-5" />
           </template>
@@ -80,12 +80,15 @@
         </div>
       </div>
     </UContainer>
+
+    <VCatalogModal v-model="isCatalogModalOpen" />
   </header>
 </template>
 
 <script lang="ts" setup>
 import VLangDropdown from "~/components/common/VLangDropdown.vue";
 import IconLogo from "~/components/icons/IconLogo.vue";
+import VCatalogModal from "~/components/categories/modals/VCatalogModal.vue";
 import {
   Menu,
   Search,
@@ -96,6 +99,8 @@ import {
   ChevronDown,
   MapPin,
 } from "lucide-vue-next";
+
+const isCatalogModalOpen = ref(false);
 
 const { t } = useI18n();
 const localePath = useLocalePath();
