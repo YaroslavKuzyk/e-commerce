@@ -4,7 +4,19 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: true,
 
-  modules: ["@pinia/nuxt", "nuxt-auth-sanctum", "@nuxt/ui"],
+  modules: ["@pinia/nuxt", "nuxt-auth-sanctum", "@nuxt/ui", "@nuxtjs/i18n"],
+
+  i18n: {
+    locales: [
+      { code: "ua", files: ["ua.json"], name: "Українська" },
+      { code: "en", files: ["en.json"], name: "English" },
+    ],
+    defaultLocale: "ua",
+    strategy: "prefix",
+    langDir: "locales",
+    detectBrowserLanguage: false,
+  },
+
   css: ["~/assets/styles/tailwind.css"],
 
   devServer: {

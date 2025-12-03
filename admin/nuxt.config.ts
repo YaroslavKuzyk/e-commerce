@@ -7,9 +7,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: "Admin iD",
-      link: [
-        { rel: "icon", type: "image/png", href: "/favicon.ico" },
-      ],
+      link: [{ rel: "icon", type: "image/png", href: "/favicon.ico" }],
     },
   },
 
@@ -25,8 +23,6 @@ export default defineNuxtConfig({
     langDir: "locales",
     detectBrowserLanguage: false,
   },
-
-
 
   css: ["~/assets/styles/tailwind.css"],
 
@@ -45,9 +41,9 @@ export default defineNuxtConfig({
     },
     redirect: {
       keepRequestedRoute: false,
-      onLogin: "/profile",
-      onLogout: "/login",
-      onAuthOnly: "/login",
+      onLogin: "/ua/profile",
+      onLogout: "/ua/login",
+      onAuthOnly: "/ua/login",
       onGuestOnly: "/",
     },
     token: {
