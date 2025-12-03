@@ -3,14 +3,14 @@
     <UContainer class="flex">
       <div class="max-w-[33%] w-full">
         <div class="pb-5 mb-5 border-b border-neutral-200 pr-4">
-          <span class="text-sx font-medium mb-2 block">Режим роботи</span>
+          <span class="text-sx font-medium mb-2 block">{{ $t('footer.workingHours') }}</span>
 
           <div class="grid grid-cols-2">
             <div>
               <span
                 class="text-xs text-white bg-slate-600 px-[4px] py-[1px] inline-block mr-2"
               >
-                Пн-Пт
+                {{ $t('footer.weekdays') }}
               </span>
               <span class="text-xs font-medium text-muted">09:00-20:00</span>
             </div>
@@ -22,7 +22,7 @@
               <span
                 class="text-xs text-white bg-slate-600 px-[4px] py-[1px] inline-block mr-2"
               >
-                Сб-Нд
+                {{ $t('footer.weekends') }}
               </span>
               <span class="text-xs font-medium text-muted">10:00-20:00</span>
             </div>
@@ -37,24 +37,24 @@
             <span class="text-xs font-medium text-muted"
               >support@platforma.com</span
             >
-            <span class="text-xs text-muted">Підтримка клієнтів</span>
+            <span class="text-xs text-muted">{{ $t('footer.customerSupport') }}</span>
           </div>
 
           <div class="flex flex-col">
             <span class="text-xs font-medium text-muted"
               >sales@platforma.com</span
             >
-            <span class="text-xs text-muted">Комерційні питання</span>
+            <span class="text-xs text-muted">{{ $t('footer.commercialQuestions') }}</span>
           </div>
 
           <div class="flex flex-col">
             <span class="text-xs font-medium text-muted">hr@platforma.com</span>
-            <span class="text-xs text-muted">Робота в компанії</span>
+            <span class="text-xs text-muted">{{ $t('footer.workAtCompany') }}</span>
           </div>
 
           <div class="flex flex-col">
-            <span class="text-xs font-medium text-muted">telegram chat</span>
-            <span class="text-xs text-muted">Онлайн чат</span>
+            <span class="text-xs font-medium text-muted">{{ $t('footer.telegramChat') }}</span>
+            <span class="text-xs text-muted">{{ $t('footer.onlineChat') }}</span>
           </div>
         </div>
       </div>
@@ -69,8 +69,8 @@
           <span class="text-xs text-dimmed">{{ item.title }}</span>
           <div class="flex flex-col gap-1">
             <NuxtLink
-              v-for="(link, index) in item.items"
-              :key="index"
+              v-for="(link, linkIndex) in item.items"
+              :key="linkIndex"
               :to="link.href"
               class="text-xs text-muted"
             >
@@ -81,7 +81,7 @@
       </div>
       <div class="max-w-[33%] w-full pl-4">
         <span class="text-sx font-medium mb-2 block">
-          Наші соціальні мережі
+          {{ $t('footer.socialNetworks') }}
         </span>
 
         <div class="grid grid-cols-3 gap-2">
@@ -114,33 +114,34 @@ import IconTwitter from "@/components/icons/IconTwitter.vue";
 import IconDiscord from "@/components/icons/IconDiscord.vue";
 import IconFacebook from "@/components/icons/IconFacebook.vue";
 
+const { t } = useI18n();
 const { phoneOne, phoneTwo } = useConstants();
 
 const nav = computed(() => {
   return [
     {
-      title: "Покупцям",
+      title: t("footer.navCustomers"),
       items: [
-        { title: "Доставка", href: "#" },
-        { title: "Оплата", href: "#" },
-        { title: "Гарантія", href: "#" },
-        { title: "Повернення та обмін", href: "#" },
-        { title: "Бонусна програма", href: "#" },
-        { title: "Політика конфіденційності", href: "#" },
-        { title: "Корпоративним клієнтам", href: "#" },
-        { title: "Всі категорії", href: "#" },
+        { title: t("footer.delivery"), href: "#" },
+        { title: t("footer.payment"), href: "#" },
+        { title: t("footer.warranty"), href: "#" },
+        { title: t("footer.returnAndExchange"), href: "#" },
+        { title: t("footer.bonusProgram"), href: "#" },
+        { title: t("footer.privacyPolicy"), href: "#" },
+        { title: t("footer.corporateClients"), href: "#" },
+        { title: t("footer.allCategories"), href: "#" },
       ],
     },
     {
-      title: "Інформація про компанію",
+      title: t("footer.navCompanyInfo"),
       items: [
-        { title: "Уцінка", href: "#" },
-        { title: "Акції", href: "#" },
-        { title: "Про нас", href: "#" },
-        { title: "Контакти", href: "#" },
-        { title: "Партнерство", href: "#" },
-        { title: "Вакансії", href: "#" },
-        { title: "Блог", href: "#" },
+        { title: t("footer.discountProducts"), href: "#" },
+        { title: t("footer.promotions"), href: "#" },
+        { title: t("footer.aboutUs"), href: "#" },
+        { title: t("footer.contacts"), href: "#" },
+        { title: t("footer.partnership"), href: "#" },
+        { title: t("footer.vacancies"), href: "#" },
+        { title: t("footer.blog"), href: "#" },
       ],
     },
   ];
@@ -152,37 +153,37 @@ const socials = computed(() => {
       title: "Instagram",
       href: "#",
       icon: IconInstagram,
-      stats: "1.2M підписників",
+      stats: `1.2M ${t("footer.subscribers")}`,
     },
     {
       title: "Telegram",
       href: "#",
       icon: IconTelegram,
-      stats: "1.2M підписників",
+      stats: `1.2M ${t("footer.subscribers")}`,
     },
     {
       title: "TikTok",
       href: "#",
       icon: IconTikTiok,
-      stats: "1.2M підписників",
+      stats: `1.2M ${t("footer.subscribers")}`,
     },
     {
       title: "Twitter",
       href: "#",
       icon: IconTwitter,
-      stats: "1.2M підписників",
+      stats: `1.2M ${t("footer.subscribers")}`,
     },
     {
       title: "Discord",
       href: "#",
       icon: IconDiscord,
-      stats: "1.2M підписників",
+      stats: `1.2M ${t("footer.subscribers")}`,
     },
     {
       title: "Facebook",
       href: "#",
       icon: IconFacebook,
-      stats: "1.2M підписників",
+      stats: `1.2M ${t("footer.subscribers")}`,
     },
   ];
 });
