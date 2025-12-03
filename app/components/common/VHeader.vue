@@ -2,14 +2,20 @@
   <header>
     <UContainer>
       <div class="flex items-center justify-between gap-4 py-2">
-        <div class="flex items-center gap-2">
-          <VLangDropdown />
-          <UButton color="neutral" variant="ghost" class="gap-1">
-            <span>{{ $t("header.city") }}</span>
-            <ChevronDown size="16" />
-          </UButton>
+        <div class="flex items-center gap-4">
+          <div class="flex items-center gap-2">
+            <VLangDropdown />
+            <UButton color="neutral" variant="ghost" class="gap-1">
+              <template #leading>
+                <MapPin size="16" />
+              </template>
+              <span>{{ $t("header.city") }}</span>
+              <ChevronDown size="16" />
+            </UButton>
+          </div>
+          <div class="h-5 w-[1px] bg-neutral-200"></div>
+          <UNavigationMenu :items="menuItems" />
         </div>
-        <UNavigationMenu :items="menuItems" />
         <div class="flex items-center gap-4">
           <UButton variant="soft" size="xs" color="neutral">{{
             $t("header.telegram")
@@ -88,10 +94,12 @@ import {
   Scale,
   ShoppingCart,
   ChevronDown,
+  MapPin,
 } from "lucide-vue-next";
 
 const { t } = useI18n();
 const localePath = useLocalePath();
+const { phoneOne, phoneTwo } = useConstants();
 
 const menuItems = computed(() => {
   return [
@@ -125,13 +133,11 @@ const menuItems = computed(() => {
 const phoneItems = computed(() => {
   return [
     {
-      label: "+38 (099) 028-41-95",
+      label: phoneOne,
     },
     {
-      label: "+38 (099) 028-41-95",
+      label: phoneTwo,
     },
   ];
 });
 </script>
-
-<style lang="scss" scoped></style>
