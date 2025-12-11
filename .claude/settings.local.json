@@ -25,7 +25,10 @@
       "Bash(findstr:*)",
       "Bash(tasklist:*)",
       "Bash(sc query:*)",
-      "Bash(docker-compose:*)"
+      "Bash(docker-compose:*)",
+      "Bash(npm run:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)"
     ],
     "deny": [],
     "ask": []

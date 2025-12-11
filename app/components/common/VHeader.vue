@@ -88,7 +88,7 @@
 <script lang="ts" setup>
 import VLangDropdown from "~/components/common/VLangDropdown.vue";
 import IconLogo from "~/components/icons/IconLogo.vue";
-import VCatalogModal from "~/components/categories/modals/VCatalogModal.vue";
+import VCatalogModal from "~/components/category/modals/VCategoryModal.vue";
 import {
   Menu,
   Search,
