@@ -15,7 +15,7 @@
         @click.self="model = false"
       >
         <div class="modal-content">
-          <VCategoriesList in-modal />
+          <VCategoryTreeItem in-modal />
         </div>
       </div>
     </Transition>
@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import VCategoriesList from "~/components/categories/list/VCategoriesList.vue";
+import VCategoryTreeItem from "~/components/category/tree/VCategoryTreeItem.vue";
 
 const model = defineModel<boolean>({ default: false });
 

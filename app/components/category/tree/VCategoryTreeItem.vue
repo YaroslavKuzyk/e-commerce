@@ -13,23 +13,14 @@
       :class="{ 'relative z-50 overlay': onPage && showContent }"
     >
       <div ref="categoriesListRef" class="max-w-[340px] w-full shrink-0">
-        <div
+        <VCategoryTreeItemTitle
           v-for="index in 10"
           :key="index"
-          class="flex items-center gap-3 p-3 rounded-[14px] cursor-pointer hover:bg-primary-50 duration-200"
-          :class="{
-            'bg-primary-50':
-              activeCategory === index || (!isInteractive && index === 2),
-          }"
+          :title="`Категорія номер ${index}`"
+          :img="`https://telemart.ua/theme/main/i/c/c1-h.svg`"
+          :active="activeCategory === index || (!isInteractive && index === 2)"
           @mouseenter="handleCategoryHover(index)"
-        >
-          <img
-            src="https://telemart.ua/theme/main/i/c/c1-h.svg"
-            alt="category"
-          />
-          <span>Категорія номер {{ index }}</span>
-          <ChevronRight class="ml-auto" />
-        </div>
+        />
       </div>
 
       <div
@@ -113,7 +104,7 @@
 </template>
 
 <script setup lang="ts">
-import { ChevronRight } from "lucide-vue-next";
+import VCategoryTreeItemTitle from "./VCategoryTreeItemTitle.vue";
 
 interface IProps {
   onPage?: boolean;
