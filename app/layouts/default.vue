@@ -5,7 +5,7 @@
       <div class="flex-grow">
         <slot />
       </div>
-      <VFooter />
+      <VFooter class="mt-[100px]" />
     </UApp>
   </main>
 </template>
