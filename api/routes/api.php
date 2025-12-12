@@ -17,15 +17,19 @@ use App\Http\Controllers\Admin\AdminBlogPostController;
 use App\Http\Controllers\CustomerAuthController;
 use Illuminate\Support\Facades\Route;
 
-// Customer auth routes (public)
-Route::post('/register', [CustomerAuthController::class, 'register']);
-Route::post('/login', [CustomerAuthController::class, 'login']);
-
 // Customer auth routes (protected)
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [CustomerAuthController::class, 'logout']);
     Route::get('/user', [CustomerAuthController::class, 'user']);
 });
+
+// Customer auth routes (public)
+Route::post('/register', [CustomerAuthController::class, 'register']);
+Route::post('/login', [CustomerAuthController::class, 'login']);
+
+// Customer categories routes (public)
+Route::get('/product-categories', [CustomerProductCategoryController::class, 'index']);
+Route::get('/product-categories/{id}', [CustomerProductCategoryController::class, 'show']);
 
 // Admin routes group with /admin prefix
 Route::prefix('admin')->group(function () {

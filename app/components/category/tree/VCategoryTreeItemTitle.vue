@@ -5,18 +5,18 @@
       'bg-primary-50': active,
     }"
   >
-    <img :src="img" :alt="title" />
-    <span>{{ title }}</span>
+    <!-- <img :src="category.menu_image_file_id" :alt="category.name" /> -->
+    <span>{{ category.name }}</span>
     <ChevronRight class="ml-auto" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ChevronRight } from "lucide-vue-next";
+import type { ProductCategory } from "~/models/productCategory";
 
 interface IProps {
-  title: string;
-  img: string;
+  category: ProductCategory;
   active: boolean;
 }
 
