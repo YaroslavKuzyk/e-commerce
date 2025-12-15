@@ -26,6 +26,7 @@ use App\Contracts\Services\Admin\AdminPermissionServiceInterface;
 use App\Contracts\Services\Admin\AdminUserServiceInterface;
 use App\Contracts\Services\Admin\AdminCustomerServiceInterface;
 use App\Contracts\Services\CustomerAuthServiceInterface;
+use App\Contracts\CustomerProductCategoryServiceInterface;
 use App\Repositories\DeliveryMethodRepository;
 use App\Repositories\PaymentMethodRepository;
 use App\Repositories\ProductCategoryRepository;
@@ -50,6 +51,7 @@ use App\Services\Admin\AdminPermissionService;
 use App\Services\Admin\AdminUserService;
 use App\Services\Admin\AdminCustomerService;
 use App\Services\CustomerAuthService;
+use App\Services\CustomerProductCategoryService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -88,6 +90,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Register Customer Service bindings
         $this->app->bind(CustomerAuthServiceInterface::class, CustomerAuthService::class);
+        $this->app->bind(CustomerProductCategoryServiceInterface::class, CustomerProductCategoryService::class);
     }
 
     /**

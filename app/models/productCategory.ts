@@ -2,6 +2,7 @@ export interface ProductCategory {
   id: number;
   parent_id: number | null;
   name: string;
+  subtitle: string | null;
   slug: string;
   status: string;
   body_description: string | null;
@@ -26,4 +27,7 @@ export interface IProductCategoryProvider {
   getProductCategoryById: (
     id: number
   ) => ReturnType<typeof useAsyncData<ProductCategory | undefined>>;
+  getLatestCategories: (
+    limit?: number
+  ) => ReturnType<typeof useAsyncData<ProductCategory[] | undefined>>;
 }

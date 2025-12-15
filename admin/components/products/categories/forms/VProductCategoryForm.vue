@@ -17,6 +17,14 @@
       />
     </UFormField>
 
+    <UFormField label="Підзаголовок" name="subtitle">
+      <UInput
+        v-model="state.subtitle"
+        placeholder="Для фотографів"
+        class="w-full"
+      />
+    </UFormField>
+
     <UFormField label="Slug" name="slug" required>
       <UInput
         v-model="state.slug"
@@ -169,6 +177,7 @@ const productCategoryStore = useProductCategoryStore();
 const schema = z.object({
   parent_id: z.number().nullable().optional(),
   name: z.string().min(1, "Назва є обов'язковою"),
+  subtitle: z.string().optional().nullable(),
   slug: z.string().min(1, "Slug є обов'язковим"),
   status: z.enum(["draft", "published"]),
   body_description: z.string().optional().nullable(),
@@ -179,6 +188,7 @@ const schema = z.object({
 const state = reactive({
   parent_id: props.category?.parent_id ?? props.initialParentId ?? null,
   name: props.category?.name || "",
+  subtitle: props.category?.subtitle || null,
   slug: props.category?.slug || "",
   status: (props.category?.status || "draft") as "draft" | "published",
   body_description: props.category?.body_description || null,

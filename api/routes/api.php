@@ -15,6 +15,8 @@ use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\Admin\AdminBlogCategoryController;
 use App\Http\Controllers\Admin\AdminBlogPostController;
 use App\Http\Controllers\CustomerAuthController;
+use App\Http\Controllers\CustomerProductCategoryController;
+use App\Http\Controllers\CustomerFileController;
 use Illuminate\Support\Facades\Route;
 
 // Customer auth routes (protected)
@@ -29,7 +31,11 @@ Route::post('/login', [CustomerAuthController::class, 'login']);
 
 // Customer categories routes (public)
 Route::get('/product-categories', [CustomerProductCategoryController::class, 'index']);
+Route::get('/product-categories/flat', [CustomerProductCategoryController::class, 'flatIndex']);
 Route::get('/product-categories/{id}', [CustomerProductCategoryController::class, 'show']);
+
+// Customer files routes (public)
+Route::get('/files/{id}/download', [CustomerFileController::class, 'download']);
 
 // Admin routes group with /admin prefix
 Route::prefix('admin')->group(function () {
