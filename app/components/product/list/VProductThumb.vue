@@ -1,22 +1,25 @@
 <template>
   <NuxtLink
-    to="/product/620682"
+    :to="`/product/${product.slug}`"
     class="px-[16px] py-[10px] v-product-thumb__wrapper"
   >
     <div class="v-product-thumb flex flex-col gap-2">
       <!-- Header -->
       <div class="flex items-center justify-between gap-2">
-        <UBadge>Хіт продаж</UBadge>
-        <span>Код: <strong>620682</strong></span>
+        <UBadge v-if="isNew">Новинка</UBadge>
+        <span class="text-sm text-dimmed">Код: <strong>{{ product.id }}</strong></span>
       </div>
 
       <!-- Image -->
       <div class="py-6 flex items-center justify-center relative">
-        <img
-          src="https://content1.rozetka.com.ua/goods/images/big/485317909.jpg"
-          alt=""
-          class="max-w-[172px]"
+        <VSecureImage
+          v-if="product.main_image_file_id"
+          :fileId="product.main_image_file_id"
+          imgClass="max-w-[172px] max-h-[172px] object-contain"
         />
+        <div v-else class="w-[172px] h-[172px] bg-gray-100 rounded flex items-center justify-center">
+          <Package class="w-12 h-12 text-gray-400" />
+        </div>
 
         <UButton
           variant="ghost"
@@ -29,40 +32,22 @@
         </UButton>
       </div>
 
-      <!-- Color Variations -->
-      <div class="flex items-center gap-1" @click.stop.prevent>
-        <NuxtLink
-          v-for="item in ['#FECFDA', '#FFFFFF', '#83FFA8']"
-          :key="item"
-          :to="`/product/${item}`"
-          class="w-[16px] h-[16px] rounded-full border border-gray-300"
-          :style="`background-color: ${item}`"
-        ></NuxtLink>
-      </div>
-
       <!-- Title -->
       <div>
         <h3 class="font-semibold line-clamp-2">
-          Моноблок Apple iMac 24" М4 4.5К 10‑ядер GPU
+          {{ product.name }}
         </h3>
       </div>
 
-      <!-- Reviews -->
-      <div class="flex items-center gap-2" @click.stop.prevent>
-        <NuxtLink to="/product/620682/reviews">
-          <VRating :model-value="Math.random() * 5" readonly />
-        </NuxtLink>
-        <NuxtLink to="/product/620682/reviews" class="flex items-center gap-1">
-          <MessageSquareText class="w-[12px] h-[12px] text-dimmed" />
-          <span class="text-dimmed text-xs">150</span>
-        </NuxtLink>
+      <!-- Category -->
+      <div v-if="product.category" class="text-sm text-dimmed">
+        {{ product.category.name }}
       </div>
 
       <!-- Footer Price -->
       <div class="flex items-end justify-between gap-2">
         <div>
-          <div class="text-sm text-dimmed line-through">14 999 грн</div>
-          <div class="text-xl font-semibold text-red-500">12 999 грн</div>
+          <div class="text-xl font-semibold text-primary">{{ formatPrice(product.base_price) }} грн</div>
         </div>
         <div>
           <UButton
@@ -77,10 +62,8 @@
 
       <!-- Hidden Content -->
       <div ref="hiddenRef" class="v-product-thumb__hidden">
-        <div class="text-sm">
-          Екран 23.5" (4480x2520) 4.5K / Apple M4 / RAM 16 ГБ / SSD 256 ГБ /
-          Apple M4 Graphics (10 ядер) / без ОД / Wi-Fi / Bluetooth / веб-камера
-          / macOS Sequoia / 4.44 кг / рожевий / клавіатура + миша
+        <div class="text-sm text-dimmed">
+          {{ product.short_description || 'Опис відсутній' }}
         </div>
       </div>
     </div>
@@ -88,11 +71,29 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
-import { Heart, MessageSquareText, ShoppingCart } from "lucide-vue-next";
-import VRating from "@/components/common/VRating.vue";
+import { ref, onMounted, computed } from "vue";
+import { Heart, ShoppingCart, Package } from "lucide-vue-next";
+import type { Product } from "~/models/product";
+import VSecureImage from "~/components/common/VSecureImage.vue";
+
+interface Props {
+  product: Product;
+}
+
+const props = defineProps<Props>();
 
 const hiddenRef = ref<HTMLElement | null>(null);
+
+const isNew = computed(() => {
+  const createdAt = new Date(props.product.created_at);
+  const now = new Date();
+  const diffDays = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
+  return diffDays <= 30;
+});
+
+const formatPrice = (price: string) => {
+  return Number(price).toLocaleString("uk-UA");
+};
 
 onMounted(() => {
   if (hiddenRef.value) {

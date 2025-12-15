@@ -52,7 +52,10 @@ class ProductRepository implements ProductRepositoryInterface
             $query->where('brand_id', $filters['brand_id']);
         }
 
-        $query->orderBy('name');
+        // Sort by created_at desc by default
+        $sortBy = $filters['sort_by'] ?? 'created_at';
+        $sortOrder = $filters['sort_order'] ?? 'desc';
+        $query->orderBy($sortBy, $sortOrder);
 
         if (!empty($filters['per_page'])) {
             return $query->paginate(
