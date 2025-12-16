@@ -28,7 +28,10 @@
       "Bash(docker-compose:*)",
       "Bash(npm run:*)",
       "Bash(lsof:*)",
-      "Bash(xargs kill:*)"
+      "Bash(xargs kill:*)",
+      "Bash(grep:*)",
+      "Bash(npx vue-tsc:*)",
+      "Bash(ls:*)"
     ],
     "deny": [],
     "ask": []

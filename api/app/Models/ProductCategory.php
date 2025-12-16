@@ -15,6 +15,7 @@ class ProductCategory extends Model
     protected $fillable = [
         'parent_id',
         'name',
+        'subtitle',
         'slug',
         'status',
         'body_description',
@@ -47,6 +48,11 @@ class ProductCategory extends Model
     public function menuImageFile(): BelongsTo
     {
         return $this->belongsTo(File::class, 'menu_image_file_id');
+    }
+
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class, 'category_id');
     }
 
     public function allSubcategories(): HasMany

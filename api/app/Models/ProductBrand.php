@@ -6,6 +6,7 @@ use App\Enums\ProductBrandStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProductBrand extends Model
 {
@@ -34,6 +35,11 @@ class ProductBrand extends Model
     public function menuImageFile(): BelongsTo
     {
         return $this->belongsTo(File::class, 'menu_image_file_id');
+    }
+
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class, 'brand_id');
     }
 
     public function scopePublished($query)

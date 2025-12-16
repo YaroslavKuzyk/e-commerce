@@ -1,11 +1,12 @@
 <?php
 
-namespace App\Services\Admin;
+namespace App\Services;
 
 use App\Contracts\CustomerProductCategoryServiceInterface;
 use App\Contracts\ProductCategoryRepositoryInterface;
 use App\Models\ProductCategory;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class CustomerProductCategoryService implements CustomerProductCategoryServiceInterface
 {
@@ -21,6 +22,18 @@ class CustomerProductCategoryService implements CustomerProductCategoryServiceIn
     public function getAllCategories(): Collection
     {
         return $this->productCategoryRepository->getAllWithTree();
+    }
+
+    /**
+     * Get paginated flat list of categories.
+     *
+     * @param int $page
+     * @param int $limit
+     * @return LengthAwarePaginator
+     */
+    public function getCategoriesPaginated(int $page = 1, int $limit = 15): LengthAwarePaginator
+    {
+        return $this->productCategoryRepository->getPaginatedFlat($page, $limit);
     }
 
     /**

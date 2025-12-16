@@ -18,7 +18,7 @@
           :key="category.id"
           :category="category"
           :active="
-            activeCategory === category.id ||
+            activeCategoryId === category.id ||
             (!isInteractive && category.id === 2)
           "
           @mouseenter="handleCategoryHover(category.id)"
@@ -29,7 +29,44 @@
         v-if="!isInteractive || showContent"
         class="flex-1 overflow-auto pl-12 bg-white"
         :style="{ maxHeight: `${listHeight}px` }"
-      ></div>
+      >
+        <div>
+          <div v-if="activeCategory">
+            <router-link
+              :to="`/category/${activeCategory.slug}`"
+              class="text-lg font-semibold flex items-center gap-2 mb-2"
+            >
+              <VSecureImage
+                v-if="activeCategory.logo_file_id"
+                :fileId="activeCategory.logo_file_id"
+                class="w-6 h-6 mr-[2px]"
+              />
+              {{ activeCategory.name }}
+            </router-link>
+
+            <router-link
+              v-if="subcategoriesData.length"
+              :to="`/category/${activeCategory.slug}/${subcategoriesData[0].slug}`"
+              class="text-md font-medium flex items-center gap-2 text-gray-600"
+            >
+              Підкатегорії
+            </router-link>
+
+            <div class="pl-9">
+              <router-link
+                v-for="subcategory in subcategoriesData"
+                :key="subcategory.id"
+                :to="`/category/${subcategory.slug}`"
+                class="block py-2"
+              >
+                {{ subcategory.name }}
+              </router-link>
+            </div>
+          </div>
+        </div>
+        <div></div>
+        <div></div>
+      </div>
 
       <div
         v-if="onPage"
@@ -45,7 +82,9 @@
 </template>
 
 <script setup lang="ts">
+import type { ProductCategory } from "~/models/productCategory";
 import VCategoryTreeItemTitle from "./VCategoryTreeItemTitle.vue";
+import VSecureImage from "~/components/common/VSecureImage.vue";
 
 interface IProps {
   onPage?: boolean;
@@ -56,17 +95,34 @@ const { onPage, inModal } = defineProps<IProps>();
 
 const productCategoryStore = useProductCategoryStore();
 
+const {
+  data: categoriesData,
+  refresh: refreshCategoriesData,
+  status,
+} = await productCategoryStore.fetchProductCategories();
+
 const isInteractive = computed(() => onPage || inModal);
 
 const categoriesListRef = ref<HTMLElement | null>(null);
 const listHeight = ref(0);
-const activeCategory = ref<number | null>(null);
+const activeCategoryId = ref<number | null>(null);
 const showContent = ref(false);
+const subcategoriesData = ref<ProductCategory[]>([]);
 
-const handleCategoryHover = (index: number) => {
+const activeCategory = computed(() =>
+  categoriesData.value?.find(
+    (category) => category.id === activeCategoryId.value
+  )
+);
+
+const handleCategoryHover = (id: number) => {
   if (isInteractive.value) {
-    activeCategory.value = index;
+    activeCategoryId.value = id;
     showContent.value = true;
+
+    subcategoriesData.value =
+      categoriesData.value?.find((category) => category.id === id)
+        ?.subcategories || [];
   }
 };
 
@@ -81,17 +137,11 @@ onMounted(() => {
     }
 
     if (inModal) {
-      activeCategory.value = 1;
+      activeCategoryId.value = 1;
       showContent.value = true;
     }
   });
 });
-
-const {
-  data: categoriesData,
-  refresh: refreshCategoriesData,
-  status,
-} = await productCategoryStore.fetchProductCategories();
 </script>
 
 <style scoped lang="scss">

@@ -4,9 +4,18 @@ namespace App\Contracts;
 
 use App\Models\ProductCategory;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 interface ProductCategoryRepositoryInterface
 {
+    /**
+     * Get paginated flat list of categories.
+     *
+     * @param int $page
+     * @param int $limit
+     * @return LengthAwarePaginator
+     */
+    public function getPaginatedFlat(int $page = 1, int $limit = 15): LengthAwarePaginator;
     /**
      * Get all categories with tree structure.
      *
