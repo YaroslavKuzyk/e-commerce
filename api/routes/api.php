@@ -14,16 +14,44 @@ use App\Http\Controllers\Admin\AdminAttributeController;
 use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\Admin\AdminBlogCategoryController;
 use App\Http\Controllers\Admin\AdminBlogPostController;
+use App\Http\Controllers\Admin\AdminProductReviewController;
+use App\Http\Controllers\Admin\AdminStoreSettingsController;
+use App\Http\Controllers\Admin\AdminCallbackRequestController;
 use App\Http\Controllers\CustomerAuthController;
 use App\Http\Controllers\CustomerProductCategoryController;
 use App\Http\Controllers\CustomerProductController;
 use App\Http\Controllers\CustomerFileController;
+use App\Http\Controllers\CustomerBlogController;
+use App\Http\Controllers\CustomerSearchController;
+use App\Http\Controllers\CustomerProductReviewController;
+use App\Http\Controllers\CustomerStoreSettingsController;
+use App\Http\Controllers\CallbackRequestController;
+use App\Http\Controllers\CustomerFavoriteController;
+use App\Http\Controllers\CustomerCartController;
 use Illuminate\Support\Facades\Route;
 
 // Customer auth routes (protected)
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [CustomerAuthController::class, 'logout']);
     Route::get('/user', [CustomerAuthController::class, 'user']);
+
+    // Favorites routes
+    Route::get('/favorites', [CustomerFavoriteController::class, 'index']);
+    Route::get('/favorites/ids', [CustomerFavoriteController::class, 'ids']);
+    Route::post('/favorites/{productId}', [CustomerFavoriteController::class, 'store']);
+    Route::delete('/favorites/{productId}', [CustomerFavoriteController::class, 'destroy']);
+    Route::post('/favorites/{productId}/toggle', [CustomerFavoriteController::class, 'toggle']);
+    Route::post('/favorites/sync', [CustomerFavoriteController::class, 'sync']);
+    Route::post('/favorites/check', [CustomerFavoriteController::class, 'check']);
+
+    // Cart routes
+    Route::get('/cart', [CustomerCartController::class, 'index']);
+    Route::get('/cart/summary', [CustomerCartController::class, 'summary']);
+    Route::post('/cart/{productId}', [CustomerCartController::class, 'store']);
+    Route::put('/cart/{productId}', [CustomerCartController::class, 'update']);
+    Route::delete('/cart/{productId}', [CustomerCartController::class, 'destroy']);
+    Route::delete('/cart', [CustomerCartController::class, 'clear']);
+    Route::post('/cart/sync', [CustomerCartController::class, 'sync']);
 });
 
 // Customer auth routes (public)
@@ -33,6 +61,7 @@ Route::post('/login', [CustomerAuthController::class, 'login']);
 // Customer categories routes (public)
 Route::get('/product-categories', [CustomerProductCategoryController::class, 'index']);
 Route::get('/product-categories/flat', [CustomerProductCategoryController::class, 'flatIndex']);
+Route::get('/product-categories/parents', [CustomerProductCategoryController::class, 'parents']);
 Route::get('/product-categories/resolve-path', [CustomerProductCategoryController::class, 'resolvePath']);
 Route::get('/product-categories/slug/{slug}', [CustomerProductCategoryController::class, 'showBySlug']);
 Route::get('/product-categories/{id}', [CustomerProductCategoryController::class, 'show']);
@@ -48,6 +77,27 @@ Route::get('/products/filters-by-slug', [CustomerProductController::class, 'filt
 Route::get('/products/attribute-slugs', [CustomerProductController::class, 'attributeSlugs']);
 Route::get('/products/slug/{slug}', [CustomerProductController::class, 'showBySlug']);
 Route::get('/products/{id}', [CustomerProductController::class, 'show']);
+
+// Customer blog routes (public)
+Route::get('/blog/categories', [CustomerBlogController::class, 'categories']);
+Route::get('/blog/categories/{slug}', [CustomerBlogController::class, 'categoryBySlug']);
+Route::get('/blog/posts', [CustomerBlogController::class, 'posts']);
+Route::get('/blog/posts/{slug}', [CustomerBlogController::class, 'postBySlug']);
+Route::get('/blog/posts/{slug}/related', [CustomerBlogController::class, 'relatedPosts']);
+
+// Global search route (public)
+Route::get('/search', [CustomerSearchController::class, 'search']);
+
+// Product reviews routes (public)
+Route::get('/products/{slug}/reviews', [CustomerProductReviewController::class, 'index']);
+Route::get('/products/{slug}/reviews/stats', [CustomerProductReviewController::class, 'stats']);
+Route::post('/products/{slug}/reviews', [CustomerProductReviewController::class, 'store']);
+
+// Store settings routes (public)
+Route::get('/store-settings', [CustomerStoreSettingsController::class, 'index']);
+
+// Callback requests routes (public)
+Route::post('/callback-requests', [CallbackRequestController::class, 'store']);
 
 // Admin routes group with /admin prefix
 Route::prefix('admin')->group(function () {
@@ -187,5 +237,29 @@ Route::prefix('admin')->group(function () {
         Route::delete('blog-posts/{id}', [AdminBlogPostController::class, 'destroy'])->middleware('permission:Delete Blog Post');
         Route::post('blog-posts/generate-slug', [AdminBlogPostController::class, 'generateSlug'])->middleware('permission:Create Blog Post');
         Route::post('blog-posts/{id}/products', [AdminBlogPostController::class, 'syncProducts'])->middleware('permission:Update Blog Post');
+
+        // Product reviews management routes with permissions
+        Route::get('product-reviews', [AdminProductReviewController::class, 'index'])->middleware('permission:Read Product Reviews');
+        Route::get('product-reviews/stats', [AdminProductReviewController::class, 'stats'])->middleware('permission:Read Product Reviews');
+        Route::get('product-reviews/{id}', [AdminProductReviewController::class, 'show'])->middleware('permission:Read Product Reviews');
+        Route::patch('product-reviews/{id}/approve', [AdminProductReviewController::class, 'approve'])->middleware('permission:Update Product Review');
+        Route::patch('product-reviews/{id}/reject', [AdminProductReviewController::class, 'reject'])->middleware('permission:Update Product Review');
+        Route::delete('product-reviews/{id}', [AdminProductReviewController::class, 'destroy'])->middleware('permission:Delete Product Review');
+        Route::post('product-reviews/bulk-approve', [AdminProductReviewController::class, 'bulkApprove'])->middleware('permission:Update Product Review');
+        Route::post('product-reviews/bulk-reject', [AdminProductReviewController::class, 'bulkReject'])->middleware('permission:Update Product Review');
+        Route::post('product-reviews/bulk-delete', [AdminProductReviewController::class, 'bulkDelete'])->middleware('permission:Delete Product Review');
+
+        // Store settings management routes
+        Route::get('store-settings', [AdminStoreSettingsController::class, 'index'])->middleware('permission:Read Store Settings');
+        Route::put('store-settings', [AdminStoreSettingsController::class, 'update'])->middleware('permission:Update Store Settings');
+
+        // Callback requests management routes with permissions
+        Route::get('callback-requests', [AdminCallbackRequestController::class, 'index'])->middleware('permission:Read Callback Requests');
+        Route::get('callback-requests/stats', [AdminCallbackRequestController::class, 'stats'])->middleware('permission:Read Callback Requests');
+        Route::get('callback-requests/{id}', [AdminCallbackRequestController::class, 'show'])->middleware('permission:Read Callback Requests');
+        Route::put('callback-requests/{id}', [AdminCallbackRequestController::class, 'update'])->middleware('permission:Update Callback Request');
+        Route::delete('callback-requests/{id}', [AdminCallbackRequestController::class, 'destroy'])->middleware('permission:Delete Callback Request');
+        Route::post('callback-requests/bulk-delete', [AdminCallbackRequestController::class, 'bulkDelete'])->middleware('permission:Delete Callback Request');
+        Route::post('callback-requests/bulk-update-status', [AdminCallbackRequestController::class, 'bulkUpdateStatus'])->middleware('permission:Update Callback Request');
     });
 });

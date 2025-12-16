@@ -103,4 +103,40 @@ class User extends Authenticatable
             $query->whereIn('roles.id', $this->roles->pluck('id'));
         })->get();
     }
+
+    /**
+     * Get user's favorite products (many-to-many).
+     */
+    public function favoriteProducts(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'user_favorites')
+            ->withPivot('created_at')
+            ->orderByPivot('created_at', 'desc');
+    }
+
+    /**
+     * Check if product is in user's favorites.
+     */
+    public function hasFavorite(int $productId): bool
+    {
+        return $this->favoriteProducts()->where('product_id', $productId)->exists();
+    }
+
+    /**
+     * Get user's cart items.
+     */
+    public function cartItems(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(CartItem::class);
+    }
+
+    /**
+     * Get user's cart products (many-to-many through cart_items).
+     */
+    public function cartProducts(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'cart_items')
+            ->withPivot('quantity', 'created_at', 'updated_at')
+            ->orderByPivot('created_at', 'desc');
+    }
 }

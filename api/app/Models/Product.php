@@ -84,6 +84,16 @@ class Product extends Model
         return $this->hasMany(ProductSpecification::class)->orderBy('sort_order');
     }
 
+    public function reviews(): HasMany
+    {
+        return $this->hasMany(ProductReview::class);
+    }
+
+    public function approvedReviews(): HasMany
+    {
+        return $this->hasMany(ProductReview::class)->where('status', 'approved');
+    }
+
     public function scopePublished($query)
     {
         return $query->where('status', ProductStatus::PUBLISHED);
@@ -156,6 +166,22 @@ class Product extends Model
         }
 
         return true;
+    }
+
+    /**
+     * Get average rating from approved reviews
+     */
+    public function getAverageRatingAttribute(): float
+    {
+        return round($this->approvedReviews()->avg('rating') ?? 0, 2);
+    }
+
+    /**
+     * Get count of approved reviews
+     */
+    public function getReviewsCountAttribute(): int
+    {
+        return $this->approvedReviews()->count();
     }
 
     /**

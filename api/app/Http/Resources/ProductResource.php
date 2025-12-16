@@ -35,6 +35,8 @@ class ProductResource extends JsonResource
             'clearance_reason' => $this->clearance_reason,
             'current_price' => $this->current_price,
             'discount_percentage' => $this->discount_percentage,
+            'average_rating' => $this->average_rating,
+            'reviews_count' => $this->reviews_count,
             'main_image_file_id' => $this->main_image_file_id,
             'main_image' => new FileResource($this->whenLoaded('mainImage')),
             'attributes' => AttributeResource::collection($this->whenLoaded('attributes')),

@@ -36,7 +36,8 @@
     "error": "Помилка",
     "warning": "Попередження",
     "info": "Інформація",
-    "clear": "Очистити"
+    "clear": "Очистити",
+    "select": "Обрати"
   },
   "nav": {
     "main": "Головна",
@@ -49,10 +50,13 @@
     "attributes": "Атрибути",
     "categories": "Категорії",
     "brands": "Бренди",
+    "reviews": "Відгуки",
     "blog": "Блог",
     "posts": "Статті",
     "deliveryPayment": "Оплата та Доставка",
     "files": "Файли",
+    "storeSettings": "Налаштування магазину",
+    "callbackRequests": "Заявки на дзвінок",
     "profile": "Профіль",
     "settings": "Налаштування",
     "logout": "Вихід"
@@ -202,6 +206,45 @@
     "deleteSuccess": "Атрибут успішно видалено",
     "deleteError": "Не вдалося видалити атрибут"
   },
+  "reviews": {
+    "title": "Відгуки",
+    "searchByAuthor": "Пошук за автором",
+    "product": "Продукт",
+    "author": "Автор",
+    "rating": "Рейтинг",
+    "pending": "На модерації",
+    "approved": "Схвалено",
+    "rejected": "Відхилено",
+    "viewReview": "Переглянути відгук",
+    "approve": "Схвалити",
+    "reject": "Відхилити",
+    "deleteTitle": "Видалити відгук",
+    "deleteConfirm": "Ви збираєтеся видалити відгук від:",
+    "deleteWarning": "Ця дія незворотна.",
+    "approveSuccess": "Відгук схвалено",
+    "approveError": "Не вдалося схвалити відгук",
+    "rejectSuccess": "Відгук відхилено",
+    "rejectError": "Не вдалося відхилити відгук",
+    "deleteSuccess": "Відгук видалено",
+    "deleteError": "Не вдалося видалити відгук",
+    "bulkApproveSuccess": "Відгуки схвалено",
+    "bulkRejectSuccess": "Відгуки відхилено",
+    "bulkDeleteSuccess": "Відгуки видалено",
+    "advantages": "Переваги",
+    "disadvantages": "Недоліки",
+    "comment": "Коментар",
+    "email": "Email",
+    "createdAt": "Дата створення",
+    "images": "Зображення",
+    "videos": "Відео",
+    "noContent": "Немає вмісту",
+    "stats": {
+      "total": "Всього",
+      "pending": "На модерації",
+      "approved": "Схвалено",
+      "rejected": "Відхилено"
+    }
+  },
   "blog": {
     "posts": {
       "title": "Статті блогу",
@@ -285,5 +328,90 @@
     "selectRole": "Оберіть роль",
     "selectStatus": "Оберіть статус",
     "enterPassword": "Введіть пароль (мінімум 8 символів)"
+  },
+  "storeSettings": {
+    "title": "Налаштування магазину",
+    "saveSuccess": "Налаштування успішно збережено",
+    "saveError": "Не вдалося зберегти налаштування",
+    "general": {
+      "title": "Основна інформація",
+      "storeName": "Назва магазину",
+      "storeNamePlaceholder": "Введіть назву магазину",
+      "favicon": "Favicon",
+      "logo": "Логотип"
+    },
+    "contacts": {
+      "phones": "Контактні телефони",
+      "emails": "Електронні адреси",
+      "labelPlaceholder": "Мітка (напр. Telegram)",
+      "phonePlaceholder": "+38 (099) 000-00-00",
+      "emailPlaceholder": "email{'@'}example.com",
+      "noPhonesAdded": "Телефони не додано",
+      "noEmailsAdded": "Email адреси не додано",
+      "displayTypes": {
+        "text": "Текст",
+        "button": "Кнопка",
+        "buttonLink": "Кнопка-посилання",
+        "link": "Посилання"
+      }
+    },
+    "workingHours": {
+      "title": "Режим роботи"
+    },
+    "footerWorkingHours": {
+      "title": "Режим роботи (Футер)",
+      "description": "Окремий блок режиму роботи для відображення в футері сайту",
+      "phone1": "Телефон 1",
+      "phone2": "Телефон 2",
+      "phoneLabelPlaceholder": "Мітка (напр. Замовлення)",
+      "phoneValuePlaceholder": "+38 (099) 000-00-00"
+    },
+    "socialLinks": {
+      "title": "Соціальні мережі",
+      "urlPlaceholder": "https://...",
+      "followersPlaceholder": "1.2M",
+      "noLinksAdded": "Соціальні мережі не додано"
+    }
+  },
+  "callbackRequests": {
+    "title": "Заявки на дзвінок",
+    "searchPlaceholder": "Пошук за телефоном або ім'ям",
+    "phone": "Телефон",
+    "name": "Ім'я",
+    "comment": "Коментар",
+    "createdAt": "Дата створення",
+    "view": "Переглянути",
+    "viewRequest": "Перегляд заявки",
+    "changeStatus": "Змінити статус",
+    "selected": "Вибрано: {count}",
+    "markAsNew": "Позначити як нову",
+    "markAsInProgress": "Позначити як в обробці",
+    "markAsCompleted": "Позначити як виконану",
+    "markAsCancelled": "Позначити як скасовану",
+    "deleteTitle": "Видалити заявку",
+    "deleteConfirm": "Ви впевнені, що хочете видалити цю заявку?",
+    "deleteWarning": "Ця дія незворотна.",
+    "loadError": "Не вдалося завантажити заявки",
+    "updateSuccess": "Статус заявки оновлено",
+    "updateError": "Не вдалося оновити статус заявки",
+    "deleteSuccess": "Заявку видалено",
+    "deleteError": "Не вдалося видалити заявку",
+    "bulkUpdateSuccess": "Статус заявок оновлено",
+    "bulkUpdateError": "Не вдалося оновити статус заявок",
+    "bulkDeleteSuccess": "Заявки видалено",
+    "bulkDeleteError": "Не вдалося видалити заявки",
+    "status": {
+      "new": "Нова",
+      "in_progress": "В обробці",
+      "completed": "Виконана",
+      "cancelled": "Скасована"
+    },
+    "stats": {
+      "all": "Всього",
+      "new": "Нові",
+      "inProgress": "В обробці",
+      "completed": "Виконані",
+      "cancelled": "Скасовані"
+    }
   }
 }

@@ -23,15 +23,10 @@
           <Package class="w-12 h-12 text-gray-400" />
         </div>
 
-        <UButton
-          variant="ghost"
-          color="error"
-          size="icon"
-          class="absolute top-2 right-2 p-1 z-1"
-          @click.stop.prevent
-        >
-          <Heart />
-        </UButton>
+        <VFavoriteButton
+          :product-id="product.id"
+          class="absolute top-2 right-2 z-1"
+        />
       </div>
 
       <!-- Color Options -->
@@ -73,8 +68,10 @@
         <div>
           <UButton
             variant="soft"
+            :color="cartStore.isInCart(product.id) ? 'primary' : 'neutral'"
             class="w-[44px] h-[36px] flex items-center justify-center mb-[2px]"
-            @click.stop.prevent
+            :loading="isAddingToCart"
+            @click.stop.prevent="addToCart"
           >
             <ShoppingCart class="w-[18px] h-[18px]" />
           </UButton>
@@ -93,11 +90,13 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, computed } from "vue";
-import { Heart, ShoppingCart, Package, MessageSquare } from "lucide-vue-next";
+import { ShoppingCart, Package, MessageSquare } from "lucide-vue-next";
 import type { Product, AttributeValue } from "~/models/product";
 import VSecureImage from "~/components/common/VSecureImage.vue";
 import VRating from "~/components/common/VRating.vue";
+import VFavoriteButton from "~/components/common/VFavoriteButton.vue";
 import { buildProductUrl } from "~/utils/urlBuilder";
+import { useCartStore } from "~/stores/useCartStore";
 
 interface Props {
   product: Product;
@@ -105,6 +104,19 @@ interface Props {
 
 const props = defineProps<Props>();
 const router = useRouter();
+const cartStore = useCartStore();
+
+// Cart functionality
+const isAddingToCart = ref(false);
+const addToCart = async () => {
+  if (isAddingToCart.value) return;
+  isAddingToCart.value = true;
+  try {
+    await cartStore.add(props.product.id);
+  } finally {
+    isAddingToCart.value = false;
+  }
+};
 
 // Build category path from product category
 const categoryPath = computed(() => {
@@ -192,9 +204,9 @@ const selectColor = (colorId: number) => {
   }
 };
 
-// Rating stub (random for now)
-const rating = computed(() => Math.floor(Math.random() * 3) + 3); // 3-5 stars
-const reviewCount = computed(() => Math.floor(Math.random() * 200) + 10);
+// Rating from product reviews
+const rating = computed(() => props.product.average_rating || 0);
+const reviewCount = computed(() => props.product.reviews_count || 0);
 
 // Price calculations
 const currentPrice = computed(() => props.product.base_price);

@@ -2,7 +2,13 @@
   "common": {
     "search": "Search",
     "searchPlaceholder": "I want to find...",
-    "catalog": "Catalog"
+    "catalog": "Catalog",
+    "noResults": "No results found",
+    "products": "Products",
+    "categories": "Categories",
+    "blogCategories": "Blog categories",
+    "blogPosts": "Blog posts",
+    "viewAllResults": "View all results"
   },
   "header": {
     "city": "Kyiv",
@@ -20,13 +26,6 @@
   },
   "footer": {
     "workingHours": "Working hours",
-    "weekdays": "Mon-Fri",
-    "weekends": "Sat-Sun",
-    "customerSupport": "Customer support",
-    "commercialQuestions": "Commercial questions",
-    "workAtCompany": "Work at company",
-    "onlineChat": "Online chat",
-    "telegramChat": "Telegram chat",
     "socialNetworks": "Our social networks",
     "subscribers": "subscribers",
     "navCustomers": "For customers",

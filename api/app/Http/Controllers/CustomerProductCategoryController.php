@@ -208,6 +208,30 @@ class CustomerProductCategoryController extends Controller
     }
 
     /**
+     * Get all parent (root) categories with their subcategories.
+     */
+    public function parents(): JsonResponse
+    {
+        $categories = \App\Models\ProductCategory::whereNull('parent_id')
+            ->published()
+            ->with(['subcategories' => function ($q) {
+                $q->published()->withCount(['products' => function ($query) {
+                    $query->where('status', 'published');
+                }]);
+            }])
+            ->withCount(['products' => function ($query) {
+                $query->where('status', 'published');
+            }])
+            ->orderBy('name')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => ProductCategoryResource::collection($categories),
+        ]);
+    }
+
+    /**
      * Get category by slug with breadcrumbs.
      */
     public function showBySlug(string $slug): JsonResponse
