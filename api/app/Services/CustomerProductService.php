@@ -65,4 +65,15 @@ class CustomerProductService implements CustomerProductServiceInterface
 
         return $product;
     }
+
+    /**
+     * Get available filters for products.
+     *
+     * @param array $currentFilters
+     * @return array
+     */
+    public function getAvailableFilters(array $currentFilters = []): array
+    {
+        return $this->productRepository->getAvailableFilters($currentFilters);
+    }
 }

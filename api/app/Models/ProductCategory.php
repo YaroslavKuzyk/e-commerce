@@ -50,6 +50,11 @@ class ProductCategory extends Model
         return $this->belongsTo(File::class, 'menu_image_file_id');
     }
 
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class, 'category_id');
+    }
+
     public function allSubcategories(): HasMany
     {
         return $this->subcategories()->with('allSubcategories');

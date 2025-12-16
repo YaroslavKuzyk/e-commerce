@@ -13,6 +13,8 @@ interface ProductRepositoryInterface
 
     public function getAllWithFilters(array $filters): Collection|LengthAwarePaginator;
 
+    public function getAvailableFilters(array $currentFilters = []): array;
+
     public function findById(int $id): ?Product;
 
     public function findBySlug(string $slug): ?Product;

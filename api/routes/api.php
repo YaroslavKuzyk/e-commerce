@@ -33,6 +33,8 @@ Route::post('/login', [CustomerAuthController::class, 'login']);
 // Customer categories routes (public)
 Route::get('/product-categories', [CustomerProductCategoryController::class, 'index']);
 Route::get('/product-categories/flat', [CustomerProductCategoryController::class, 'flatIndex']);
+Route::get('/product-categories/resolve-path', [CustomerProductCategoryController::class, 'resolvePath']);
+Route::get('/product-categories/slug/{slug}', [CustomerProductCategoryController::class, 'showBySlug']);
 Route::get('/product-categories/{id}', [CustomerProductCategoryController::class, 'show']);
 
 // Customer files routes (public)
@@ -40,6 +42,10 @@ Route::get('/files/{id}/download', [CustomerFileController::class, 'download']);
 
 // Customer products routes (public)
 Route::get('/products', [CustomerProductController::class, 'index']);
+Route::get('/products/filters', [CustomerProductController::class, 'filters']);
+Route::get('/products/by-slugs', [CustomerProductController::class, 'indexBySlugs']);
+Route::get('/products/filters-by-slug', [CustomerProductController::class, 'filtersByCategorySlug']);
+Route::get('/products/attribute-slugs', [CustomerProductController::class, 'attributeSlugs']);
 Route::get('/products/slug/{slug}', [CustomerProductController::class, 'showBySlug']);
 Route::get('/products/{id}', [CustomerProductController::class, 'show']);
 

@@ -64,6 +64,225 @@
         </UFormField>
       </div>
 
+      <!-- Discount Section (Collapsible) -->
+      <div class="rounded-lg border border-amber-200 dark:border-amber-800 overflow-hidden">
+        <button
+          type="button"
+          class="w-full flex items-center justify-between p-4 bg-amber-50 dark:bg-amber-950/20 hover:bg-amber-100 dark:hover:bg-amber-950/30 transition-colors"
+          @click="hasDiscount = !hasDiscount"
+        >
+          <div class="flex items-center gap-3">
+            <UCheckbox v-model="hasDiscount" @click.stop />
+            <div class="flex items-center gap-2">
+              <Percent class="w-5 h-5 text-amber-600" />
+              <span class="font-medium text-amber-800 dark:text-amber-200">Знижка</span>
+            </div>
+          </div>
+          <ChevronDown
+            class="w-5 h-5 text-amber-600 transition-transform"
+            :class="{ 'rotate-180': hasDiscount }"
+          />
+        </button>
+
+        <div v-if="hasDiscount" class="p-4 space-y-4 bg-amber-50/50 dark:bg-amber-950/10">
+          <div class="grid grid-cols-2 gap-4">
+            <UFormField label="Ціна зі знижкою" name="discount_price">
+              <UInput
+                v-model.number="state.discount_price"
+                type="number"
+                step="0.01"
+                placeholder="0.00"
+                class="w-full"
+                @input="onDiscountPriceChange"
+              />
+            </UFormField>
+
+            <UFormField label="Відсоток знижки (%)" name="discount_percent">
+              <UInput
+                v-model.number="state.discount_percent"
+                type="number"
+                step="0.01"
+                min="0"
+                max="100"
+                placeholder="0"
+                class="w-full"
+                @input="onDiscountPercentChange"
+              />
+            </UFormField>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <UFormField label="Початок знижки" name="discount_starts_at">
+              <div class="relative">
+                <UButton
+                  type="button"
+                  variant="outline"
+                  color="neutral"
+                  class="w-full justify-start"
+                  @click="isDiscountStartPickerOpen = !isDiscountStartPickerOpen"
+                >
+                  <template #leading>
+                    <Calendar class="w-4 h-4" />
+                  </template>
+                  {{ formatDateForDisplay(state.discount_starts_date, state.discount_starts_hours, state.discount_starts_minutes) }}
+                </UButton>
+                <div
+                  v-if="isDiscountStartPickerOpen"
+                  class="absolute left-0 top-full mt-1 z-50 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3"
+                >
+                  <UCalendar v-model="state.discount_starts_date" />
+                  <div class="flex items-center gap-2 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                    <span class="text-sm text-gray-500">Час:</span>
+                    <USelectMenu
+                      v-model="state.discount_starts_hours"
+                      :items="hoursOptions"
+                      value-key="value"
+                      label-key="label"
+                      class="w-20"
+                    />
+                    <span>:</span>
+                    <USelectMenu
+                      v-model="state.discount_starts_minutes"
+                      :items="minutesOptions"
+                      value-key="value"
+                      label-key="label"
+                      class="w-20"
+                    />
+                  </div>
+                  <div class="flex justify-end gap-2 mt-3">
+                    <UButton
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      color="neutral"
+                      @click="state.discount_starts_date = null; isDiscountStartPickerOpen = false"
+                    >
+                      Очистити
+                    </UButton>
+                    <UButton
+                      type="button"
+                      size="sm"
+                      @click="isDiscountStartPickerOpen = false"
+                    >
+                      Готово
+                    </UButton>
+                  </div>
+                </div>
+              </div>
+            </UFormField>
+
+            <UFormField label="Кінець знижки" name="discount_ends_at">
+              <div class="relative">
+                <UButton
+                  type="button"
+                  variant="outline"
+                  color="neutral"
+                  class="w-full justify-start"
+                  @click="isDiscountEndPickerOpen = !isDiscountEndPickerOpen"
+                >
+                  <template #leading>
+                    <Calendar class="w-4 h-4" />
+                  </template>
+                  {{ formatDateForDisplay(state.discount_ends_date, state.discount_ends_hours, state.discount_ends_minutes) }}
+                </UButton>
+                <div
+                  v-if="isDiscountEndPickerOpen"
+                  class="absolute left-0 top-full mt-1 z-50 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg p-3"
+                >
+                  <UCalendar v-model="state.discount_ends_date" />
+                  <div class="flex items-center gap-2 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                    <span class="text-sm text-gray-500">Час:</span>
+                    <USelectMenu
+                      v-model="state.discount_ends_hours"
+                      :items="hoursOptions"
+                      value-key="value"
+                      label-key="label"
+                      class="w-20"
+                    />
+                    <span>:</span>
+                    <USelectMenu
+                      v-model="state.discount_ends_minutes"
+                      :items="minutesOptions"
+                      value-key="value"
+                      label-key="label"
+                      class="w-20"
+                    />
+                  </div>
+                  <div class="flex justify-end gap-2 mt-3">
+                    <UButton
+                      type="button"
+                      size="sm"
+                      variant="ghost"
+                      color="neutral"
+                      @click="state.discount_ends_date = null; isDiscountEndPickerOpen = false"
+                    >
+                      Очистити
+                    </UButton>
+                    <UButton
+                      type="button"
+                      size="sm"
+                      @click="isDiscountEndPickerOpen = false"
+                    >
+                      Готово
+                    </UButton>
+                  </div>
+                </div>
+              </div>
+            </UFormField>
+          </div>
+
+          <div v-if="state.discount_price && state.base_price" class="text-sm text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/30 p-3 rounded-lg">
+            Економія: <strong>{{ (state.base_price - state.discount_price).toFixed(2) }} грн</strong>
+          </div>
+        </div>
+      </div>
+
+      <!-- Clearance Section (Collapsible) -->
+      <div class="rounded-lg border border-red-200 dark:border-red-800 overflow-hidden">
+        <button
+          type="button"
+          class="w-full flex items-center justify-between p-4 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-950/30 transition-colors"
+          @click="state.is_clearance = !state.is_clearance"
+        >
+          <div class="flex items-center gap-3">
+            <UCheckbox v-model="state.is_clearance" @click.stop />
+            <div class="flex items-center gap-2">
+              <Tag class="w-5 h-5 text-red-600" />
+              <span class="font-medium text-red-800 dark:text-red-200">Уцінка</span>
+            </div>
+          </div>
+          <ChevronDown
+            class="w-5 h-5 text-red-600 transition-transform"
+            :class="{ 'rotate-180': state.is_clearance }"
+          />
+        </button>
+
+        <div v-if="state.is_clearance" class="p-4 space-y-4 bg-red-50/50 dark:bg-red-950/10">
+          <UFormField label="Ціна уцінки" name="clearance_price" required>
+            <UInput
+              v-model.number="state.clearance_price"
+              type="number"
+              step="0.01"
+              placeholder="0.00"
+              class="w-full"
+            />
+          </UFormField>
+
+          <UFormField label="Причина уцінки" name="clearance_reason" required>
+            <UTextarea
+              v-model="state.clearance_reason"
+              placeholder="Вкажіть причину уцінки (пошкодження упаковки, вітринний зразок, тощо)..."
+              :rows="2"
+              class="w-full"
+            />
+          </UFormField>
+
+          <div v-if="state.clearance_price" class="text-sm text-red-700 dark:text-red-300 bg-red-100 dark:bg-red-900/30 p-3 rounded-lg">
+            Знижка: <strong>{{ calculateClearancePercent }}%</strong> від базової ціни
+          </div>
+        </div>
+      </div>
+
       <UFormField label="Короткий опис" name="short_description">
         <UTextarea
           v-model="state.short_description"
@@ -206,8 +425,10 @@
 
 <script setup lang="ts">
 import { z } from "zod";
-import { Ban, Send } from "lucide-vue-next";
+import { CalendarDate, type DateValue } from "@internationalized/date";
+import { Ban, Send, Calendar, ChevronDown, Percent, Tag } from "lucide-vue-next";
 import type { Product, ProductStatus } from "~/models/product";
+import type { ProductCategory } from "~/models/productCategory";
 import VSecureImage from "~/components/common/VSecureImage.vue";
 import VFilePickerModal from "~/components/files/modals/VFilePickerModal.vue";
 import VWysiwygEditor from "~/components/common/VWysiwygEditor.vue";
@@ -238,11 +459,59 @@ const schema = z.object({
   category_id: z.number().nullable().optional(),
   brand_id: z.number().nullable().optional(),
   base_price: z.number().min(0).optional(),
+  discount_price: z.number().min(0).nullable().optional(),
+  discount_percent: z.number().min(0).max(100).nullable().optional(),
+  is_clearance: z.boolean().optional(),
+  clearance_price: z.number().min(0).nullable().optional(),
+  clearance_reason: z.string().nullable().optional(),
   short_description: z.string().nullable().optional(),
   description: z.string().nullable().optional(),
   main_image_file_id: z.number().nullable().optional(),
   attribute_ids: z.array(z.number()).optional(),
 });
+
+// Parse datetime string to CalendarDate and time parts
+const parseDateTime = (dateString: string | null | undefined): { date: CalendarDate | null; hours: string; minutes: string } => {
+  if (!dateString) return { date: null, hours: "00", minutes: "00" };
+  try {
+    const date = new Date(dateString);
+    return {
+      date: new CalendarDate(date.getFullYear(), date.getMonth() + 1, date.getDate()),
+      hours: date.getHours().toString().padStart(2, "0"),
+      minutes: date.getMinutes().toString().padStart(2, "0"),
+    };
+  } catch {
+    return { date: null, hours: "00", minutes: "00" };
+  }
+};
+
+// Format CalendarDate and time to ISO string for API
+const formatDateTimeForApi = (calendarDate: DateValue | null, hours: string, minutes: string): string | null => {
+  if (!calendarDate) return null;
+  const date = new Date(
+    calendarDate.year,
+    calendarDate.month - 1,
+    calendarDate.day,
+    parseInt(hours) || 0,
+    parseInt(minutes) || 0
+  );
+  return date.toISOString();
+};
+
+// Format date for display
+const formatDateForDisplay = (date: DateValue | null, hours: string, minutes: string): string => {
+  if (!date) return "Оберіть дату";
+  const d = new Date(date.year, date.month - 1, date.day);
+  return `${d.toLocaleDateString("uk-UA")} ${hours}:${minutes}`;
+};
+
+const parsedDiscountStart = parseDateTime(props.product?.discount_starts_at);
+const parsedDiscountEnd = parseDateTime(props.product?.discount_ends_at);
+
+// Check if product has discount
+const hasDiscount = ref(
+  !!(props.product?.discount_price || props.product?.discount_percent)
+);
 
 const state = reactive({
   name: props.product?.name || "",
@@ -251,11 +520,37 @@ const state = reactive({
   category_id: props.product?.category_id || null,
   brand_id: props.product?.brand_id || null,
   base_price: Number(props.product?.base_price) || 0,
+  discount_price: props.product?.discount_price ? Number(props.product.discount_price) : null,
+  discount_percent: props.product?.discount_percent ? Number(props.product.discount_percent) : null,
+  discount_starts_date: parsedDiscountStart.date as DateValue | null,
+  discount_starts_hours: parsedDiscountStart.hours,
+  discount_starts_minutes: parsedDiscountStart.minutes,
+  discount_ends_date: parsedDiscountEnd.date as DateValue | null,
+  discount_ends_hours: parsedDiscountEnd.hours,
+  discount_ends_minutes: parsedDiscountEnd.minutes,
+  is_clearance: props.product?.is_clearance || false,
+  clearance_price: props.product?.clearance_price ? Number(props.product.clearance_price) : null,
+  clearance_reason: props.product?.clearance_reason || null,
   short_description: props.product?.short_description || null,
   description: props.product?.description || null,
   main_image_file_id: props.product?.main_image_file_id || null,
   attribute_ids: props.product?.attributes?.map(a => a.id) || [] as number[],
 });
+
+// Date picker states
+const isDiscountStartPickerOpen = ref(false);
+const isDiscountEndPickerOpen = ref(false);
+
+// Hours and minutes options
+const hoursOptions = Array.from({ length: 24 }, (_, i) => ({
+  label: i.toString().padStart(2, "0"),
+  value: i.toString().padStart(2, "0"),
+}));
+
+const minutesOptions = Array.from({ length: 60 }, (_, i) => ({
+  label: i.toString().padStart(2, "0"),
+  value: i.toString().padStart(2, "0"),
+}));
 
 const statusItems = [
   { label: "Чернетка", value: "draft" },
@@ -275,10 +570,20 @@ const { data: brandsData } = await productBrandStore.fetchProductBrands();
 const { data: attributesData } = await attributeStore.fetchAttributes();
 
 const categoryOptions = computed(() => {
-  return (categoriesData.value || []).map(cat => ({
-    label: cat.name,
-    value: cat.id,
-  }));
+  const flatten = (cats: ProductCategory[], level = 0): { label: string; value: number }[] => {
+    return cats.reduce((acc: { label: string; value: number }[], cat) => {
+      const prefix = level > 0 ? '— '.repeat(level) : '';
+      acc.push({
+        label: prefix + cat.name,
+        value: cat.id,
+      });
+      if (cat.subcategories && cat.subcategories.length > 0) {
+        acc.push(...flatten(cat.subcategories, level + 1));
+      }
+      return acc;
+    }, []);
+  };
+  return flatten(categoriesData.value || []);
 });
 
 const brandOptions = computed(() => {
@@ -295,6 +600,47 @@ const availableAttributes = computed(() => {
 const selectedAttributes = computed(() => {
   return availableAttributes.value.filter(attr => state.attribute_ids.includes(attr.id));
 });
+
+// Discount calculations
+const calculateClearancePercent = computed(() => {
+  if (!state.clearance_price || !state.base_price) return 0;
+  return Math.round((1 - state.clearance_price / state.base_price) * 100);
+});
+
+// Flag to prevent infinite loops during recalculation
+let isRecalculating = false;
+
+// Recalculate discount percent when discount price changes
+const onDiscountPriceChange = () => {
+  if (isRecalculating || !state.base_price) return;
+  isRecalculating = true;
+
+  nextTick(() => {
+    if (state.discount_price && state.discount_price > 0) {
+      const percent = ((state.base_price - state.discount_price) / state.base_price) * 100;
+      state.discount_percent = Math.round(percent * 100) / 100; // Round to 2 decimal places
+    } else {
+      state.discount_percent = null;
+    }
+    isRecalculating = false;
+  });
+};
+
+// Recalculate discount price when discount percent changes
+const onDiscountPercentChange = () => {
+  if (isRecalculating || !state.base_price) return;
+  isRecalculating = true;
+
+  nextTick(() => {
+    if (state.discount_percent && state.discount_percent > 0) {
+      const price = state.base_price * (1 - state.discount_percent / 100);
+      state.discount_price = Math.round(price * 100) / 100; // Round to 2 decimal places
+    } else {
+      state.discount_price = null;
+    }
+    isRecalculating = false;
+  });
+};
 
 // File picker
 const isMainImageFilePickerOpen = ref(false);
@@ -340,18 +686,27 @@ const onSubmit = async () => {
   try {
     let result;
 
+    const productData = {
+      name: state.name,
+      slug: state.slug,
+      status: state.status,
+      category_id: state.category_id,
+      brand_id: state.brand_id,
+      base_price: state.base_price,
+      discount_price: hasDiscount.value ? (state.discount_price || null) : null,
+      discount_percent: hasDiscount.value ? (state.discount_percent || null) : null,
+      discount_starts_at: hasDiscount.value ? formatDateTimeForApi(state.discount_starts_date, state.discount_starts_hours, state.discount_starts_minutes) : null,
+      discount_ends_at: hasDiscount.value ? formatDateTimeForApi(state.discount_ends_date, state.discount_ends_hours, state.discount_ends_minutes) : null,
+      is_clearance: state.is_clearance,
+      clearance_price: state.is_clearance ? state.clearance_price : null,
+      clearance_reason: state.is_clearance ? state.clearance_reason : null,
+      short_description: state.short_description,
+      description: state.description,
+      main_image_file_id: state.main_image_file_id,
+    };
+
     if (props.product) {
-      result = await productStore.onUpdateProduct(props.product.id, {
-        name: state.name,
-        slug: state.slug,
-        status: state.status,
-        category_id: state.category_id,
-        brand_id: state.brand_id,
-        base_price: state.base_price,
-        short_description: state.short_description,
-        description: state.description,
-        main_image_file_id: state.main_image_file_id,
-      });
+      result = await productStore.onUpdateProduct(props.product.id, productData);
 
       // Sync attributes if changed
       if (!result.error.value) {
@@ -359,15 +714,7 @@ const onSubmit = async () => {
       }
     } else {
       result = await productStore.onCreateProduct({
-        name: state.name,
-        slug: state.slug,
-        status: state.status,
-        category_id: state.category_id,
-        brand_id: state.brand_id,
-        base_price: state.base_price,
-        short_description: state.short_description,
-        description: state.description,
-        main_image_file_id: state.main_image_file_id,
+        ...productData,
         attribute_ids: state.attribute_ids,
       });
     }

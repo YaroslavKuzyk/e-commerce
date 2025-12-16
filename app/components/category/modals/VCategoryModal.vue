@@ -26,6 +26,17 @@
 import VCategoryTreeItem from "~/components/category/tree/VCategoryTreeItem.vue";
 
 const model = defineModel<boolean>({ default: false });
+const route = useRoute();
+
+// Close modal on route change
+watch(
+  () => route.fullPath,
+  () => {
+    if (model.value) {
+      model.value = false;
+    }
+  }
+);
 
 watch(model, (isOpen) => {
   if (isOpen) {

@@ -18,7 +18,7 @@
           :key="category.id"
           :category="category"
           :active="
-            activeCategory === category.id ||
+            activeCategoryId === category.id ||
             (!isInteractive && category.id === 2)
           "
           @mouseenter="handleCategoryHover(category.id)"
@@ -31,14 +31,26 @@
         :style="{ maxHeight: `${listHeight}px` }"
       >
         <div>
-          <div v-if="subcategoriesData.length">
-            <h4 class="text-lg font-semibold flex items-center gap-2">
+          <div v-if="activeCategory">
+            <router-link
+              :to="`/category/${activeCategory.slug}`"
+              class="text-lg font-semibold flex items-center gap-2 mb-2"
+            >
               <VSecureImage
-                :fileId="subcategoriesData[0]?.logo_file_id"
+                v-if="activeCategory.logo_file_id"
+                :fileId="activeCategory.logo_file_id"
                 class="w-6 h-6 mr-[2px]"
               />
+              {{ activeCategory.name }}
+            </router-link>
+
+            <router-link
+              v-if="subcategoriesData.length"
+              :to="`/category/${activeCategory.slug}/${subcategoriesData[0].slug}`"
+              class="text-md font-medium flex items-center gap-2 text-gray-600"
+            >
               Підкатегорії
-            </h4>
+            </router-link>
 
             <div class="pl-9">
               <router-link
@@ -93,13 +105,19 @@ const isInteractive = computed(() => onPage || inModal);
 
 const categoriesListRef = ref<HTMLElement | null>(null);
 const listHeight = ref(0);
-const activeCategory = ref<number | null>(null);
+const activeCategoryId = ref<number | null>(null);
 const showContent = ref(false);
 const subcategoriesData = ref<ProductCategory[]>([]);
 
+const activeCategory = computed(() =>
+  categoriesData.value?.find(
+    (category) => category.id === activeCategoryId.value
+  )
+);
+
 const handleCategoryHover = (id: number) => {
   if (isInteractive.value) {
-    activeCategory.value = id;
+    activeCategoryId.value = id;
     showContent.value = true;
 
     subcategoriesData.value =
@@ -119,7 +137,7 @@ onMounted(() => {
     }
 
     if (inModal) {
-      activeCategory.value = 1;
+      activeCategoryId.value = 1;
       showContent.value = true;
     }
   });

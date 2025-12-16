@@ -10,5 +10,6 @@ export const useProduct = () => {
     getLatestProducts: (limit?: number) => provider.getLatestProducts(limit),
     getProductById: (id: number) => provider.getProductById(id),
     getProductBySlug: (slug: string) => provider.getProductBySlug(slug),
+    getAvailableFilters: (categoryId?: number) => provider.getAvailableFilters(categoryId),
   };
 };

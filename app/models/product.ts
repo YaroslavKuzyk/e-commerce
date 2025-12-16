@@ -28,10 +28,22 @@ export interface ProductVariant {
   id: number;
   product_id: number;
   sku: string;
+  slug: string;
+  name: string | null;
   price: string;
-  stock_quantity: number;
+  stock: number;
   is_default: boolean;
   status: string;
+  override_pricing: boolean;
+  discount_price: string | null;
+  discount_percent: string | null;
+  discount_starts_at: string | null;
+  discount_ends_at: string | null;
+  is_clearance: boolean;
+  clearance_price: string | null;
+  clearance_reason: string | null;
+  current_price: number;
+  discount_percentage: number | null;
   images?: ProductVariantImage[];
   attribute_values?: AttributeValue[];
   created_at: string;
@@ -42,6 +54,8 @@ export interface AttributeValue {
   id: number;
   attribute_id: number;
   value: string;
+  slug?: string;
+  color_code?: string | null;
   sort_order: number;
   attribute?: Attribute;
 }
@@ -74,6 +88,15 @@ export interface Product {
   brand?: ProductBrand;
   status: string;
   base_price: string;
+  discount_price: string | null;
+  discount_percent: string | null;
+  discount_starts_at: string | null;
+  discount_ends_at: string | null;
+  is_clearance: boolean;
+  clearance_price: string | null;
+  clearance_reason: string | null;
+  current_price?: number;
+  discount_percentage?: number | null;
   main_image_file_id: number | null;
   main_image?: {
     id: number;
@@ -102,6 +125,67 @@ export interface IProductProvider {
 }
 
 export interface ProductFilters {
+  search?: string;
   category_id?: number;
   brand_id?: number;
+  brand_ids?: number[];
+  price_min?: number;
+  price_max?: number;
+  attribute_values?: number[];
+  specifications?: Record<string, string>;
+  in_stock?: boolean;
+  has_discount?: boolean;
+  is_clearance?: boolean;
+  sort_by?: 'created_at' | 'name' | 'price_asc' | 'price_desc';
+}
+
+export interface PriceRange {
+  min: number;
+  max: number;
+}
+
+export interface FilterCategory {
+  id: number;
+  name: string;
+  slug: string;
+  products_count: number;
+  logo_file_id?: number | null;
+  subcategories?: FilterCategory[];
+}
+
+export interface FilterBrand {
+  id: number;
+  name: string;
+  slug: string;
+  products_count: number;
+}
+
+export interface FilterAttributeValue {
+  id: number;
+  value: string;
+  slug: string;
+  sort_order: number;
+  variants_count: number;
+}
+
+export interface FilterAttribute {
+  id: number;
+  name: string;
+  slug: string;
+  type: string;
+  values: FilterAttributeValue[];
+}
+
+export interface FilterSpecification {
+  name: string;
+  values: string[];
+  products_count: number;
+}
+
+export interface AvailableFilters {
+  price_range: PriceRange;
+  categories: FilterCategory[];
+  brands: FilterBrand[];
+  attributes: FilterAttribute[];
+  specifications: FilterSpecification[];
 }

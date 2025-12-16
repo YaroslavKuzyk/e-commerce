@@ -34,4 +34,12 @@ class AttributeValue extends Model
         return $this->belongsToMany(ProductVariant::class, 'product_variant_attribute_values')
             ->withTimestamps();
     }
+
+    /**
+     * Alias for productVariants for consistency.
+     */
+    public function variants(): BelongsToMany
+    {
+        return $this->productVariants();
+    }
 }

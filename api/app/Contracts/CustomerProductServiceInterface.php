@@ -34,4 +34,12 @@ interface CustomerProductServiceInterface
      * @throws \Exception
      */
     public function getProductBySlug(string $slug): Product;
+
+    /**
+     * Get available filters for products.
+     *
+     * @param array $currentFilters
+     * @return array
+     */
+    public function getAvailableFilters(array $currentFilters = []): array;
 }

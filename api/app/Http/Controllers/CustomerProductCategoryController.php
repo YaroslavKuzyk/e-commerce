@@ -149,4 +149,100 @@ class CustomerProductCategoryController extends Controller
             ], 404);
         }
     }
+
+    /**
+     * Resolve a category path (array of slugs) to category data with breadcrumbs.
+     */
+    public function resolvePath(Request $request): JsonResponse
+    {
+        $pathSlugs = $request->query('path', []);
+
+        if (empty($pathSlugs)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Path is required',
+            ], 400);
+        }
+
+        $categories = [];
+        $parentId = null;
+
+        foreach ($pathSlugs as $slug) {
+            $query = \App\Models\ProductCategory::where('slug', $slug)
+                ->published();
+
+            if ($parentId === null) {
+                $query->whereNull('parent_id');
+            } else {
+                $query->where('parent_id', $parentId);
+            }
+
+            $category = $query->first();
+
+            if (!$category) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Category not found: {$slug}",
+                ], 404);
+            }
+
+            $categories[] = $category;
+            $parentId = $category->id;
+        }
+
+        $deepestCategory = end($categories);
+        $deepestCategory->load(['subcategories' => function ($q) {
+            $q->published()->withCount(['products' => function ($query) {
+                $query->where('status', 'published');
+            }]);
+        }]);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'category' => new ProductCategoryResource($deepestCategory),
+                'breadcrumbs' => ProductCategoryResource::collection($categories),
+                'category_id' => $deepestCategory->id,
+            ],
+        ]);
+    }
+
+    /**
+     * Get category by slug with breadcrumbs.
+     */
+    public function showBySlug(string $slug): JsonResponse
+    {
+        $category = \App\Models\ProductCategory::where('slug', $slug)
+            ->published()
+            ->with(['subcategories' => function ($q) {
+                $q->published()->withCount(['products' => function ($query) {
+                    $query->where('status', 'published');
+                }]);
+            }, 'parent'])
+            ->first();
+
+        if (!$category) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Category not found',
+            ], 404);
+        }
+
+        // Build breadcrumbs by traversing up the parent chain
+        $breadcrumbs = [];
+        $current = $category;
+        while ($current) {
+            array_unshift($breadcrumbs, $current);
+            $current = $current->parent;
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'category' => new ProductCategoryResource($category),
+                'breadcrumbs' => ProductCategoryResource::collection($breadcrumbs),
+                'category_id' => $category->id,
+            ],
+        ]);
+    }
 }
