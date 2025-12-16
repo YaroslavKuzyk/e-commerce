@@ -254,7 +254,7 @@ const columns = computed(() => [
   { id: 'category', header: t('blog.posts.category'), meta: { class: { th: 'w-[150px]' } } },
   { id: 'status', header: t('common.status'), meta: { class: { th: 'w-[120px]' } } },
   { id: 'publication_date', header: t('blog.posts.publicationDate'), meta: { class: { th: 'w-[150px]' } } },
-  { id: 'actions', header: '', meta: { class: { th: 'w-24' } } },
+  { id: 'actions', header: t('common.actions'), meta: { class: { th: 'w-24 text-end', td: 'text-end' } } },
 ]);
 
 const {

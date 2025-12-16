@@ -17,20 +17,78 @@
           <UNavigationMenu :items="menuItems" />
         </div>
         <div class="flex items-center gap-4">
-          <UButton variant="soft" size="xs" color="neutral">{{
-            $t("header.telegram")
-          }}</UButton>
-          <UButton variant="soft" size="xs" color="neutral">{{
-            $t("header.viber")
-          }}</UButton>
-          <UNavigationMenu :items="phoneItems" />
-          <UButton variant="soft" size="xs" color="neutral">{{
+          <template v-for="(phone, index) in phones" :key="index">
+            <!-- text: показує тільки номер як текст -->
+            <span
+              v-if="phone.display_type === 'text'"
+              class="text-sm text-muted"
+            >
+              {{ phone.number }}
+            </span>
+
+            <!-- button: кнопка з міткою без посилання -->
+            <UButton
+              v-else-if="phone.display_type === 'button'"
+              variant="soft"
+              size="xs"
+              color="neutral"
+            >
+              {{ phone.label }}
+            </UButton>
+
+            <!-- button-link: кнопка з міткою та посиланням tel: -->
+            <UButton
+              v-else-if="phone.display_type === 'button-link'"
+              variant="soft"
+              size="xs"
+              color="neutral"
+              :to="`tel:${phone.number.replace(/[^+\d]/g, '')}`"
+            >
+              {{ phone.label }}
+            </UButton>
+
+            <!-- link: текстове посилання з номером -->
+            <a
+              v-else-if="phone.display_type === 'link'"
+              :href="`tel:${phone.number.replace(/[^+\d]/g, '')}`"
+              class="text-sm text-muted hover:text-primary transition-colors"
+            >
+              {{ phone.number }}
+            </a>
+
+            <!-- fallback для старих даних без display_type -->
+            <span v-else class="text-sm text-muted">
+              {{ phone.number }}
+            </span>
+          </template>
+
+          <template v-if="phones.length === 0">
+            <UButton variant="soft" size="xs" color="neutral">{{
+              $t("header.telegram")
+            }}</UButton>
+            <UButton variant="soft" size="xs" color="neutral">{{
+              $t("header.viber")
+            }}</UButton>
+            <span class="text-sm text-muted">+38 (099) 028-41-95</span>
+          </template>
+
+          <UButton variant="soft" size="xs" color="neutral" @click="isCallbackModalOpen = true">{{
             $t("header.callBack")
           }}</UButton>
         </div>
       </div>
       <div class="flex items-center gap-4">
-        <IconLogo />
+        <NuxtLink to="/">
+          <VSecureImage
+            v-if="logoFileId"
+            :file-id="logoFileId"
+            alt="Logo"
+            width="w-auto"
+            object-fit="contain"
+            img-class="h-[50px]"
+          />
+          <IconLogo v-else />
+        </NuxtLink>
 
         <UButton @click="isCatalogModalOpen = true">
           <template #leading>
@@ -39,22 +97,7 @@
           {{ $t("common.catalog") }}
         </UButton>
 
-        <div class="flex-1 flex">
-          <UInput
-            :placeholder="$t('common.searchPlaceholder')"
-            class="flex-1"
-            :ui="{
-              base: 'rounded-e-none',
-            }"
-          >
-            <template #leading>
-              <Search class="w-5 h-5 text-neutral-400" />
-            </template>
-          </UInput>
-          <UButton color="neutral" class="rounded-s-none">{{
-            $t("common.search")
-          }}</UButton>
-        </div>
+        <VGlobalSearch />
 
         <div class="flex gap-4">
           <UButton variant="ghost" color="neutral">
@@ -62,36 +105,55 @@
               <UserRound class="w-5 h-5" />
             </template>
           </UButton>
-          <UButton variant="ghost" color="neutral">
-            <template #leading>
-              <Heart class="w-5 h-5" />
-            </template>
-          </UButton>
+          <NuxtLink :to="localePath('/favorites')">
+            <UButton variant="ghost" color="neutral" class="relative">
+              <template #leading>
+                <Heart class="w-5 h-5" />
+              </template>
+              <span
+                v-if="favoriteStore.count > 0"
+                class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium"
+              >
+                {{ favoriteStore.count > 99 ? '99+' : favoriteStore.count }}
+              </span>
+            </UButton>
+          </NuxtLink>
           <UButton variant="ghost" color="neutral">
             <template #leading>
               <Scale class="w-5 h-5" />
             </template>
           </UButton>
-          <UButton variant="ghost" color="neutral">
-            <template #leading>
-              <ShoppingCart class="w-5 h-5" />
-            </template>
-          </UButton>
+          <NuxtLink :to="localePath('/cart')">
+            <UButton variant="ghost" color="neutral" class="relative">
+              <template #leading>
+                <ShoppingCart class="w-5 h-5" />
+              </template>
+              <span
+                v-if="cartStore.totalQuantity > 0"
+                class="absolute -top-1 -right-1 w-5 h-5 bg-primary text-white text-xs rounded-full flex items-center justify-center font-medium"
+              >
+                {{ cartStore.totalQuantity > 99 ? '99+' : cartStore.totalQuantity }}
+              </span>
+            </UButton>
+          </NuxtLink>
         </div>
       </div>
     </UContainer>
 
     <VCatalogModal v-model="isCatalogModalOpen" />
+    <VCallbackModal v-model="isCallbackModalOpen" />
   </header>
 </template>
 
 <script lang="ts" setup>
 import VLangDropdown from "~/components/common/VLangDropdown.vue";
+import VGlobalSearch from "~/components/common/VGlobalSearch.vue";
+import VSecureImage from "~/components/common/VSecureImage.vue";
 import IconLogo from "~/components/icons/IconLogo.vue";
 import VCatalogModal from "~/components/category/modals/VCategoryModal.vue";
+import VCallbackModal from "~/components/common/modals/VCallbackModal.vue";
 import {
   Menu,
-  Search,
   UserRound,
   Heart,
   Scale,
@@ -99,12 +161,23 @@ import {
   ChevronDown,
   MapPin,
 } from "lucide-vue-next";
+import { useFavoriteStore } from "~/stores/useFavoriteStore";
+import { useCartStore } from "~/stores/useCartStore";
 
 const isCatalogModalOpen = ref(false);
+const isCallbackModalOpen = ref(false);
 
 const { t } = useI18n();
 const localePath = useLocalePath();
-const { phoneOne, phoneTwo } = useConstants();
+const { phones, logoFileId } = useStoreSettings();
+const favoriteStore = useFavoriteStore();
+const cartStore = useCartStore();
+
+// Initialize favorites and cart on mount
+onMounted(() => {
+  favoriteStore.init();
+  cartStore.init();
+});
 
 const menuItems = computed(() => {
   return [
@@ -114,34 +187,19 @@ const menuItems = computed(() => {
     },
     {
       label: t("nav.categories"),
-      to: localePath("/categories"),
+      to: localePath("/category"),
     },
     {
       label: t("nav.promotions"),
-      to: localePath("/promotions"),
+      to: localePath("/store/akcii"),
     },
     {
       label: t("nav.discount"),
-      to: localePath("/discount"),
+      to: localePath("/store/ucinka"),
     },
     {
       label: t("nav.blog"),
       to: localePath("/blog"),
-    },
-    {
-      label: t("nav.contacts"),
-      to: localePath("/contacts"),
-    },
-  ];
-});
-
-const phoneItems = computed(() => {
-  return [
-    {
-      label: phoneOne,
-    },
-    {
-      label: phoneTwo,
     },
   ];
 });

@@ -12,8 +12,8 @@
       />
     </div>
     <div class="flex justify-center">
-      <UButton variant="link">
-        Категорії
+      <UButton variant="link" to="/category">
+        Всі категорії
 
         <template #trailing>
           <ArrowRight class="w-5 h-5" />

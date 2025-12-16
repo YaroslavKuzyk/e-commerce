@@ -31,7 +31,8 @@
       "Bash(xargs kill:*)",
       "Bash(grep:*)",
       "Bash(npx vue-tsc:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(xargs:*)"
     ],
     "deny": [],
     "ask": []

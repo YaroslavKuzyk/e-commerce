@@ -12,15 +12,13 @@
       />
     </div>
     <div class="flex justify-center">
-      <NuxtLink to="/store">
-        <UButton variant="link">
-          Продукти
+      <UButton variant="link" to="/store">
+        Всі товари
 
-          <template #trailing>
-            <ArrowRight class="w-5 h-5" />
-          </template>
-        </UButton>
-      </NuxtLink>
+        <template #trailing>
+          <ArrowRight class="w-5 h-5" />
+        </template>
+      </UButton>
     </div>
   </div>
 </template>

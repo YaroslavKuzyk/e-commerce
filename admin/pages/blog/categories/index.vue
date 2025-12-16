@@ -196,7 +196,7 @@ const columns = computed(() => [
   { id: 'slug', header: t('table.slug') },
   { id: 'status', header: t('common.status'), meta: { class: { th: 'w-[120px]' } } },
   { id: 'posts_count', header: t('blog.categories.postsCount'), meta: { class: { th: 'w-[100px]' } } },
-  { id: 'actions', header: '', meta: { class: { th: 'w-24' } } },
+  { id: 'actions', header: t('common.actions'), meta: { class: { th: 'w-24 text-end', td: 'text-end' } } },
 ]);
 
 const {

@@ -145,11 +145,56 @@
             </div>
 
             <!-- Add to Cart -->
-            <div class="flex gap-4">
-              <UButton size="lg" :disabled="!isInStock">
-                Додати в кошик
+            <div class="flex items-center gap-4">
+              <!-- Quantity Input -->
+              <div class="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg">
+                <button
+                  class="px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-l-lg transition-colors"
+                  :disabled="quantity <= 1"
+                  @click="decreaseQuantity"
+                >
+                  <Minus class="w-4 h-4" />
+                </button>
+                <input
+                  v-model.number="quantity"
+                  type="number"
+                  min="1"
+                  :max="currentVariant?.stock || 999"
+                  class="w-14 text-center py-2 border-0 focus:ring-0 bg-transparent font-medium"
+                  @input="validateQuantity"
+                />
+                <button
+                  class="px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-r-lg transition-colors"
+                  :disabled="quantity >= (currentVariant?.stock || 999)"
+                  @click="increaseQuantity"
+                >
+                  <Plus class="w-4 h-4" />
+                </button>
+              </div>
+
+              <!-- Add to Cart Button -->
+              <UButton
+                size="lg"
+                :disabled="!isInStock"
+                :loading="isAddingToCart"
+                @click="handleAddToCart"
+              >
+                {{ $t('cart.addToCart') }}
               </UButton>
-              <UButton size="lg" variant="outline"> Додати в обране </UButton>
+
+              <!-- Add to Favorites Button -->
+              <UButton
+                size="lg"
+                variant="outline"
+                :color="isFavorite ? 'error' : 'neutral'"
+                :loading="isTogglingFavorite"
+                @click="handleToggleFavorite"
+              >
+                <template #leading>
+                  <Heart :class="['w-5 h-5', isFavorite ? 'fill-current' : '']" />
+                </template>
+                {{ isFavorite ? $t('favorites.removeFromFavorites') : $t('favorites.addToFavorites') }}
+              </UButton>
             </div>
 
             <!-- SKU -->
@@ -182,6 +227,9 @@
             </div>
           </div>
         </div>
+
+        <!-- Reviews -->
+        <VProductReviews :product-slug="product.slug" />
       </div>
 
       <!-- Not Found -->
@@ -200,10 +248,13 @@
 </template>
 
 <script setup lang="ts">
-import { Package } from "lucide-vue-next";
+import { Package, Minus, Plus, Heart } from "lucide-vue-next";
 import VBreadcrumbs from "~/components/common/VBreadcrumbs.vue";
 import VSecureImage from "~/components/common/VSecureImage.vue";
+import VProductReviews from "~/components/product/reviews/VProductReviews.vue";
 import { buildProductUrl } from "~/utils/urlBuilder";
+import { useCartStore } from "~/stores/useCartStore";
+import { useFavoriteStore } from "~/stores/useFavoriteStore";
 import type {
   Product,
   ProductVariant,
@@ -213,6 +264,8 @@ import type {
 const route = useRoute();
 const router = useRouter();
 const client = useSanctumClient();
+const cartStore = useCartStore();
+const favoriteStore = useFavoriteStore();
 
 // Get slug array from route
 const slugArray = computed(() => {
@@ -280,6 +333,69 @@ const isInStock = computed(() => {
   }
   return false;
 });
+
+// Quantity management
+const quantity = ref(1);
+
+const decreaseQuantity = () => {
+  if (quantity.value > 1) {
+    quantity.value--;
+  }
+};
+
+const increaseQuantity = () => {
+  const maxStock = currentVariant.value?.stock || 999;
+  if (quantity.value < maxStock) {
+    quantity.value++;
+  }
+};
+
+const validateQuantity = () => {
+  const maxStock = currentVariant.value?.stock || 999;
+  if (quantity.value < 1) {
+    quantity.value = 1;
+  } else if (quantity.value > maxStock) {
+    quantity.value = maxStock;
+  }
+};
+
+// Reset quantity when variant changes
+watch(currentVariant, () => {
+  quantity.value = 1;
+});
+
+// Cart functionality
+const isAddingToCart = ref(false);
+
+const handleAddToCart = async () => {
+  if (isAddingToCart.value || !isInStock.value || !product.value) return;
+
+  isAddingToCart.value = true;
+  try {
+    await cartStore.add(product.value.id, quantity.value);
+  } finally {
+    isAddingToCart.value = false;
+  }
+};
+
+// Favorites functionality
+const isTogglingFavorite = ref(false);
+
+const isFavorite = computed(() => {
+  if (!product.value) return false;
+  return favoriteStore.isFavorite(product.value.id);
+});
+
+const handleToggleFavorite = async () => {
+  if (isTogglingFavorite.value || !product.value) return;
+
+  isTogglingFavorite.value = true;
+  try {
+    await favoriteStore.toggle(product.value.id);
+  } finally {
+    isTogglingFavorite.value = false;
+  }
+};
 
 // Attribute selection
 const isAttributeSelected = (attrId: number, valueId: number): boolean => {

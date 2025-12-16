@@ -97,6 +97,9 @@ import {
   SlidersHorizontal,
   Newspaper,
   FileText,
+  MessageSquare,
+  Store,
+  PhoneCall,
 } from "lucide-vue-next";
 import type { Component } from "vue";
 import VAvatar from "@/components/common/VAvatar.vue";
@@ -190,6 +193,12 @@ const menus = computed(() => {
           to: "/products/brands",
           requiredPermissions: ["Read Product Brands"],
         },
+        {
+          label: t("nav.reviews"),
+          icon: MessageSquare,
+          to: "/reviews",
+          requiredPermissions: ["Read Product Reviews"],
+        },
       ],
     },
     {
@@ -220,6 +229,18 @@ const menus = computed(() => {
       label: t("nav.files"),
       icon: Folder,
       to: "/files",
+    },
+    {
+      label: t("nav.storeSettings"),
+      icon: Store,
+      to: "/store-settings",
+      requiredPermissions: ["Read Store Settings"],
+    },
+    {
+      label: t("nav.callbackRequests"),
+      icon: PhoneCall,
+      to: "/callback-requests",
+      requiredPermissions: ["Read Callback Requests"],
     },
   ];
 

@@ -11,7 +11,7 @@
       v-for="product in products"
       :key="product.id"
       :product="product"
-      class="w-[calc(33.333%-16px)]"
+      :class="itemWidthClass"
     />
   </div>
 
@@ -38,10 +38,20 @@ import type { Product } from "~/models/product";
 interface Props {
   products: Product[];
   isLoading: boolean;
-  hasFilters: boolean;
+  hasFilters?: boolean;
+  columns?: 3 | 4;
 }
 
-defineProps<Props>();
+const props = withDefaults(defineProps<Props>(), {
+  hasFilters: false,
+  columns: 3,
+});
+
+const itemWidthClass = computed(() => {
+  // gap-6 = 24px, so for 3 columns: (100% - 2*24px) / 3 = 33.333% - 16px
+  // for 4 columns: (100% - 3*24px) / 4 = 25% - 18px
+  return props.columns === 4 ? "w-[calc(25%-18px)]" : "w-[calc(33.333%-16px)]";
+});
 
 defineEmits<{
   reset: [];

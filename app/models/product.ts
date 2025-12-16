@@ -97,6 +97,8 @@ export interface Product {
   clearance_reason: string | null;
   current_price?: number;
   discount_percentage?: number | null;
+  average_rating?: number;
+  reviews_count?: number;
   main_image_file_id: number | null;
   main_image?: {
     id: number;
