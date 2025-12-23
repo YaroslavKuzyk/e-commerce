@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Contracts;
+namespace App\Contracts\Services\Admin;
 
 use App\Models\ProductBrand;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
-interface AdminProductBrandServiceInterface
+interface ProductBrandServiceInterface
 {
     public function getAllBrands(array $filters = []): Collection|LengthAwarePaginator;
 

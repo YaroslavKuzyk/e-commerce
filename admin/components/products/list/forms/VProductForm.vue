@@ -65,10 +65,11 @@
       </div>
 
       <!-- Discount Section (Collapsible) -->
-      <div class="rounded-lg border border-amber-200 dark:border-amber-800 overflow-hidden">
+      <div class="rounded-lg border border-amber-200 dark:border-amber-800">
         <button
           type="button"
-          class="w-full flex items-center justify-between p-4 bg-amber-50 dark:bg-amber-950/20 hover:bg-amber-100 dark:hover:bg-amber-950/30 transition-colors"
+          class="w-full flex items-center justify-between p-4 bg-amber-50 dark:bg-amber-950/20 hover:bg-amber-100 dark:hover:bg-amber-950/30 transition-colors rounded-t-lg"
+          :class="{ 'rounded-b-lg': !hasDiscount }"
           @click="hasDiscount = !hasDiscount"
         >
           <div class="flex items-center gap-3">
@@ -84,7 +85,7 @@
           />
         </button>
 
-        <div v-if="hasDiscount" class="p-4 space-y-4 bg-amber-50/50 dark:bg-amber-950/10">
+        <div v-if="hasDiscount" class="p-4 space-y-4 bg-amber-50/50 dark:bg-amber-950/10 rounded-b-lg">
           <div class="grid grid-cols-2 gap-4">
             <UFormField label="Ціна зі знижкою" name="discount_price">
               <UInput
@@ -238,10 +239,11 @@
       </div>
 
       <!-- Clearance Section (Collapsible) -->
-      <div class="rounded-lg border border-red-200 dark:border-red-800 overflow-hidden">
+      <div class="rounded-lg border border-red-200 dark:border-red-800">
         <button
           type="button"
-          class="w-full flex items-center justify-between p-4 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-950/30 transition-colors"
+          class="w-full flex items-center justify-between p-4 bg-red-50 dark:bg-red-950/20 hover:bg-red-100 dark:hover:bg-red-950/30 transition-colors rounded-t-lg"
+          :class="{ 'rounded-b-lg': !state.is_clearance }"
           @click="state.is_clearance = !state.is_clearance"
         >
           <div class="flex items-center gap-3">
@@ -257,7 +259,7 @@
           />
         </button>
 
-        <div v-if="state.is_clearance" class="p-4 space-y-4 bg-red-50/50 dark:bg-red-950/10">
+        <div v-if="state.is_clearance" class="p-4 space-y-4 bg-red-50/50 dark:bg-red-950/10 rounded-b-lg">
           <UFormField label="Ціна уцінки" name="clearance_price" required>
             <UInput
               v-model.number="state.clearance_price"
@@ -686,6 +688,9 @@ const onSubmit = async () => {
   try {
     let result;
 
+    // Only set is_clearance to true if both price and reason are filled
+    const isClearanceValid = state.is_clearance && state.clearance_price && state.clearance_reason;
+
     const productData = {
       name: state.name,
       slug: state.slug,
@@ -697,9 +702,9 @@ const onSubmit = async () => {
       discount_percent: hasDiscount.value ? (state.discount_percent || null) : null,
       discount_starts_at: hasDiscount.value ? formatDateTimeForApi(state.discount_starts_date, state.discount_starts_hours, state.discount_starts_minutes) : null,
       discount_ends_at: hasDiscount.value ? formatDateTimeForApi(state.discount_ends_date, state.discount_ends_hours, state.discount_ends_minutes) : null,
-      is_clearance: state.is_clearance,
-      clearance_price: state.is_clearance ? state.clearance_price : null,
-      clearance_reason: state.is_clearance ? state.clearance_reason : null,
+      is_clearance: isClearanceValid,
+      clearance_price: isClearanceValid ? state.clearance_price : null,
+      clearance_reason: isClearanceValid ? state.clearance_reason : null,
       short_description: state.short_description,
       description: state.description,
       main_image_file_id: state.main_image_file_id,

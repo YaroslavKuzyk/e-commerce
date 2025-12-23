@@ -3,9 +3,8 @@
     <div>
       <USeparator label="Нові Категорії" :ui="{ label: 'text-2xl' }" />
     </div>
-    <div class="flex gap-6 flex-wrap py-6">
+    <div class="flex gap-4 overflow-x-auto pb-2 py-6">
       <VCategoryThumb
-        class="max-w-[50%]"
         v-for="category in categories"
         :key="category.id"
         :item="category"

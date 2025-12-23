@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Contracts;
+namespace App\Contracts\Services\Admin;
 
 use App\Models\BlogPost;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
-interface AdminBlogPostServiceInterface
+interface BlogPostServiceInterface
 {
     /**
      * Get all blog posts with optional filters and pagination.

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Contracts;
+namespace App\Contracts\Services\Admin;
 
 use App\Models\Product;
 use App\Models\ProductVariant;
@@ -8,7 +8,7 @@ use App\Models\ProductSpecification;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
-interface AdminProductServiceInterface
+interface ProductServiceInterface
 {
     public function getAllProducts(array $filters = []): Collection|LengthAwarePaginator;
 

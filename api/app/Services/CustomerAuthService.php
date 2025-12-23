@@ -3,13 +3,13 @@
 namespace App\Services;
 
 use App\Actions\Auth\CreateTokenAction;
-use App\Contracts\Services\CustomerAuthServiceInterface;
+use App\Contracts\Services\Customer\AuthServiceInterface;
 use App\Enums\UserType;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
-class CustomerAuthService implements CustomerAuthServiceInterface
+class CustomerAuthService implements AuthServiceInterface
 {
     public function __construct(
         private CreateTokenAction $createTokenAction

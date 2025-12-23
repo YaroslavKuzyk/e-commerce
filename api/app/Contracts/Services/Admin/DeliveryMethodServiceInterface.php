@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Contracts;
+namespace App\Contracts\Services\Admin;
 
 use App\Models\DeliveryMethod;
 use Illuminate\Database\Eloquent\Collection;
 
-interface AdminDeliveryMethodServiceInterface
+interface DeliveryMethodServiceInterface
 {
     /**
      * Get all delivery methods.

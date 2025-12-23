@@ -2,12 +2,12 @@
 
 namespace App\Services\Admin;
 
-use App\Contracts\AdminDeliveryMethodServiceInterface;
-use App\Contracts\DeliveryMethodRepositoryInterface;
+use App\Contracts\Services\Admin\DeliveryMethodServiceInterface;
+use App\Contracts\Repositories\DeliveryMethodRepositoryInterface;
 use App\Models\DeliveryMethod;
 use Illuminate\Database\Eloquent\Collection;
 
-class AdminDeliveryMethodService implements AdminDeliveryMethodServiceInterface
+class AdminDeliveryMethodService implements DeliveryMethodServiceInterface
 {
     public function __construct(
         protected DeliveryMethodRepositoryInterface $deliveryMethodRepository

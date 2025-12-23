@@ -4,7 +4,7 @@ namespace App\Contracts\Services\Admin;
 
 use App\Models\User;
 
-interface AdminUserServiceInterface
+interface UserServiceInterface
 {
     public function getAllAdmins(array $filters = []);
 

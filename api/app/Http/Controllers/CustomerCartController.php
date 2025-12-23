@@ -96,19 +96,17 @@ class CustomerCartController extends Controller
             ], 404);
         }
 
-        // Add or update cart item
+        // Create or update cart item with absolute quantity
+        // Frontend is responsible for calculating the final quantity
         $cartItem = CartItem::updateOrCreate(
             [
                 'user_id' => $user->id,
                 'product_id' => $productId,
             ],
             [
-                'quantity' => \DB::raw("COALESCE(quantity, 0) + {$quantity}"),
+                'quantity' => $quantity,
             ]
         );
-
-        // Reload to get actual quantity
-        $cartItem->refresh();
 
         return response()->json([
             'success' => true,

@@ -2,32 +2,39 @@
 
 namespace App\Providers;
 
-use App\Contracts\DeliveryMethodRepositoryInterface;
-use App\Contracts\PaymentMethodRepositoryInterface;
-use App\Contracts\ProductCategoryRepositoryInterface;
-use App\Contracts\ProductBrandRepositoryInterface;
-use App\Contracts\FileRepositoryInterface;
+// Repository Interfaces
+use App\Contracts\Repositories\DeliveryMethodRepositoryInterface;
+use App\Contracts\Repositories\PaymentMethodRepositoryInterface;
+use App\Contracts\Repositories\ProductCategoryRepositoryInterface;
+use App\Contracts\Repositories\ProductBrandRepositoryInterface;
+use App\Contracts\Repositories\FileRepositoryInterface;
 use App\Contracts\Repositories\PermissionRepositoryInterface;
 use App\Contracts\Repositories\RoleRepositoryInterface;
 use App\Contracts\Repositories\UserRepositoryInterface;
-use App\Contracts\AdminDeliveryMethodServiceInterface;
-use App\Contracts\AdminPaymentMethodServiceInterface;
-use App\Contracts\AdminProductCategoryServiceInterface;
-use App\Contracts\AdminProductBrandServiceInterface;
-use App\Contracts\AttributeRepositoryInterface;
-use App\Contracts\AdminAttributeServiceInterface;
-use App\Contracts\ProductRepositoryInterface;
-use App\Contracts\AdminProductServiceInterface;
-use App\Contracts\AdminBlogCategoryServiceInterface;
-use App\Contracts\AdminBlogPostServiceInterface;
-use App\Contracts\Services\Admin\AdminAuthServiceInterface;
-use App\Contracts\Services\Admin\AdminRoleServiceInterface;
-use App\Contracts\Services\Admin\AdminPermissionServiceInterface;
-use App\Contracts\Services\Admin\AdminUserServiceInterface;
-use App\Contracts\Services\Admin\AdminCustomerServiceInterface;
-use App\Contracts\Services\CustomerAuthServiceInterface;
-use App\Contracts\CustomerProductCategoryServiceInterface;
-use App\Contracts\CustomerProductServiceInterface;
+use App\Contracts\Repositories\AttributeRepositoryInterface;
+use App\Contracts\Repositories\ProductRepositoryInterface;
+
+// Admin Service Interfaces
+use App\Contracts\Services\Admin\AuthServiceInterface as AdminAuthServiceInterface;
+use App\Contracts\Services\Admin\RoleServiceInterface as AdminRoleServiceInterface;
+use App\Contracts\Services\Admin\PermissionServiceInterface as AdminPermissionServiceInterface;
+use App\Contracts\Services\Admin\UserServiceInterface as AdminUserServiceInterface;
+use App\Contracts\Services\Admin\CustomerServiceInterface as AdminCustomerServiceInterface;
+use App\Contracts\Services\Admin\DeliveryMethodServiceInterface as AdminDeliveryMethodServiceInterface;
+use App\Contracts\Services\Admin\PaymentMethodServiceInterface as AdminPaymentMethodServiceInterface;
+use App\Contracts\Services\Admin\ProductCategoryServiceInterface as AdminProductCategoryServiceInterface;
+use App\Contracts\Services\Admin\ProductBrandServiceInterface as AdminProductBrandServiceInterface;
+use App\Contracts\Services\Admin\AttributeServiceInterface as AdminAttributeServiceInterface;
+use App\Contracts\Services\Admin\ProductServiceInterface as AdminProductServiceInterface;
+use App\Contracts\Services\Admin\BlogCategoryServiceInterface as AdminBlogCategoryServiceInterface;
+use App\Contracts\Services\Admin\BlogPostServiceInterface as AdminBlogPostServiceInterface;
+
+// Customer Service Interfaces
+use App\Contracts\Services\Customer\AuthServiceInterface as CustomerAuthServiceInterface;
+use App\Contracts\Services\Customer\ProductCategoryServiceInterface as CustomerProductCategoryServiceInterface;
+use App\Contracts\Services\Customer\ProductServiceInterface as CustomerProductServiceInterface;
+
+// Repositories
 use App\Repositories\DeliveryMethodRepository;
 use App\Repositories\PaymentMethodRepository;
 use App\Repositories\ProductCategoryRepository;
@@ -36,13 +43,15 @@ use App\Repositories\FileRepository;
 use App\Repositories\PermissionRepository;
 use App\Repositories\RoleRepository;
 use App\Repositories\UserRepository;
+use App\Repositories\AttributeRepository;
+use App\Repositories\ProductRepository;
+
+// Admin Services
 use App\Services\Admin\AdminDeliveryMethodService;
 use App\Services\Admin\AdminPaymentMethodService;
 use App\Services\Admin\AdminProductCategoryService;
 use App\Services\Admin\AdminProductBrandService;
-use App\Repositories\AttributeRepository;
 use App\Services\Admin\AdminAttributeService;
-use App\Repositories\ProductRepository;
 use App\Services\Admin\AdminProductService;
 use App\Services\Admin\AdminBlogCategoryService;
 use App\Services\Admin\AdminBlogPostService;
@@ -51,9 +60,12 @@ use App\Services\Admin\AdminRoleService;
 use App\Services\Admin\AdminPermissionService;
 use App\Services\Admin\AdminUserService;
 use App\Services\Admin\AdminCustomerService;
+
+// Customer Services
 use App\Services\CustomerAuthService;
 use App\Services\CustomerProductCategoryService;
 use App\Services\CustomerProductService;
+
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider

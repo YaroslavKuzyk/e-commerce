@@ -139,4 +139,30 @@ class User extends Authenticatable
             ->withPivot('quantity', 'created_at', 'updated_at')
             ->orderByPivot('created_at', 'desc');
     }
+
+    /**
+     * Get user's comparison items.
+     */
+    public function comparisons(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(UserComparison::class);
+    }
+
+    /**
+     * Get user's comparison products (many-to-many through user_comparisons).
+     */
+    public function comparisonProducts(): BelongsToMany
+    {
+        return $this->belongsToMany(Product::class, 'user_comparisons')
+            ->withPivot('category_id', 'created_at')
+            ->orderByPivot('created_at', 'desc');
+    }
+
+    /**
+     * Check if product is in user's comparisons.
+     */
+    public function hasComparison(int $productId): bool
+    {
+        return $this->comparisons()->where('product_id', $productId)->exists();
+    }
 }

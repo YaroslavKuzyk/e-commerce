@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Contracts\AdminProductCategoryServiceInterface;
+use App\Contracts\Services\Admin\ProductCategoryServiceInterface;
 use App\Http\Resources\ProductCategoryResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 class AdminProductCategoryController extends Controller
 {
     public function __construct(
-        private AdminProductCategoryServiceInterface $adminProductCategoryService
+        private ProductCategoryServiceInterface $adminProductCategoryService
     ) {}
 
     /**

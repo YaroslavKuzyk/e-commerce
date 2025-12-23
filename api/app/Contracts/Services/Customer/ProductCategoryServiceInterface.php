@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Contracts;
+namespace App\Contracts\Services\Customer;
 
 use App\Models\ProductCategory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-interface CustomerProductCategoryServiceInterface
+interface ProductCategoryServiceInterface
 {
     /**
      * Get all categories with tree structure.

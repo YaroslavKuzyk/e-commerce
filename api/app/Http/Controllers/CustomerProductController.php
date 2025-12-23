@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Resources\ProductResource;
-use App\Contracts\CustomerProductServiceInterface;
+use App\Contracts\Services\Customer\ProductServiceInterface;
 
 class CustomerProductController extends Controller
 {
     public function __construct(
-        private CustomerProductServiceInterface $customerProductService
+        private ProductServiceInterface $customerProductService
     ) {}
 
     /**
@@ -109,6 +109,11 @@ class CustomerProductController extends Controller
         // Sorting
         if ($request->has('sort_by')) {
             $filters['sort_by'] = $request->query('sort_by');
+        }
+
+        // Filter by specific product IDs
+        if ($request->has('ids')) {
+            $filters['ids'] = $request->query('ids');
         }
 
         $products = $this->customerProductService->getProductsPaginated($page, $limit, $filters);

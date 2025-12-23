@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Contracts;
+namespace App\Contracts\Services\Admin;
 
 use App\Models\BlogCategory;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
-interface AdminBlogCategoryServiceInterface
+interface BlogCategoryServiceInterface
 {
     /**
      * Get all blog categories with optional filters and pagination.

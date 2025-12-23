@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Contracts;
+namespace App\Contracts\Services\Admin;
 
 use App\Models\PaymentMethod;
 use Illuminate\Database\Eloquent\Collection;
 
-interface AdminPaymentMethodServiceInterface
+interface PaymentMethodServiceInterface
 {
     /**
      * Get all payment methods.

@@ -74,15 +74,21 @@
             </div>
 
             <!-- Price -->
-            <div class="text-3xl font-bold text-primary mb-6">
-              {{
-                formatPrice(
-                  currentVariant?.current_price ||
-                    product.current_price ||
-                    product.base_price
-                )
-              }}
-              грн
+            <div class="mb-6">
+              <div class="flex items-center gap-4">
+                <div
+                  class="text-3xl font-bold"
+                  :class="hasActiveDiscount ? 'text-red-600' : 'text-primary'"
+                >
+                  {{ formatPrice(displayPrice) }} грн
+                </div>
+                <UBadge v-if="hasActiveDiscount" color="error" size="lg">
+                  -{{ displayDiscountPercent }}%
+                </UBadge>
+              </div>
+              <div v-if="hasActiveDiscount" class="text-lg text-dimmed line-through mt-1">
+                {{ formatPrice(displayOldPrice) }} грн
+              </div>
             </div>
 
             <!-- Variant Selection -->
@@ -98,7 +104,7 @@
                 <h4 class="font-semibold mb-2">{{ attribute.name }}</h4>
                 <div class="flex flex-wrap gap-2">
                   <UButton
-                    v-for="value in attribute.values"
+                    v-for="value in getAvailableAttributeValues(attribute)"
                     :key="value.id"
                     :variant="
                       isAttributeSelected(attribute.id, value.id)
@@ -107,10 +113,10 @@
                     "
                     size="sm"
                     :disabled="
-                      !isAttributeValueAvailable(attribute.id, value.id)
+                      !isAttributeValueInStock(attribute.id, value.id)
                     "
                     :class="{
-                      'line-through opacity-50': !isAttributeValueAvailable(
+                      'line-through opacity-50': !isAttributeValueInStock(
                         attribute.id,
                         value.id
                       ),
@@ -334,6 +340,90 @@ const isInStock = computed(() => {
   return false;
 });
 
+// Price and discount calculations
+const hasActiveDiscount = computed(() => {
+  // First check variant-level discount
+  if (currentVariant.value?.override_pricing) {
+    const variant = currentVariant.value;
+    if (!variant.discount_price || Number(variant.discount_price) <= 0) {
+      return false;
+    }
+    const now = new Date();
+    if (variant.discount_starts_at) {
+      const startDate = new Date(variant.discount_starts_at);
+      if (now < startDate) return false;
+    }
+    if (variant.discount_ends_at) {
+      const endDate = new Date(variant.discount_ends_at);
+      if (now > endDate) return false;
+    }
+    return true;
+  }
+
+  // Check product-level discount
+  if (!product.value?.discount_price || Number(product.value.discount_price) <= 0) {
+    return false;
+  }
+  const now = new Date();
+  if (product.value.discount_starts_at) {
+    const startDate = new Date(product.value.discount_starts_at);
+    if (now < startDate) return false;
+  }
+  if (product.value.discount_ends_at) {
+    const endDate = new Date(product.value.discount_ends_at);
+    if (now > endDate) return false;
+  }
+  return true;
+});
+
+const displayPrice = computed(() => {
+  // Use current_price from API if available (already calculated)
+  if (currentVariant.value?.current_price) {
+    return currentVariant.value.current_price;
+  }
+  if (product.value?.current_price) {
+    return product.value.current_price;
+  }
+  // Calculate based on discount
+  if (hasActiveDiscount.value) {
+    if (currentVariant.value?.override_pricing && currentVariant.value.discount_price) {
+      return currentVariant.value.discount_price;
+    }
+    if (product.value?.discount_price) {
+      return product.value.discount_price;
+    }
+  }
+  // Fall back to base price
+  return currentVariant.value?.price || product.value?.base_price || "0";
+});
+
+const displayOldPrice = computed(() => {
+  if (currentVariant.value?.override_pricing) {
+    return currentVariant.value.price;
+  }
+  return product.value?.base_price || "0";
+});
+
+const displayDiscountPercent = computed(() => {
+  // Check variant-level discount percent
+  if (currentVariant.value?.override_pricing && currentVariant.value.discount_percent) {
+    return Math.round(Number(currentVariant.value.discount_percent));
+  }
+  // Check product-level discount percent
+  if (product.value?.discount_percent) {
+    return Math.round(Number(product.value.discount_percent));
+  }
+  // Calculate if not provided
+  if (hasActiveDiscount.value) {
+    const oldPrice = Number(displayOldPrice.value);
+    const newPrice = Number(displayPrice.value);
+    if (oldPrice > 0) {
+      return Math.round(((oldPrice - newPrice) / oldPrice) * 100);
+    }
+  }
+  return 0;
+});
+
 // Quantity management
 const quantity = ref(1);
 
@@ -402,8 +492,24 @@ const isAttributeSelected = (attrId: number, valueId: number): boolean => {
   return selectedAttributes.value[attrId] === valueId;
 };
 
-// Check if attribute value is available (has at least one variant with current selection)
-const isAttributeValueAvailable = (
+// Check if attribute value exists in any variant
+const doesAttributeValueExist = (valueId: number): boolean => {
+  if (!product.value?.variants?.length) return false;
+
+  return product.value.variants.some((variant) => {
+    if (!variant.attribute_values) return false;
+    return variant.attribute_values.some((av) => av.id === valueId);
+  });
+};
+
+// Get filtered attribute values that exist in variants
+const getAvailableAttributeValues = (attribute: { id: number; values?: Array<{ id: number; value: string; color_code?: string | null }> }) => {
+  if (!attribute.values) return [];
+  return attribute.values.filter((value) => doesAttributeValueExist(value.id));
+};
+
+// Check if attribute value is in stock (has at least one variant with stock > 0)
+const isAttributeValueInStock = (
   attrId: number,
   valueId: number
 ): boolean => {
@@ -413,13 +519,14 @@ const isAttributeValueAvailable = (
   const testSelection = { ...selectedAttributes.value, [attrId]: valueId };
   const testAttrValues = Object.values(testSelection);
 
-  // Check if any variant matches this selection
+  // Check if any variant matches this selection AND has stock > 0
   return product.value.variants.some((variant) => {
     if (!variant.attribute_values) return false;
     const variantAttrIds = variant.attribute_values.map((av) => av.id);
-    return testAttrValues.every((attrValueId) =>
+    const matches = testAttrValues.every((attrValueId) =>
       variantAttrIds.includes(attrValueId)
     );
+    return matches && variant.stock > 0;
   });
 };
 

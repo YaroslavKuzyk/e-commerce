@@ -2,14 +2,14 @@
 
 namespace App\Services\Admin;
 
-use App\Contracts\AdminAttributeServiceInterface;
-use App\Contracts\AttributeRepositoryInterface;
+use App\Contracts\Services\Admin\AttributeServiceInterface;
+use App\Contracts\Repositories\AttributeRepositoryInterface;
 use App\Models\Attribute;
 use App\Models\AttributeValue;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
-class AdminAttributeService implements AdminAttributeServiceInterface
+class AdminAttributeService implements AttributeServiceInterface
 {
     public function __construct(
         protected AttributeRepositoryInterface $attributeRepository

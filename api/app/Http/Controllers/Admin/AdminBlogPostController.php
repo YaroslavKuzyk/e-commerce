@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Contracts\AdminBlogPostServiceInterface;
+use App\Contracts\Services\Admin\BlogPostServiceInterface;
 use App\Http\Resources\BlogPostResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 class AdminBlogPostController extends Controller
 {
     public function __construct(
-        private AdminBlogPostServiceInterface $adminBlogPostService
+        private BlogPostServiceInterface $adminBlogPostService
     ) {}
 
     /**

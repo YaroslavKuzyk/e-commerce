@@ -4,7 +4,7 @@ namespace App\Contracts\Services\Admin;
 
 use App\Models\User;
 
-interface AdminCustomerServiceInterface
+interface CustomerServiceInterface
 {
     public function getAllCustomers(array $filters = []);
     public function getCustomerById(User $user);

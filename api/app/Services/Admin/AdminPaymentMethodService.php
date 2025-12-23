@@ -2,12 +2,12 @@
 
 namespace App\Services\Admin;
 
-use App\Contracts\AdminPaymentMethodServiceInterface;
-use App\Contracts\PaymentMethodRepositoryInterface;
+use App\Contracts\Services\Admin\PaymentMethodServiceInterface;
+use App\Contracts\Repositories\PaymentMethodRepositoryInterface;
 use App\Models\PaymentMethod;
 use Illuminate\Database\Eloquent\Collection;
 
-class AdminPaymentMethodService implements AdminPaymentMethodServiceInterface
+class AdminPaymentMethodService implements PaymentMethodServiceInterface
 {
     public function __construct(
         protected PaymentMethodRepositoryInterface $paymentMethodRepository

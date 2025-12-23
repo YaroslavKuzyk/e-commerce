@@ -2,12 +2,12 @@
 
 namespace App\Services\Admin;
 
-use App\Contracts\AdminBlogPostServiceInterface;
+use App\Contracts\Services\Admin\BlogPostServiceInterface;
 use App\Models\BlogPost;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
-class AdminBlogPostService implements AdminBlogPostServiceInterface
+class AdminBlogPostService implements BlogPostServiceInterface
 {
     /**
      * Get all blog posts with optional filters and pagination.

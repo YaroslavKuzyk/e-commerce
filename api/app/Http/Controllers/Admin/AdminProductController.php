@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Contracts\AdminProductServiceInterface;
+use App\Contracts\Services\Admin\ProductServiceInterface;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\ProductVariantResource;
 use App\Http\Resources\ProductSpecificationResource;
@@ -15,7 +15,7 @@ use Illuminate\Support\Str;
 class AdminProductController extends Controller
 {
     public function __construct(
-        private AdminProductServiceInterface $adminProductService
+        private ProductServiceInterface $adminProductService
     ) {}
 
     /**

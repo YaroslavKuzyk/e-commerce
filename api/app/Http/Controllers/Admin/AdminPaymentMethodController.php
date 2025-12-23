@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Contracts\AdminPaymentMethodServiceInterface;
+use App\Contracts\Services\Admin\PaymentMethodServiceInterface;
 use App\Http\Resources\PaymentMethodResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Validator;
 class AdminPaymentMethodController extends Controller
 {
     public function __construct(
-        private AdminPaymentMethodServiceInterface $adminPaymentMethodService
+        private PaymentMethodServiceInterface $adminPaymentMethodService
     ) {}
 
     /**

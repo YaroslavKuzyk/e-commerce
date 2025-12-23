@@ -6,12 +6,12 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Resources\ProductCategoryResource;
 use App\Http\Resources\ProductCategoryFlatResource;
-use App\Contracts\CustomerProductCategoryServiceInterface;
+use App\Contracts\Services\Customer\ProductCategoryServiceInterface;
 
 class CustomerProductCategoryController extends Controller
 {
     public function __construct(
-        private CustomerProductCategoryServiceInterface $customerProductCategoryService
+        private ProductCategoryServiceInterface $customerProductCategoryService
     ) {}
 
 

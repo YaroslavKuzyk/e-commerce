@@ -4,7 +4,7 @@ namespace App\Contracts\Services\Admin;
 
 use App\Models\Role;
 
-interface AdminRoleServiceInterface
+interface RoleServiceInterface
 {
     public function getAllRoles();
 

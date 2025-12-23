@@ -2,12 +2,12 @@
 
 namespace App\Services\Admin;
 
-use App\Contracts\AdminBlogCategoryServiceInterface;
+use App\Contracts\Services\Admin\BlogCategoryServiceInterface;
 use App\Models\BlogCategory;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
-class AdminBlogCategoryService implements AdminBlogCategoryServiceInterface
+class AdminBlogCategoryService implements BlogCategoryServiceInterface
 {
     /**
      * Get all blog categories with optional filters and pagination.

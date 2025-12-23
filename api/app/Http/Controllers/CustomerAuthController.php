@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Contracts\Services\CustomerAuthServiceInterface;
+use App\Contracts\Services\Customer\AuthServiceInterface;
 use App\Http\Resources\CustomerResource;
 use Illuminate\Http\Request;
 
 class CustomerAuthController extends Controller
 {
     public function __construct(
-        private CustomerAuthServiceInterface $authService
+        private AuthServiceInterface $authService
     ) {}
 
     /**

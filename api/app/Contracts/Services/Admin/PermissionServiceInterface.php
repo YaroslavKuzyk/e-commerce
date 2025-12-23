@@ -2,7 +2,7 @@
 
 namespace App\Contracts\Services\Admin;
 
-interface AdminPermissionServiceInterface
+interface PermissionServiceInterface
 {
     public function getAll();
 }

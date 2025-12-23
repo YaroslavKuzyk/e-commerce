@@ -6,27 +6,26 @@
     <div class="v-product-thumb flex flex-col gap-2">
       <!-- Header -->
       <div class="flex items-center justify-between gap-2">
-        <UBadge v-if="isNew" color="warning" class="bg-[#CDDC39] text-black">Хіт продаж</UBadge>
-        <UBadge v-else-if="hasDiscount" color="error">-{{ discountPercent }}%</UBadge>
+        <UBadge v-if="hasDiscount" color="error">-{{ discountPercent }}%</UBadge>
         <span v-else></span>
         <span class="text-sm text-dimmed">Код: <strong>{{ product.id }}</strong></span>
       </div>
 
       <!-- Image -->
-      <div class="py-6 flex items-center justify-center relative">
+      <div class="py-4 flex items-center justify-center relative min-h-[155px]">
         <VSecureImage
           v-if="product.main_image_file_id"
           :fileId="product.main_image_file_id"
-          imgClass="max-w-[172px] max-h-[172px] object-contain"
+          imgClass="max-h-[155px] w-auto object-contain"
         />
-        <div v-else class="w-[172px] h-[172px] bg-gray-100 rounded flex items-center justify-center">
+        <div v-else class="h-[155px] w-full bg-gray-100 rounded flex items-center justify-center">
           <Package class="w-12 h-12 text-gray-400" />
         </div>
 
-        <VFavoriteButton
-          :product-id="product.id"
-          class="absolute top-2 right-2 z-1"
-        />
+        <div class="absolute top-2 right-2 z-1 flex flex-col gap-1">
+          <VFavoriteButton :product-id="product.id" />
+          <VCompareButton :product-id="product.id" :category-id="rootCategoryId" />
+        </div>
       </div>
 
       <!-- Color Options -->
@@ -63,7 +62,7 @@
           <div v-if="hasDiscount" class="text-sm text-dimmed line-through">
             {{ formatPrice(oldPrice) }} грн
           </div>
-          <div class="text-xl font-semibold text-primary">{{ formatPrice(currentPrice) }} грн</div>
+          <div class="text-xl font-semibold" :class="hasDiscount ? 'text-red-600' : 'text-primary'">{{ formatPrice(currentPrice) }} грн</div>
         </div>
         <div>
           <UButton
@@ -95,6 +94,7 @@ import type { Product, AttributeValue } from "~/models/product";
 import VSecureImage from "~/components/common/VSecureImage.vue";
 import VRating from "~/components/common/VRating.vue";
 import VFavoriteButton from "~/components/common/VFavoriteButton.vue";
+import VCompareButton from "~/components/common/VCompareButton.vue";
 import { buildProductUrl } from "~/utils/urlBuilder";
 import { useCartStore } from "~/stores/useCartStore";
 
@@ -131,6 +131,18 @@ const categoryPath = computed(() => {
   }
 
   return path;
+});
+
+// Get root category ID for comparison grouping
+const rootCategoryId = computed(() => {
+  if (!props.product.category) return 0;
+
+  let currentCategory: typeof props.product.category | undefined = props.product.category;
+  while (currentCategory?.parent) {
+    currentCategory = currentCategory.parent;
+  }
+
+  return currentCategory?.id || props.product.category.id;
 });
 
 // Build product URL with category slug
@@ -208,14 +220,56 @@ const selectColor = (colorId: number) => {
 const rating = computed(() => props.product.average_rating || 0);
 const reviewCount = computed(() => props.product.reviews_count || 0);
 
-// Price calculations
-const currentPrice = computed(() => props.product.base_price);
-const oldPrice = computed(() => {
-  // Stub: 10-20% higher price for "discount" effect
-  return String(Math.round(Number(props.product.base_price) * 1.15));
+// Price calculations - use real discount data from API
+const hasDiscount = computed(() => {
+  // Check if discount is active based on dates and discount_price
+  if (!props.product.discount_price || Number(props.product.discount_price) <= 0) {
+    return false;
+  }
+
+  const now = new Date();
+
+  // Check start date
+  if (props.product.discount_starts_at) {
+    const startDate = new Date(props.product.discount_starts_at);
+    if (now < startDate) return false;
+  }
+
+  // Check end date
+  if (props.product.discount_ends_at) {
+    const endDate = new Date(props.product.discount_ends_at);
+    if (now > endDate) return false;
+  }
+
+  return true;
 });
-const hasDiscount = computed(() => false); // Set to true to show discount
-const discountPercent = computed(() => 15);
+
+const currentPrice = computed(() => {
+  // Use current_price from API if available (already calculated with discounts)
+  if (props.product.current_price) {
+    return String(props.product.current_price);
+  }
+  // Otherwise calculate based on discount
+  if (hasDiscount.value && props.product.discount_price) {
+    return props.product.discount_price;
+  }
+  return props.product.base_price;
+});
+
+const oldPrice = computed(() => props.product.base_price);
+
+const discountPercent = computed(() => {
+  if (props.product.discount_percent) {
+    return Math.round(Number(props.product.discount_percent));
+  }
+  // Calculate percent if not provided
+  if (hasDiscount.value && props.product.discount_price) {
+    const base = Number(props.product.base_price);
+    const discount = Number(props.product.discount_price);
+    return Math.round(((base - discount) / base) * 100);
+  }
+  return 0;
+});
 
 const formatPrice = (price: string) => {
   return Number(price).toLocaleString("uk-UA");

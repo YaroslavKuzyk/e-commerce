@@ -2,10 +2,10 @@
 
 namespace App\Services\Admin;
 
-use App\Contracts\Services\Admin\AdminPermissionServiceInterface;
+use App\Contracts\Services\Admin\PermissionServiceInterface;
 use App\Contracts\Repositories\PermissionRepositoryInterface;
 
-class AdminPermissionService implements AdminPermissionServiceInterface
+class AdminPermissionService implements PermissionServiceInterface
 {
     public function __construct(
         private PermissionRepositoryInterface $permissionRepository

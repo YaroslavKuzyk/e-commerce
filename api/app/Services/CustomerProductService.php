@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use App\Contracts\CustomerProductServiceInterface;
-use App\Contracts\ProductRepositoryInterface;
+use App\Contracts\Services\Customer\ProductServiceInterface;
+use App\Contracts\Repositories\ProductRepositoryInterface;
 use App\Models\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-class CustomerProductService implements CustomerProductServiceInterface
+class CustomerProductService implements ProductServiceInterface
 {
     public function __construct(
         protected ProductRepositoryInterface $productRepository

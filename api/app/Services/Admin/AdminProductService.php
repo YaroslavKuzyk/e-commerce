@@ -2,15 +2,15 @@
 
 namespace App\Services\Admin;
 
-use App\Contracts\AdminProductServiceInterface;
-use App\Contracts\ProductRepositoryInterface;
+use App\Contracts\Services\Admin\ProductServiceInterface;
+use App\Contracts\Repositories\ProductRepositoryInterface;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\ProductSpecification;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
-class AdminProductService implements AdminProductServiceInterface
+class AdminProductService implements ProductServiceInterface
 {
     public function __construct(
         protected ProductRepositoryInterface $productRepository

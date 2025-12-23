@@ -2,13 +2,13 @@
 
 namespace App\Services;
 
-use App\Contracts\CustomerProductCategoryServiceInterface;
-use App\Contracts\ProductCategoryRepositoryInterface;
+use App\Contracts\Services\Customer\ProductCategoryServiceInterface;
+use App\Contracts\Repositories\ProductCategoryRepositoryInterface;
 use App\Models\ProductCategory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-class CustomerProductCategoryService implements CustomerProductCategoryServiceInterface
+class CustomerProductCategoryService implements ProductCategoryServiceInterface
 {
     public function __construct(
         protected ProductCategoryRepositoryInterface $productCategoryRepository

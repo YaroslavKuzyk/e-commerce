@@ -126,28 +126,31 @@ export const useCartStore = defineStore("cart", () => {
   };
 
   /**
-   * Add product to cart (sets absolute quantity, not incremental)
+   * Add product to cart
    */
   const add = async (productId: number, quantity: number = 1) => {
     const currentQty = cartItems.value.get(productId) || 0;
+    const newQty = currentQty + quantity;
 
-    // If product already in cart, just update quantity
-    if (currentQty > 0) {
-      return updateQuantity(productId, currentQty + quantity, true);
-    }
-
-    // Optimistic update for new product
-    cartItems.value.set(productId, quantity);
+    // Optimistic update
+    cartItems.value.set(productId, newQty);
 
     if (isAuthenticated.value) {
       try {
-        await client(`/api/cart/${productId}`, {
+        // Send absolute quantity to server (server sets this value, not adds to existing)
+        const response = await client<{ success: boolean; data: { quantity: number } }>(`/api/cart/${productId}`, {
           method: "POST",
-          body: { quantity },
+          body: { quantity: newQty },
         });
+        // Update with server's actual quantity to stay in sync
+        cartItems.value.set(productId, response.data.quantity);
       } catch (error) {
         // Rollback on error
-        cartItems.value.delete(productId);
+        if (currentQty > 0) {
+          cartItems.value.set(productId, currentQty);
+        } else {
+          cartItems.value.delete(productId);
+        }
         console.error("Failed to add to cart:", error);
         return;
       }

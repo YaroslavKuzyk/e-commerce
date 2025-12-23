@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Contracts\AdminBlogCategoryServiceInterface;
+use App\Contracts\Services\Admin\BlogCategoryServiceInterface;
 use App\Http\Resources\BlogCategoryResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 class AdminBlogCategoryController extends Controller
 {
     public function __construct(
-        private AdminBlogCategoryServiceInterface $adminBlogCategoryService
+        private BlogCategoryServiceInterface $adminBlogCategoryService
     ) {}
 
     /**

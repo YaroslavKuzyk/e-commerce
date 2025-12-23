@@ -2,7 +2,7 @@
 
 namespace App\Services\Admin;
 
-use App\Contracts\Services\Admin\AdminUserServiceInterface;
+use App\Contracts\Services\Admin\UserServiceInterface;
 use App\Contracts\Repositories\UserRepositoryInterface;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 use App\Http\Resources\UserResource;
 use App\Enums\UserType;
 
-class AdminUserService implements AdminUserServiceInterface
+class AdminUserService implements UserServiceInterface
 {
     public function __construct(
         private UserRepositoryInterface $userRepository

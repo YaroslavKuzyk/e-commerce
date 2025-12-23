@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Contracts\DeliveryMethodRepositoryInterface;
+use App\Contracts\Repositories\DeliveryMethodRepositoryInterface;
 use App\Models\DeliveryMethod;
 use Illuminate\Database\Eloquent\Collection;
 

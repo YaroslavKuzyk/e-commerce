@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Contracts\AdminProductBrandServiceInterface;
+use App\Contracts\Services\Admin\ProductBrandServiceInterface;
 use App\Http\Resources\ProductBrandResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 class AdminProductBrandController extends Controller
 {
     public function __construct(
-        private AdminProductBrandServiceInterface $adminProductBrandService
+        private ProductBrandServiceInterface $adminProductBrandService
     ) {}
 
     /**

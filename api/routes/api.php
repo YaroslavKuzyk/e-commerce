@@ -28,6 +28,7 @@ use App\Http\Controllers\CustomerStoreSettingsController;
 use App\Http\Controllers\CallbackRequestController;
 use App\Http\Controllers\CustomerFavoriteController;
 use App\Http\Controllers\CustomerCartController;
+use App\Http\Controllers\CustomerComparisonController;
 use Illuminate\Support\Facades\Route;
 
 // Customer auth routes (protected)
@@ -52,6 +53,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/cart/{productId}', [CustomerCartController::class, 'destroy']);
     Route::delete('/cart', [CustomerCartController::class, 'clear']);
     Route::post('/cart/sync', [CustomerCartController::class, 'sync']);
+
+    // Comparison routes
+    Route::get('/comparisons', [CustomerComparisonController::class, 'index']);
+    Route::get('/comparisons/summary', [CustomerComparisonController::class, 'summary']);
+    Route::get('/comparisons/category/{categoryId}', [CustomerComparisonController::class, 'byCategory'])->where('categoryId', '[0-9]+');
+    Route::get('/comparisons/category/{slug}', [CustomerComparisonController::class, 'byCategorySlug'])->where('slug', '[a-z0-9-]+');
+    Route::post('/comparisons/{productId}', [CustomerComparisonController::class, 'store']);
+    Route::delete('/comparisons/{productId}', [CustomerComparisonController::class, 'destroy']);
+    Route::post('/comparisons/{productId}/toggle', [CustomerComparisonController::class, 'toggle']);
+    Route::post('/comparisons/sync', [CustomerComparisonController::class, 'sync']);
+    Route::delete('/comparisons', [CustomerComparisonController::class, 'clear']);
 });
 
 // Customer auth routes (public)

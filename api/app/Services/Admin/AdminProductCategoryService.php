@@ -2,13 +2,13 @@
 
 namespace App\Services\Admin;
 
-use App\Contracts\AdminProductCategoryServiceInterface;
-use App\Contracts\ProductCategoryRepositoryInterface;
+use App\Contracts\Services\Admin\ProductCategoryServiceInterface;
+use App\Contracts\Repositories\ProductCategoryRepositoryInterface;
 use App\Models\ProductCategory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Storage;
 
-class AdminProductCategoryService implements AdminProductCategoryServiceInterface
+class AdminProductCategoryService implements ProductCategoryServiceInterface
 {
     public function __construct(
         protected ProductCategoryRepositoryInterface $productCategoryRepository

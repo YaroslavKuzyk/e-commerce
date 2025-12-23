@@ -3,13 +3,13 @@
 namespace App\Services\Admin;
 
 use App\Actions\Role\ReassignUsersToRoleAction;
-use App\Contracts\Services\Admin\AdminRoleServiceInterface;
+use App\Contracts\Services\Admin\RoleServiceInterface;
 use App\Contracts\Repositories\RoleRepositoryInterface;
 use App\Models\Role;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\RoleResource;
 
-class AdminRoleService implements AdminRoleServiceInterface
+class AdminRoleService implements RoleServiceInterface
 {
     public function __construct(
         private RoleRepositoryInterface $roleRepository,

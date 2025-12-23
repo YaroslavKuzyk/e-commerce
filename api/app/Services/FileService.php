@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Contracts\FileRepositoryInterface;
+use App\Contracts\Repositories\FileRepositoryInterface;
 use App\Models\File;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\UploadedFile;

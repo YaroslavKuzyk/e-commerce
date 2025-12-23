@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Contracts;
+namespace App\Contracts\Services\Admin;
 
 use App\Models\Attribute;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
-interface AdminAttributeServiceInterface
+interface AttributeServiceInterface
 {
     public function getAllAttributes(array $filters = []): Collection|LengthAwarePaginator;
 

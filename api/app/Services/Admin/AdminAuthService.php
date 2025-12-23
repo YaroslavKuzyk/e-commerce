@@ -5,10 +5,10 @@ namespace App\Services\Admin;
 use App\Actions\Auth\CreateTokenAction;
 use App\Actions\Auth\LoginUserAction;
 use App\Actions\Auth\RegisterUserAction;
-use App\Contracts\Services\Admin\AdminAuthServiceInterface;
+use App\Contracts\Services\Admin\AuthServiceInterface;
 use App\Models\User;
 
-class AdminAuthService implements AdminAuthServiceInterface
+class AdminAuthService implements AuthServiceInterface
 {
     public function __construct(
         private RegisterUserAction $registerUserAction,

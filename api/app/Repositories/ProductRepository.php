@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Contracts\ProductRepositoryInterface;
+use App\Contracts\Repositories\ProductRepositoryInterface;
 use App\Models\Product;
 use App\Models\ProductVariant;
 use App\Models\ProductBrand;
@@ -34,7 +34,7 @@ class ProductRepository implements ProductRepositoryInterface
      */
     public function getAllWithFilters(array $filters): Collection|LengthAwarePaginator
     {
-        $query = Product::with(['category.parent', 'brand', 'mainImage', 'variants.attributeValues']);
+        $query = Product::with(['category.parent.parent', 'brand', 'mainImage', 'variants.attributeValues.attribute', 'specifications']);
 
         // Search by name, slug, or description
         if (!empty($filters['search'])) {
@@ -127,6 +127,12 @@ class ProductRepository implements ProductRepositoryInterface
         // Is clearance filter (Уцінка)
         if (!empty($filters['is_clearance'])) {
             $query->where('is_clearance', true);
+        }
+
+        // Filter by specific product IDs
+        if (!empty($filters['ids'])) {
+            $ids = is_array($filters['ids']) ? $filters['ids'] : explode(',', $filters['ids']);
+            $query->whereIn('id', $ids);
         }
 
         // Sort by created_at desc by default

@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Contracts\ProductCategoryRepositoryInterface;
+use App\Contracts\Repositories\ProductCategoryRepositoryInterface;
 use App\Models\ProductCategory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;

@@ -2,13 +2,13 @@
 
 namespace App\Services\Admin;
 
-use App\Contracts\AdminProductBrandServiceInterface;
-use App\Contracts\ProductBrandRepositoryInterface;
+use App\Contracts\Services\Admin\ProductBrandServiceInterface;
+use App\Contracts\Repositories\ProductBrandRepositoryInterface;
 use App\Models\ProductBrand;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
-class AdminProductBrandService implements AdminProductBrandServiceInterface
+class AdminProductBrandService implements ProductBrandServiceInterface
 {
     public function __construct(
         protected ProductBrandRepositoryInterface $productBrandRepository

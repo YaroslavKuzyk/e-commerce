@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Contracts\AdminDeliveryMethodServiceInterface;
+use App\Contracts\Services\Admin\DeliveryMethodServiceInterface;
 use App\Http\Resources\DeliveryMethodResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Validator;
 class AdminDeliveryMethodController extends Controller
 {
     public function __construct(
-        private AdminDeliveryMethodServiceInterface $adminDeliveryMethodService
+        private DeliveryMethodServiceInterface $adminDeliveryMethodService
     ) {}
 
     /**

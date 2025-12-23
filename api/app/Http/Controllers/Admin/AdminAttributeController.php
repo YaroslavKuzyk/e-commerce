@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Contracts\AdminAttributeServiceInterface;
+use App\Contracts\Services\Admin\AttributeServiceInterface;
 use App\Http\Resources\AttributeResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 class AdminAttributeController extends Controller
 {
     public function __construct(
-        private AdminAttributeServiceInterface $adminAttributeService
+        private AttributeServiceInterface $adminAttributeService
     ) {}
 
     /**

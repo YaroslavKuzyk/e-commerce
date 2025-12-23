@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Contracts\PaymentMethodRepositoryInterface;
+use App\Contracts\Repositories\PaymentMethodRepositoryInterface;
 use App\Models\PaymentMethod;
 use Illuminate\Database\Eloquent\Collection;
 

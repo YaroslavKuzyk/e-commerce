@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Contracts;
+namespace App\Contracts\Services\Customer;
 
 use App\Models\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
-interface CustomerProductServiceInterface
+interface ProductServiceInterface
 {
     /**
      * Get paginated products.

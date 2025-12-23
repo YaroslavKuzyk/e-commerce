@@ -72,9 +72,13 @@
             <span class="text-sm text-muted">+38 (099) 028-41-95</span>
           </template>
 
-          <UButton variant="soft" size="xs" color="neutral" @click="isCallbackModalOpen = true">{{
-            $t("header.callBack")
-          }}</UButton>
+          <UButton
+            variant="soft"
+            size="xs"
+            color="neutral"
+            @click="isCallbackModalOpen = true"
+            >{{ $t("header.callBack") }}</UButton
+          >
         </div>
       </div>
       <div class="flex items-center gap-4">
@@ -85,7 +89,7 @@
             alt="Logo"
             width="w-auto"
             object-fit="contain"
-            img-class="h-[50px]"
+            img-class="h-[32px]"
           />
           <IconLogo v-else />
         </NuxtLink>
@@ -114,15 +118,23 @@
                 v-if="favoriteStore.count > 0"
                 class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-medium"
               >
-                {{ favoriteStore.count > 99 ? '99+' : favoriteStore.count }}
+                {{ favoriteStore.count > 99 ? "99+" : favoriteStore.count }}
               </span>
             </UButton>
           </NuxtLink>
-          <UButton variant="ghost" color="neutral">
-            <template #leading>
-              <Scale class="w-5 h-5" />
-            </template>
-          </UButton>
+          <NuxtLink :to="localePath('/comparison')">
+            <UButton variant="ghost" color="neutral" class="relative">
+              <template #leading>
+                <Scale class="w-5 h-5" />
+              </template>
+              <span
+                v-if="comparisonStore.count > 0"
+                class="absolute -top-1 -right-1 w-5 h-5 bg-blue-500 text-white text-xs rounded-full flex items-center justify-center font-medium"
+              >
+                {{ comparisonStore.count > 99 ? "99+" : comparisonStore.count }}
+              </span>
+            </UButton>
+          </NuxtLink>
           <NuxtLink :to="localePath('/cart')">
             <UButton variant="ghost" color="neutral" class="relative">
               <template #leading>
@@ -132,7 +144,9 @@
                 v-if="cartStore.totalQuantity > 0"
                 class="absolute -top-1 -right-1 w-5 h-5 bg-primary text-white text-xs rounded-full flex items-center justify-center font-medium"
               >
-                {{ cartStore.totalQuantity > 99 ? '99+' : cartStore.totalQuantity }}
+                {{
+                  cartStore.totalQuantity > 99 ? "99+" : cartStore.totalQuantity
+                }}
               </span>
             </UButton>
           </NuxtLink>
@@ -163,6 +177,7 @@ import {
 } from "lucide-vue-next";
 import { useFavoriteStore } from "~/stores/useFavoriteStore";
 import { useCartStore } from "~/stores/useCartStore";
+import { useComparisonStore } from "~/stores/useComparisonStore";
 
 const isCatalogModalOpen = ref(false);
 const isCallbackModalOpen = ref(false);
@@ -172,11 +187,13 @@ const localePath = useLocalePath();
 const { phones, logoFileId } = useStoreSettings();
 const favoriteStore = useFavoriteStore();
 const cartStore = useCartStore();
+const comparisonStore = useComparisonStore();
 
-// Initialize favorites and cart on mount
+// Initialize stores on mount
 onMounted(() => {
   favoriteStore.init();
   cartStore.init();
+  comparisonStore.init();
 });
 
 const menuItems = computed(() => {
