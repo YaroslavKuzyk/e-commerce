@@ -42,4 +42,14 @@ interface CustomerProductServiceInterface
      * @return array
      */
     public function getAvailableFilters(array $currentFilters = []): array;
+
+    /**
+     * Get paginated product variants.
+     *
+     * @param int $page
+     * @param int $limit
+     * @param array $filters
+     * @return LengthAwarePaginator
+     */
+    public function getVariantsPaginated(int $page = 1, int $limit = 15, array $filters = []): LengthAwarePaginator;
 }

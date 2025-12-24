@@ -2,33 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\ProductResource;
+use App\Http\Resources\ProductVariantCatalogResource;
 use App\Models\CartItem;
-use App\Models\Product;
+use App\Models\ProductVariant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CustomerCartController extends Controller
 {
     /**
-     * Get user's cart with products and quantities.
+     * Get user's cart with product variants and quantities.
      */
     public function index(Request $request): JsonResponse
     {
         $user = $request->user();
 
         $cartItems = $user->cartItems()
-            ->with(['product' => function ($query) {
-                $query->published()
-                    ->with(['category', 'brand', 'mainImage', 'variants.images', 'attributes.values']);
+            ->with(['productVariant' => function ($query) {
+                $query->where('status', 'published')
+                    ->with([
+                        'product.category.parent',
+                        'product.brand',
+                        'product.mainImage',
+                        'attributeValues.attribute',
+                        'images.file',
+                    ]);
             }])
             ->get()
-            ->filter(fn($item) => $item->product !== null);
+            ->filter(fn($item) => $item->productVariant !== null && $item->productVariant->product !== null);
 
         $items = $cartItems->map(function ($item) {
             return [
                 'id' => $item->id,
-                'product' => new ProductResource($item->product),
+                'variant' => new ProductVariantCatalogResource($item->productVariant),
                 'quantity' => $item->quantity,
                 'created_at' => $item->created_at,
             ];
@@ -36,8 +42,7 @@ class CustomerCartController extends Controller
 
         $totalQuantity = $cartItems->sum('quantity');
         $totalPrice = $cartItems->sum(function ($item) {
-            $price = $item->product->discount_price ?? $item->product->price;
-            return $price * $item->quantity;
+            return $item->productVariant->current_price * $item->quantity;
         });
 
         return response()->json([
@@ -59,9 +64,9 @@ class CustomerCartController extends Controller
         $user = $request->user();
 
         $cartItems = $user->cartItems()
-            ->select('product_id', 'quantity')
+            ->select('product_variant_id', 'quantity')
             ->get()
-            ->keyBy('product_id')
+            ->keyBy('product_variant_id')
             ->map(fn($item) => $item->quantity);
 
         return response()->json([
@@ -75,9 +80,9 @@ class CustomerCartController extends Controller
     }
 
     /**
-     * Add product to cart or update quantity if exists.
+     * Add product variant to cart or update quantity if exists.
      */
-    public function store(Request $request, int $productId): JsonResponse
+    public function store(Request $request, int $variantId): JsonResponse
     {
         $request->validate([
             'quantity' => 'sometimes|integer|min:1|max:999',
@@ -86,35 +91,41 @@ class CustomerCartController extends Controller
         $user = $request->user();
         $quantity = (int) $request->input('quantity', 1);
 
-        // Check if product exists and is published
-        $product = Product::where('id', $productId)->published()->first();
+        // Check if variant exists and is published
+        $variant = ProductVariant::where('id', $variantId)
+            ->where('status', 'published')
+            ->first();
 
-        if (!$product) {
+        if (!$variant) {
             return response()->json([
                 'success' => false,
-                'message' => 'Product not found',
+                'message' => 'Product variant not found',
             ], 404);
         }
 
-        // Add or update cart item
-        $cartItem = CartItem::updateOrCreate(
-            [
-                'user_id' => $user->id,
-                'product_id' => $productId,
-            ],
-            [
-                'quantity' => \DB::raw("COALESCE(quantity, 0) + {$quantity}"),
-            ]
-        );
+        // Check if item already exists in cart
+        $existingItem = CartItem::where('user_id', $user->id)
+            ->where('product_variant_id', $variantId)
+            ->first();
 
-        // Reload to get actual quantity
-        $cartItem->refresh();
+        if ($existingItem) {
+            // Add to existing quantity
+            $existingItem->increment('quantity', $quantity);
+            $cartItem = $existingItem;
+        } else {
+            // Create new cart item
+            $cartItem = CartItem::create([
+                'user_id' => $user->id,
+                'product_variant_id' => $variantId,
+                'quantity' => $quantity,
+            ]);
+        }
 
         return response()->json([
             'success' => true,
             'message' => 'Product added to cart',
             'data' => [
-                'product_id' => $productId,
+                'variant_id' => $variantId,
                 'quantity' => $cartItem->quantity,
             ],
         ], 201);
@@ -123,7 +134,7 @@ class CustomerCartController extends Controller
     /**
      * Update cart item quantity.
      */
-    public function update(Request $request, int $productId): JsonResponse
+    public function update(Request $request, int $variantId): JsonResponse
     {
         $request->validate([
             'quantity' => 'required|integer|min:1|max:999',
@@ -133,7 +144,7 @@ class CustomerCartController extends Controller
         $quantity = (int) $request->input('quantity');
 
         $cartItem = CartItem::where('user_id', $user->id)
-            ->where('product_id', $productId)
+            ->where('product_variant_id', $variantId)
             ->first();
 
         if (!$cartItem) {
@@ -149,21 +160,21 @@ class CustomerCartController extends Controller
             'success' => true,
             'message' => 'Cart updated',
             'data' => [
-                'product_id' => $productId,
+                'variant_id' => $variantId,
                 'quantity' => $quantity,
             ],
         ]);
     }
 
     /**
-     * Remove product from cart.
+     * Remove product variant from cart.
      */
-    public function destroy(Request $request, int $productId): JsonResponse
+    public function destroy(Request $request, int $variantId): JsonResponse
     {
         $user = $request->user();
 
         CartItem::where('user_id', $user->id)
-            ->where('product_id', $productId)
+            ->where('product_variant_id', $variantId)
             ->delete();
 
         return response()->json([
@@ -195,34 +206,34 @@ class CustomerCartController extends Controller
     {
         $request->validate([
             'items' => 'required|array',
-            'items.*.product_id' => 'required|integer',
+            'items.*.variant_id' => 'required|integer',
             'items.*.quantity' => 'required|integer|min:1|max:999',
         ]);
 
         $user = $request->user();
         $items = $request->input('items');
 
-        // Get product IDs from request
-        $productIds = array_column($items, 'product_id');
+        // Get variant IDs from request
+        $variantIds = array_column($items, 'variant_id');
 
-        // Get only valid published product IDs
-        $validProductIds = Product::whereIn('id', $productIds)
-            ->published()
+        // Get only valid published variant IDs
+        $validVariantIds = ProductVariant::whereIn('id', $variantIds)
+            ->where('status', 'published')
             ->pluck('id')
             ->toArray();
 
-        // Create a map of product_id => quantity from request
+        // Create a map of variant_id => quantity from request
         $itemsMap = [];
         foreach ($items as $item) {
-            if (in_array($item['product_id'], $validProductIds)) {
-                $itemsMap[$item['product_id']] = $item['quantity'];
+            if (in_array($item['variant_id'], $validVariantIds)) {
+                $itemsMap[$item['variant_id']] = $item['quantity'];
             }
         }
 
         // Merge with existing cart (add quantities for existing items)
-        foreach ($itemsMap as $productId => $quantity) {
+        foreach ($itemsMap as $variantId => $quantity) {
             $existingItem = CartItem::where('user_id', $user->id)
-                ->where('product_id', $productId)
+                ->where('product_variant_id', $variantId)
                 ->first();
 
             if ($existingItem) {
@@ -234,7 +245,7 @@ class CustomerCartController extends Controller
                 // Create new cart item
                 CartItem::create([
                     'user_id' => $user->id,
-                    'product_id' => $productId,
+                    'product_variant_id' => $variantId,
                     'quantity' => $quantity,
                 ]);
             }
@@ -242,9 +253,9 @@ class CustomerCartController extends Controller
 
         // Return updated cart summary
         $cartItems = $user->cartItems()
-            ->select('product_id', 'quantity')
+            ->select('product_variant_id', 'quantity')
             ->get()
-            ->keyBy('product_id')
+            ->keyBy('product_variant_id')
             ->map(fn($item) => $item->quantity);
 
         return response()->json([

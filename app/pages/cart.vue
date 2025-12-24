@@ -57,14 +57,14 @@
           <div class="space-y-4">
             <div
               v-for="item in cartItems"
-              :key="item.productId"
+              :key="item.variantId"
               class="flex gap-4 p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700"
             >
               <!-- Product Image -->
-              <NuxtLink :to="item.product ? buildProductUrl(item.product) : '#'" class="shrink-0">
+              <NuxtLink :to="item.variant ? buildProductUrl(item.variant) : '#'" class="shrink-0">
                 <VSecureImage
-                  v-if="item.product?.main_image_file_id"
-                  :file-id="item.product.main_image_file_id"
+                  v-if="item.variant?.main_image_file_id"
+                  :file-id="item.variant.main_image_file_id"
                   img-class="w-24 h-24 object-contain rounded"
                 />
                 <div v-else class="w-24 h-24 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center">
@@ -75,10 +75,10 @@
               <!-- Product Info -->
               <div class="flex-1 min-w-0">
                 <NuxtLink
-                  :to="item.product ? buildProductUrl(item.product) : '#'"
+                  :to="item.variant ? buildProductUrl(item.variant) : '#'"
                   class="font-medium text-gray-900 dark:text-white hover:text-primary line-clamp-2"
                 >
-                  {{ item.product?.name || `Product #${item.productId}` }}
+                  {{ item.variant?.name || `Product #${item.variantId}` }}
                 </NuxtLink>
 
                 <!-- Quantity Controls -->
@@ -86,7 +86,7 @@
                   <div class="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg">
                     <button
                       class="px-3 py-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-l-lg transition-colors"
-                      @click="decreaseQuantity(item.productId, item.quantity)"
+                      @click="decreaseQuantity(item.variantId, item.quantity)"
                     >
                       <Minus class="w-4 h-4" />
                     </button>
@@ -95,14 +95,14 @@
                     </span>
                     <button
                       class="px-3 py-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-r-lg transition-colors"
-                      @click="increaseQuantity(item.productId, item.quantity)"
+                      @click="increaseQuantity(item.variantId, item.quantity)"
                     >
                       <Plus class="w-4 h-4" />
                     </button>
                   </div>
                   <button
                     class="p-2 text-gray-400 hover:text-red-500 transition-colors"
-                    @click="removeItem(item.productId)"
+                    @click="removeItem(item.variantId)"
                   >
                     <Trash2 class="w-5 h-5" />
                   </button>
@@ -111,17 +111,17 @@
 
               <!-- Price -->
               <div class="text-right shrink-0">
-                <div v-if="item.product" class="font-bold text-lg text-gray-900 dark:text-white">
-                  {{ formatPrice(getItemPrice(item.product) * item.quantity) }}
+                <div v-if="item.variant" class="font-bold text-lg text-gray-900 dark:text-white">
+                  {{ formatPrice(getItemPrice(item.variant) * item.quantity) }}
                 </div>
                 <div
-                  v-if="item.product?.discount_price"
+                  v-if="item.variant?.discount_price"
                   class="text-sm text-gray-500 line-through"
                 >
-                  {{ formatPrice(Number(item.product.base_price) * item.quantity) }}
+                  {{ formatPrice(Number(item.variant.base_price) * item.quantity) }}
                 </div>
-                <div v-if="item.product" class="text-sm text-gray-500 mt-1">
-                  {{ formatPrice(getItemPrice(item.product)) }} / {{ $t("cart.perItem") }}
+                <div v-if="item.variant" class="text-sm text-gray-500 mt-1">
+                  {{ formatPrice(getItemPrice(item.variant)) }} / {{ $t("cart.perItem") }}
                 </div>
               </div>
             </div>
@@ -204,17 +204,19 @@ import { buildProductUrl as buildProductUrlUtil } from "~/utils/urlBuilder";
 
 const { t } = useI18n();
 
-// Build product URL from product object
-const buildProductUrl = (product: Product): string => {
+// Build product URL from variant object
+const buildProductUrl = (variant: Product): string => {
   const categoryPath: string[] = [];
-  let currentCategory = product.category;
+  let currentCategory = variant.category;
 
   while (currentCategory) {
     categoryPath.unshift(currentCategory.slug);
     currentCategory = currentCategory.parent;
   }
 
-  return buildProductUrlUtil(categoryPath, product.slug);
+  // Use variant_slug if available
+  const variantSlug = (variant as any).variant_slug;
+  return buildProductUrlUtil(categoryPath, variant.slug, variantSlug);
 };
 const localePath = useLocalePath();
 const cartStore = useCartStore();
@@ -226,29 +228,29 @@ const isLoading = ref(true);
 const cartItems = ref<CartItem[]>([]);
 
 // Get item price (current_price or base_price)
-const getItemPrice = (product: Product): number => {
-  if (product.current_price !== undefined) {
-    return product.current_price;
+const getItemPrice = (variant: Product): number => {
+  if (variant.current_price !== undefined) {
+    return variant.current_price;
   }
-  if (product.discount_price) {
-    return Number(product.discount_price);
+  if (variant.discount_price) {
+    return Number(variant.discount_price);
   }
-  return Number(product.base_price);
+  return Number(variant.base_price);
 };
 
 // Calculate prices
 const totalPrice = computed(() => {
   return cartItems.value.reduce((sum, item) => {
-    if (!item.product) return sum;
-    return sum + getItemPrice(item.product) * item.quantity;
+    if (!item.variant) return sum;
+    return sum + getItemPrice(item.variant) * item.quantity;
   }, 0);
 });
 
 const totalDiscount = computed(() => {
   return cartItems.value.reduce((sum, item) => {
-    if (!item.product || !item.product.discount_price) return sum;
-    const basePrice = Number(item.product.base_price);
-    const discountPrice = Number(item.product.discount_price);
+    if (!item.variant || !item.variant.discount_price) return sum;
+    const basePrice = Number(item.variant.base_price);
+    const discountPrice = Number(item.variant.discount_price);
     return sum + (basePrice - discountPrice) * item.quantity;
   }, 0);
 });
@@ -270,32 +272,32 @@ onMounted(async () => {
   isLoading.value = false;
 });
 
-// Load cart items with products
+// Load cart items with variants
 const loadCartItems = async () => {
   if (isAuthenticated.value) {
     const result = await cartStore.getCartWithProducts();
     cartItems.value = result.items;
   } else {
-    // For guest users, load products by IDs
+    // For guest users, load variants by IDs
     const items: CartItem[] = [];
-    cartStore.cartItems.forEach((quantity, productId) => {
-      items.push({ productId, quantity });
+    cartStore.cartItems.forEach((quantity, variantId) => {
+      items.push({ variantId, quantity });
     });
 
     if (items.length > 0) {
       try {
-        const ids = items.map((i) => i.productId).join(",");
+        const ids = items.map((i) => i.variantId).join(",");
         const response = await client<{ success: boolean; data: Product[] }>(
-          `/api/products?ids=${ids}&limit=50`
+          `/api/products/variants?ids=${ids}&limit=50`
         );
-        const productsMap = new Map(response.data.map((p) => [p.id, p]));
+        const variantsMap = new Map(response.data.map((v: any) => [v.variant_id || v.id, v]));
 
         cartItems.value = items.map((item) => ({
           ...item,
-          product: productsMap.get(item.productId),
+          variant: variantsMap.get(item.variantId),
         }));
       } catch (error) {
-        console.error("Failed to load cart products:", error);
+        console.error("Failed to load cart variants:", error);
         cartItems.value = items;
       }
     } else {
@@ -305,29 +307,29 @@ const loadCartItems = async () => {
 };
 
 // Quantity controls
-const increaseQuantity = async (productId: number, currentQty: number) => {
-  await cartStore.updateQuantity(productId, currentQty + 1);
-  const item = cartItems.value.find((i) => i.productId === productId);
+const increaseQuantity = async (variantId: number, currentQty: number) => {
+  await cartStore.updateQuantity(variantId, currentQty + 1);
+  const item = cartItems.value.find((i) => i.variantId === variantId);
   if (item) {
     item.quantity = currentQty + 1;
   }
 };
 
-const decreaseQuantity = async (productId: number, currentQty: number) => {
+const decreaseQuantity = async (variantId: number, currentQty: number) => {
   if (currentQty <= 1) {
-    await removeItem(productId);
+    await removeItem(variantId);
   } else {
-    await cartStore.updateQuantity(productId, currentQty - 1);
-    const item = cartItems.value.find((i) => i.productId === productId);
+    await cartStore.updateQuantity(variantId, currentQty - 1);
+    const item = cartItems.value.find((i) => i.variantId === variantId);
     if (item) {
       item.quantity = currentQty - 1;
     }
   }
 };
 
-const removeItem = async (productId: number) => {
-  await cartStore.remove(productId);
-  cartItems.value = cartItems.value.filter((i) => i.productId !== productId);
+const removeItem = async (variantId: number) => {
+  await cartStore.remove(variantId);
+  cartItems.value = cartItems.value.filter((i) => i.variantId !== variantId);
 };
 
 const handleClearCart = async () => {

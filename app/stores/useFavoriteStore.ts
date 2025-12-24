@@ -41,7 +41,7 @@ export const useFavoriteStore = defineStore("favorite", () => {
   const { t } = useI18n();
 
   // State
-  const favoriteIds = ref<Set<number>>(new Set());
+  const favoriteIds = ref<Set<number>>(new Set()); // variantIds
   const isLoading = ref(false);
   const isInitialized = ref(false);
 
@@ -50,10 +50,10 @@ export const useFavoriteStore = defineStore("favorite", () => {
   const isAuthenticated = computed(() => !!user.value);
 
   /**
-   * Check if product is in favorites
+   * Check if variant is in favorites
    */
-  const isFavorite = (productId: number): boolean => {
-    return favoriteIds.value.has(productId);
+  const isFavorite = (variantId: number): boolean => {
+    return favoriteIds.value.has(variantId);
   };
 
   /**
@@ -95,20 +95,20 @@ export const useFavoriteStore = defineStore("favorite", () => {
   };
 
   /**
-   * Add product to favorites
+   * Add variant to favorites
    */
-  const add = async (productId: number) => {
+  const add = async (variantId: number) => {
     // Optimistic update
-    favoriteIds.value.add(productId);
+    favoriteIds.value.add(variantId);
 
     if (isAuthenticated.value) {
       try {
-        await client<ToggleResponse>(`/api/favorites/${productId}`, {
+        await client<ToggleResponse>(`/api/favorites/${variantId}`, {
           method: "POST",
         });
       } catch (error) {
         // Rollback on error
-        favoriteIds.value.delete(productId);
+        favoriteIds.value.delete(variantId);
         console.error("Failed to add favorite:", error);
         return;
       }
@@ -123,20 +123,20 @@ export const useFavoriteStore = defineStore("favorite", () => {
   };
 
   /**
-   * Remove product from favorites
+   * Remove variant from favorites
    */
-  const remove = async (productId: number) => {
+  const remove = async (variantId: number) => {
     // Optimistic update
-    favoriteIds.value.delete(productId);
+    favoriteIds.value.delete(variantId);
 
     if (isAuthenticated.value) {
       try {
-        await client<ToggleResponse>(`/api/favorites/${productId}`, {
+        await client<ToggleResponse>(`/api/favorites/${variantId}`, {
           method: "DELETE",
         });
       } catch (error) {
         // Rollback on error
-        favoriteIds.value.add(productId);
+        favoriteIds.value.add(variantId);
         console.error("Failed to remove favorite:", error);
         return;
       }
@@ -151,13 +151,13 @@ export const useFavoriteStore = defineStore("favorite", () => {
   };
 
   /**
-   * Toggle product in favorites
+   * Toggle variant in favorites
    */
-  const toggle = async (productId: number) => {
-    if (isFavorite(productId)) {
-      await remove(productId);
+  const toggle = async (variantId: number) => {
+    if (isFavorite(variantId)) {
+      await remove(variantId);
     } else {
-      await add(productId);
+      await add(variantId);
     }
   };
 
@@ -173,7 +173,7 @@ export const useFavoriteStore = defineStore("favorite", () => {
       try {
         const response = await client<SyncResponse>("/api/favorites/sync", {
           method: "POST",
-          body: { product_ids: localFavorites },
+          body: { variant_ids: localFavorites },
         });
 
         // Update local state with merged favorites
@@ -191,7 +191,7 @@ export const useFavoriteStore = defineStore("favorite", () => {
   };
 
   /**
-   * Get paginated favorite products (for favorites page)
+   * Get paginated favorite variants (for favorites page)
    */
   const getFavoriteProducts = async (page = 1, limit = 15) => {
     if (!isAuthenticated.value) {

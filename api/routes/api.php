@@ -28,6 +28,8 @@ use App\Http\Controllers\CustomerStoreSettingsController;
 use App\Http\Controllers\CallbackRequestController;
 use App\Http\Controllers\CustomerFavoriteController;
 use App\Http\Controllers\CustomerCartController;
+use App\Http\Controllers\CustomerComparisonController;
+use App\Http\Controllers\CustomerPublicComparisonController;
 use Illuminate\Support\Facades\Route;
 
 // Customer auth routes (protected)
@@ -52,6 +54,17 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/cart/{productId}', [CustomerCartController::class, 'destroy']);
     Route::delete('/cart', [CustomerCartController::class, 'clear']);
     Route::post('/cart/sync', [CustomerCartController::class, 'sync']);
+
+    // Comparison routes
+    Route::get('/comparisons', [CustomerComparisonController::class, 'index']);
+    Route::get('/comparisons/ids', [CustomerComparisonController::class, 'ids']);
+    Route::get('/comparisons/category/{categorySlug}', [CustomerComparisonController::class, 'showByCategory']);
+    Route::post('/comparisons/{productId}', [CustomerComparisonController::class, 'store']);
+    Route::delete('/comparisons/{productId}', [CustomerComparisonController::class, 'destroy']);
+    Route::post('/comparisons/{productId}/toggle', [CustomerComparisonController::class, 'toggle']);
+    Route::post('/comparisons/sync', [CustomerComparisonController::class, 'sync']);
+    Route::delete('/comparisons/category/{categorySlug}', [CustomerComparisonController::class, 'clearCategory']);
+    Route::post('/comparisons/check', [CustomerComparisonController::class, 'check']);
 });
 
 // Customer auth routes (public)
@@ -73,6 +86,7 @@ Route::get('/files/{id}/download', [CustomerFileController::class, 'download']);
 Route::get('/products', [CustomerProductController::class, 'index']);
 Route::get('/products/filters', [CustomerProductController::class, 'filters']);
 Route::get('/products/by-slugs', [CustomerProductController::class, 'indexBySlugs']);
+Route::get('/products/variants', [CustomerProductController::class, 'variants']);
 Route::get('/products/filters-by-slug', [CustomerProductController::class, 'filtersByCategorySlug']);
 Route::get('/products/attribute-slugs', [CustomerProductController::class, 'attributeSlugs']);
 Route::get('/products/slug/{slug}', [CustomerProductController::class, 'showBySlug']);
@@ -98,6 +112,9 @@ Route::get('/store-settings', [CustomerStoreSettingsController::class, 'index'])
 
 // Callback requests routes (public)
 Route::post('/callback-requests', [CallbackRequestController::class, 'store']);
+
+// Public comparison route (for shared links)
+Route::post('/comparisons/by-ids', [CustomerPublicComparisonController::class, 'getByIds']);
 
 // Admin routes group with /admin prefix
 Route::prefix('admin')->group(function () {

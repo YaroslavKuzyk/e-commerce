@@ -76,4 +76,20 @@ class CustomerProductService implements CustomerProductServiceInterface
     {
         return $this->productRepository->getAvailableFilters($currentFilters);
     }
+
+    /**
+     * Get paginated product variants.
+     *
+     * @param int $page
+     * @param int $limit
+     * @param array $filters
+     * @return LengthAwarePaginator
+     */
+    public function getVariantsPaginated(int $page = 1, int $limit = 15, array $filters = []): LengthAwarePaginator
+    {
+        $filters['page'] = $page;
+        $filters['per_page'] = $limit;
+
+        return $this->productRepository->getVariantsWithFilters($filters);
+    }
 }

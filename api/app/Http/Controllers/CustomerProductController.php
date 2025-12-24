@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\ProductVariantCatalogResource;
 use App\Contracts\CustomerProductServiceInterface;
 
 class CustomerProductController extends Controller
@@ -374,6 +375,118 @@ class CustomerProductController extends Controller
         return response()->json([
             'success' => true,
             'data' => $filters,
+        ]);
+    }
+
+    /**
+     * Get product variants as separate catalog items.
+     * Each variant is returned as a separate item with product info included.
+     */
+    public function variants(Request $request): JsonResponse
+    {
+        $page = (int) $request->query('page', 1);
+        $limit = (int) $request->query('limit', 15);
+        $filters = [];
+
+        // Fetch specific variants by IDs (for cart/favorites)
+        if ($request->has('ids')) {
+            $ids = array_map('intval', explode(',', $request->query('ids')));
+            $variants = \App\Models\ProductVariant::whereIn('id', $ids)
+                ->where('status', 'published')
+                ->with([
+                    'product.category.parent',
+                    'product.brand',
+                    'product.mainImage',
+                    'attributeValues.attribute',
+                    'images.file',
+                ])
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => ProductVariantCatalogResource::collection($variants),
+            ]);
+        }
+
+        // Category slug resolution
+        if ($request->has('category_slug')) {
+            $category = \App\Models\ProductCategory::where('slug', $request->query('category_slug'))->first();
+            if ($category) {
+                $filters['category_id'] = $category->id;
+            }
+        }
+
+        // Brand slugs resolution
+        if ($request->has('brand_slugs')) {
+            $brandSlugs = explode(',', $request->query('brand_slugs'));
+            $brandIds = \App\Models\ProductBrand::whereIn('slug', $brandSlugs)->pluck('id')->toArray();
+            if (!empty($brandIds)) {
+                $filters['brand_ids'] = implode(',', $brandIds);
+            }
+        }
+
+        // Attribute value slugs resolution
+        if ($request->has('attr_slugs')) {
+            $attributeValueIds = [];
+            foreach ($request->query('attr_slugs') as $attrSlug => $valueSlugs) {
+                $attribute = \App\Models\Attribute::where('slug', $attrSlug)->first();
+                if ($attribute) {
+                    $valueIds = \App\Models\AttributeValue::where('attribute_id', $attribute->id)
+                        ->whereIn('slug', explode(',', $valueSlugs))
+                        ->pluck('id')
+                        ->toArray();
+                    $attributeValueIds = array_merge($attributeValueIds, $valueIds);
+                }
+            }
+            if (!empty($attributeValueIds)) {
+                $filters['attribute_values'] = implode(',', $attributeValueIds);
+            }
+        }
+
+        // Search
+        if ($request->has('search')) {
+            $filters['search'] = $request->query('search');
+        }
+
+        // Price range
+        if ($request->has('price_min')) {
+            $filters['price_min'] = $request->query('price_min');
+        }
+        if ($request->has('price_max')) {
+            $filters['price_max'] = $request->query('price_max');
+        }
+
+        // In stock
+        if ($request->has('in_stock')) {
+            $filters['in_stock'] = filter_var($request->query('in_stock'), FILTER_VALIDATE_BOOLEAN);
+        }
+
+        // Has discount filter (Акції)
+        if ($request->has('has_discount')) {
+            $filters['has_discount'] = filter_var($request->query('has_discount'), FILTER_VALIDATE_BOOLEAN);
+        }
+
+        // Is clearance filter (Уцінка)
+        if ($request->has('is_clearance')) {
+            $filters['is_clearance'] = filter_var($request->query('is_clearance'), FILTER_VALIDATE_BOOLEAN);
+        }
+
+        // Sort
+        if ($request->has('sort_by')) {
+            $filters['sort_by'] = $request->query('sort_by');
+        }
+
+        $variants = $this->customerProductService->getVariantsPaginated($page, $limit, $filters);
+
+        return response()->json([
+            'success' => true,
+            'data' => ProductVariantCatalogResource::collection($variants),
+            'meta' => [
+                'current_page' => $variants->currentPage(),
+                'last_page' => $variants->lastPage(),
+                'per_page' => $variants->perPage(),
+                'total' => $variants->total(),
+            ],
         ]);
     }
 }

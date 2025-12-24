@@ -10,15 +10,20 @@
       >
         <div class="w-20 h-20 flex items-center justify-center">
           <VSecureImage
-            v-if="category.logo_file_id"
-            :fileId="category.logo_file_id"
+            v-if="category.menu_image_file_id"
+            :fileId="category.menu_image_file_id"
             imgClass="max-w-full max-h-full object-contain"
           />
-          <div v-else class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center">
+          <div
+            v-else
+            class="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center"
+          >
             <Folder class="w-8 h-8 text-gray-400" />
           </div>
         </div>
-        <span class="text-sm text-center line-clamp-2">{{ category.name }}</span>
+        <span class="text-sm text-center line-clamp-2">{{
+          category.name
+        }}</span>
       </NuxtLink>
     </div>
   </div>
@@ -32,7 +37,7 @@ interface ParentCategory {
   id: number;
   name: string;
   slug: string;
-  logo_file_id?: number | null;
+  menu_image_file_id?: number | null;
 }
 
 interface Props {

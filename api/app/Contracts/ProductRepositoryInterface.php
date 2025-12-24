@@ -34,4 +34,6 @@ interface ProductRepositoryInterface
     public function deleteVariant(ProductVariant $variant): bool;
 
     public function findVariantById(int $id): ?ProductVariant;
+
+    public function getVariantsWithFilters(array $filters): Collection|LengthAwarePaginator;
 }

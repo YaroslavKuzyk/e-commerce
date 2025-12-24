@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\ProductResource;
-use App\Models\Product;
+use App\Http\Resources\ProductVariantCatalogResource;
+use App\Models\ProductVariant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class CustomerFavoriteController extends Controller
 {
     /**
-     * Get user's favorite products with pagination.
+     * Get user's favorite product variants with pagination.
      */
     public function index(Request $request): JsonResponse
     {
@@ -18,14 +18,20 @@ class CustomerFavoriteController extends Controller
         $page = (int) $request->query('page', 1);
         $limit = min((int) $request->query('limit', 15), 50);
 
-        $favorites = $user->favoriteProducts()
-            ->published()
-            ->with(['category', 'brand', 'mainImage', 'variants.images', 'attributes.values'])
+        $favorites = $user->favoriteVariants()
+            ->where('status', 'published')
+            ->with([
+                'product.category.parent',
+                'product.brand',
+                'product.mainImage',
+                'attributeValues.attribute',
+                'images.file',
+            ])
             ->paginate($limit, ['*'], 'page', $page);
 
         return response()->json([
             'success' => true,
-            'data' => ProductResource::collection($favorites),
+            'data' => ProductVariantCatalogResource::collection($favorites),
             'meta' => [
                 'current_page' => $favorites->currentPage(),
                 'last_page' => $favorites->lastPage(),
@@ -36,13 +42,13 @@ class CustomerFavoriteController extends Controller
     }
 
     /**
-     * Get list of favorite product IDs (for quick checking).
+     * Get list of favorite variant IDs (for quick checking).
      */
     public function ids(Request $request): JsonResponse
     {
         $user = $request->user();
 
-        $ids = $user->favoriteProducts()->pluck('products.id')->toArray();
+        $ids = $user->favoriteVariants()->pluck('product_variants.id')->toArray();
 
         return response()->json([
             'success' => true,
@@ -51,24 +57,26 @@ class CustomerFavoriteController extends Controller
     }
 
     /**
-     * Add product to favorites.
+     * Add product variant to favorites.
      */
-    public function store(Request $request, int $productId): JsonResponse
+    public function store(Request $request, int $variantId): JsonResponse
     {
         $user = $request->user();
 
-        // Check if product exists and is published
-        $product = Product::where('id', $productId)->published()->first();
+        // Check if variant exists and is published
+        $variant = ProductVariant::where('id', $variantId)
+            ->where('status', 'published')
+            ->first();
 
-        if (!$product) {
+        if (!$variant) {
             return response()->json([
                 'success' => false,
-                'message' => 'Product not found',
+                'message' => 'Product variant not found',
             ], 404);
         }
 
         // Check if already in favorites
-        if ($user->hasFavorite($productId)) {
+        if ($user->hasFavorite($variantId)) {
             return response()->json([
                 'success' => true,
                 'message' => 'Product already in favorites',
@@ -76,7 +84,7 @@ class CustomerFavoriteController extends Controller
             ]);
         }
 
-        $user->favoriteProducts()->attach($productId);
+        $user->favoriteVariants()->attach($variantId);
 
         return response()->json([
             'success' => true,
@@ -86,13 +94,13 @@ class CustomerFavoriteController extends Controller
     }
 
     /**
-     * Remove product from favorites.
+     * Remove product variant from favorites.
      */
-    public function destroy(Request $request, int $productId): JsonResponse
+    public function destroy(Request $request, int $variantId): JsonResponse
     {
         $user = $request->user();
 
-        $user->favoriteProducts()->detach($productId);
+        $user->favoriteVariants()->detach($variantId);
 
         return response()->json([
             'success' => true,
@@ -102,29 +110,31 @@ class CustomerFavoriteController extends Controller
     }
 
     /**
-     * Toggle product in favorites (add if not exists, remove if exists).
+     * Toggle product variant in favorites (add if not exists, remove if exists).
      */
-    public function toggle(Request $request, int $productId): JsonResponse
+    public function toggle(Request $request, int $variantId): JsonResponse
     {
         $user = $request->user();
 
-        // Check if product exists and is published
-        $product = Product::where('id', $productId)->published()->first();
+        // Check if variant exists and is published
+        $variant = ProductVariant::where('id', $variantId)
+            ->where('status', 'published')
+            ->first();
 
-        if (!$product) {
+        if (!$variant) {
             return response()->json([
                 'success' => false,
-                'message' => 'Product not found',
+                'message' => 'Product variant not found',
             ], 404);
         }
 
-        $isFavorite = $user->hasFavorite($productId);
+        $isFavorite = $user->hasFavorite($variantId);
 
         if ($isFavorite) {
-            $user->favoriteProducts()->detach($productId);
+            $user->favoriteVariants()->detach($variantId);
             $message = 'Product removed from favorites';
         } else {
-            $user->favoriteProducts()->attach($productId);
+            $user->favoriteVariants()->attach($variantId);
             $message = 'Product added to favorites';
         }
 
@@ -142,26 +152,26 @@ class CustomerFavoriteController extends Controller
     public function sync(Request $request): JsonResponse
     {
         $request->validate([
-            'product_ids' => 'required|array',
-            'product_ids.*' => 'integer',
+            'variant_ids' => 'required|array',
+            'variant_ids.*' => 'integer',
         ]);
 
         $user = $request->user();
-        $productIds = $request->input('product_ids');
+        $variantIds = $request->input('variant_ids');
 
-        // Get only valid published product IDs
-        $validProductIds = Product::whereIn('id', $productIds)
-            ->published()
+        // Get only valid published variant IDs
+        $validVariantIds = ProductVariant::whereIn('id', $variantIds)
+            ->where('status', 'published')
             ->pluck('id')
             ->toArray();
 
         // Merge with existing favorites (syncWithoutDetaching won't remove existing)
-        if (!empty($validProductIds)) {
-            $user->favoriteProducts()->syncWithoutDetaching($validProductIds);
+        if (!empty($validVariantIds)) {
+            $user->favoriteVariants()->syncWithoutDetaching($validVariantIds);
         }
 
         // Return updated list of favorite IDs
-        $updatedIds = $user->favoriteProducts()->pluck('products.id')->toArray();
+        $updatedIds = $user->favoriteVariants()->pluck('product_variants.id')->toArray();
 
         return response()->json([
             'success' => true,
@@ -171,26 +181,26 @@ class CustomerFavoriteController extends Controller
     }
 
     /**
-     * Check if products are in favorites (bulk check).
+     * Check if variants are in favorites (bulk check).
      */
     public function check(Request $request): JsonResponse
     {
         $request->validate([
-            'product_ids' => 'required|array',
-            'product_ids.*' => 'integer',
+            'variant_ids' => 'required|array',
+            'variant_ids.*' => 'integer',
         ]);
 
         $user = $request->user();
-        $productIds = $request->input('product_ids');
+        $variantIds = $request->input('variant_ids');
 
-        $favoriteIds = $user->favoriteProducts()
-            ->whereIn('products.id', $productIds)
-            ->pluck('products.id')
+        $favoriteIds = $user->favoriteVariants()
+            ->whereIn('product_variants.id', $variantIds)
+            ->pluck('product_variants.id')
             ->toArray();
 
-        // Return object with product_id => is_favorite
+        // Return object with variant_id => is_favorite
         $result = [];
-        foreach ($productIds as $id) {
+        foreach ($variantIds as $id) {
             $result[$id] = in_array($id, $favoriteIds);
         }
 

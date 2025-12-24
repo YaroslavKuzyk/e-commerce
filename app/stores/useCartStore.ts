@@ -8,16 +8,16 @@ import {
 } from "~/utils/cartStorage";
 
 export interface CartItem {
-  productId: number;
+  variantId: number;
   quantity: number;
-  product?: Product;
+  variant?: Product;
 }
 
 interface CartResponse {
   success: boolean;
   data: Array<{
     id: number;
-    product: Product;
+    variant: Product;
     quantity: number;
     created_at: string;
   }>;
@@ -54,7 +54,7 @@ export const useCartStore = defineStore("cart", () => {
   const { t } = useI18n();
 
   // State
-  const cartItems = ref<Map<number, number>>(new Map()); // productId => quantity
+  const cartItems = ref<Map<number, number>>(new Map()); // variantId => quantity
   const isLoading = ref(false);
   const isInitialized = ref(false);
 
@@ -70,17 +70,17 @@ export const useCartStore = defineStore("cart", () => {
   const isAuthenticated = computed(() => !!user.value);
 
   /**
-   * Check if product is in cart
+   * Check if variant is in cart
    */
-  const isInCart = (productId: number): boolean => {
-    return cartItems.value.has(productId);
+  const isInCart = (variantId: number): boolean => {
+    return cartItems.value.has(variantId);
   };
 
   /**
-   * Get quantity of product in cart
+   * Get quantity of variant in cart
    */
-  const getQuantity = (productId: number): number => {
-    return cartItems.value.get(productId) || 0;
+  const getQuantity = (variantId: number): number => {
+    return cartItems.value.get(variantId) || 0;
   };
 
   /**
@@ -104,7 +104,7 @@ export const useCartStore = defineStore("cart", () => {
   const loadFromStorage = () => {
     const stored = getCartFromStorage();
     cartItems.value = new Map(
-      stored.map((item) => [item.productId, item.quantity])
+      stored.map((item) => [item.variantId, item.quantity])
     );
   };
 
@@ -126,28 +126,28 @@ export const useCartStore = defineStore("cart", () => {
   };
 
   /**
-   * Add product to cart (sets absolute quantity, not incremental)
+   * Add variant to cart (sets absolute quantity, not incremental)
    */
-  const add = async (productId: number, quantity: number = 1) => {
-    const currentQty = cartItems.value.get(productId) || 0;
+  const add = async (variantId: number, quantity: number = 1) => {
+    const currentQty = cartItems.value.get(variantId) || 0;
 
-    // If product already in cart, just update quantity
+    // If variant already in cart, just update quantity
     if (currentQty > 0) {
-      return updateQuantity(productId, currentQty + quantity, true);
+      return updateQuantity(variantId, currentQty + quantity, true);
     }
 
-    // Optimistic update for new product
-    cartItems.value.set(productId, quantity);
+    // Optimistic update for new variant
+    cartItems.value.set(variantId, quantity);
 
     if (isAuthenticated.value) {
       try {
-        await client(`/api/cart/${productId}`, {
+        await client(`/api/cart/${variantId}`, {
           method: "POST",
           body: { quantity },
         });
       } catch (error) {
         // Rollback on error
-        cartItems.value.delete(productId);
+        cartItems.value.delete(variantId);
         console.error("Failed to add to cart:", error);
         return;
       }
@@ -162,27 +162,27 @@ export const useCartStore = defineStore("cart", () => {
   };
 
   /**
-   * Update product quantity in cart
+   * Update variant quantity in cart
    */
-  const updateQuantity = async (productId: number, quantity: number, showToast: boolean = false) => {
-    const prevQty = cartItems.value.get(productId) || 0;
+  const updateQuantity = async (variantId: number, quantity: number, showToast: boolean = false) => {
+    const prevQty = cartItems.value.get(variantId) || 0;
 
     if (quantity <= 0) {
-      return remove(productId);
+      return remove(variantId);
     }
 
     // Optimistic update
-    cartItems.value.set(productId, quantity);
+    cartItems.value.set(variantId, quantity);
 
     if (isAuthenticated.value) {
       try {
-        await client(`/api/cart/${productId}`, {
+        await client(`/api/cart/${variantId}`, {
           method: "PUT",
           body: { quantity },
         });
       } catch (error) {
         // Rollback on error
-        cartItems.value.set(productId, prevQty);
+        cartItems.value.set(variantId, prevQty);
         console.error("Failed to update cart:", error);
         return;
       }
@@ -199,23 +199,23 @@ export const useCartStore = defineStore("cart", () => {
   };
 
   /**
-   * Remove product from cart
+   * Remove variant from cart
    */
-  const remove = async (productId: number) => {
-    const prevQty = cartItems.value.get(productId);
+  const remove = async (variantId: number) => {
+    const prevQty = cartItems.value.get(variantId);
 
     // Optimistic update
-    cartItems.value.delete(productId);
+    cartItems.value.delete(variantId);
 
     if (isAuthenticated.value) {
       try {
-        await client(`/api/cart/${productId}`, {
+        await client(`/api/cart/${variantId}`, {
           method: "DELETE",
         });
       } catch (error) {
         // Rollback on error
         if (prevQty) {
-          cartItems.value.set(productId, prevQty);
+          cartItems.value.set(variantId, prevQty);
         }
         console.error("Failed to remove from cart:", error);
         return;
@@ -260,8 +260,8 @@ export const useCartStore = defineStore("cart", () => {
    */
   const saveToStorage = () => {
     const items: StorageCartItem[] = [];
-    cartItems.value.forEach((quantity, productId) => {
-      items.push({ productId, quantity });
+    cartItems.value.forEach((quantity, variantId) => {
+      items.push({ variantId, quantity });
     });
     saveCartToStorage(items);
   };
@@ -280,7 +280,7 @@ export const useCartStore = defineStore("cart", () => {
           method: "POST",
           body: {
             items: localCart.map((item) => ({
-              product_id: item.productId,
+              variant_id: item.variantId,
               quantity: item.quantity,
             })),
           },
@@ -303,14 +303,14 @@ export const useCartStore = defineStore("cart", () => {
   };
 
   /**
-   * Get full cart with products (for cart page)
+   * Get full cart with variants (for cart page)
    */
   const getCartWithProducts = async () => {
     if (!isAuthenticated.value) {
-      // For guest users, return items without product details
+      // For guest users, return items without variant details
       const items: CartItem[] = [];
-      cartItems.value.forEach((quantity, productId) => {
-        items.push({ productId, quantity });
+      cartItems.value.forEach((quantity, variantId) => {
+        items.push({ variantId, quantity });
       });
       return { items, meta: null };
     }
@@ -319,9 +319,9 @@ export const useCartStore = defineStore("cart", () => {
       const response = await client<CartResponse>("/api/cart");
       return {
         items: response.data.map((item) => ({
-          productId: item.product.id,
+          variantId: item.variant.id,
           quantity: item.quantity,
-          product: item.product,
+          variant: item.variant,
         })),
         meta: response.meta,
       };

@@ -98,7 +98,7 @@ export function useAllProductsPage() {
         success: boolean;
         data: Product[];
         meta: AllProductsPageMeta;
-      }>(`${apiBase}/api/products/by-slugs?${queryString}`);
+      }>(`${apiBase}/api/products/variants?${queryString}`);
 
       products.value = response.data;
       meta.value = response.meta;

@@ -11,7 +11,7 @@ class UserFavorite extends Model
 
     protected $fillable = [
         'user_id',
-        'product_id',
+        'product_variant_id',
     ];
 
     protected $casts = [
@@ -23,8 +23,8 @@ class UserFavorite extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function product(): BelongsTo
+    public function productVariant(): BelongsTo
     {
-        return $this->belongsTo(Product::class);
+        return $this->belongsTo(ProductVariant::class);
     }
 }

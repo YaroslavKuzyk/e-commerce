@@ -473,4 +473,168 @@ class ProductRepository implements ProductRepositoryInterface
     {
         return ProductVariant::with(['attributeValues.attribute', 'images.file'])->find($id);
     }
+
+    /**
+     * Get all product variants with filters and optional pagination.
+     * Returns variants as separate items for catalog display.
+     *
+     * @param array $filters
+     * @return Collection|LengthAwarePaginator
+     */
+    public function getVariantsWithFilters(array $filters): Collection|LengthAwarePaginator
+    {
+        $query = ProductVariant::with([
+            'product.category.parent',
+            'product.brand',
+            'product.mainImage',
+            'attributeValues.attribute',
+            'images.file',
+        ])
+        ->whereHas('product', function ($q) use ($filters) {
+            // Only published products
+            $q->where('status', 'published');
+
+            // Search by product name, slug, or description
+            if (!empty($filters['search'])) {
+                $search = $filters['search'];
+                $q->where(function ($query) use ($search) {
+                    $query->where('name', 'like', "%{$search}%")
+                          ->orWhere('slug', 'like', "%{$search}%")
+                          ->orWhere('short_description', 'like', "%{$search}%")
+                          ->orWhere('description', 'like', "%{$search}%");
+                });
+            }
+
+            // Category filter with subcategories support
+            if (!empty($filters['category_id'])) {
+                $categoryIds = $this->getCategoryIdsWithChildren((int) $filters['category_id']);
+                $q->whereIn('category_id', $categoryIds);
+            }
+
+            // Multiple brands filter
+            if (!empty($filters['brand_ids'])) {
+                $brandIds = is_array($filters['brand_ids']) ? $filters['brand_ids'] : explode(',', $filters['brand_ids']);
+                $q->whereIn('brand_id', $brandIds);
+            } elseif (!empty($filters['brand_id'])) {
+                $q->where('brand_id', $filters['brand_id']);
+            }
+        });
+
+        // Variant status filter (only published variants)
+        if (!isset($filters['include_inactive']) || !$filters['include_inactive']) {
+            $query->where('status', 'published');
+        }
+
+        // Price range filter (on variant price)
+        if (!empty($filters['price_min'])) {
+            $query->where('price', '>=', (float) $filters['price_min']);
+        }
+        if (!empty($filters['price_max'])) {
+            $query->where('price', '<=', (float) $filters['price_max']);
+        }
+
+        // Attribute values filter
+        if (!empty($filters['attribute_values'])) {
+            $attributeValues = is_array($filters['attribute_values'])
+                ? $filters['attribute_values']
+                : explode(',', $filters['attribute_values']);
+
+            $query->whereHas('attributeValues', function ($q) use ($attributeValues) {
+                $q->whereIn('attribute_values.id', $attributeValues);
+            });
+        }
+
+        // In stock filter
+        if (!empty($filters['in_stock'])) {
+            $query->where('stock', '>', 0);
+        }
+
+        // Has discount filter (Акції)
+        if (!empty($filters['has_discount'])) {
+            $query->where(function ($q) {
+                // Variant's own discount
+                $q->where(function ($q2) {
+                    $q2->where('override_pricing', true)
+                       ->where(function ($q3) {
+                           $q3->whereNotNull('discount_price')
+                              ->where('discount_price', '>', 0);
+                       })
+                       ->where(function ($q3) {
+                           $q3->whereNull('discount_starts_at')
+                              ->orWhere('discount_starts_at', '<=', now());
+                       })
+                       ->where(function ($q3) {
+                           $q3->whereNull('discount_ends_at')
+                              ->orWhere('discount_ends_at', '>=', now());
+                       });
+                })
+                // Or inherit from product
+                ->orWhere(function ($q2) {
+                    $q2->where(function ($q3) {
+                        $q3->where('override_pricing', false)
+                           ->orWhereNull('override_pricing');
+                    })
+                    ->whereHas('product', function ($q3) {
+                        $q3->whereNotNull('discount_price')
+                           ->where('discount_price', '>', 0)
+                           ->where(function ($q4) {
+                               $q4->whereNull('discount_starts_at')
+                                  ->orWhere('discount_starts_at', '<=', now());
+                           })
+                           ->where(function ($q4) {
+                               $q4->whereNull('discount_ends_at')
+                                  ->orWhere('discount_ends_at', '>=', now());
+                           });
+                    });
+                });
+            });
+        }
+
+        // Is clearance filter (Уцінка)
+        if (!empty($filters['is_clearance'])) {
+            $query->where(function ($q) {
+                $q->where(function ($q2) {
+                    $q2->where('override_pricing', true)
+                       ->where('is_clearance', true);
+                })
+                ->orWhere(function ($q2) {
+                    $q2->where(function ($q3) {
+                        $q3->where('override_pricing', false)
+                           ->orWhereNull('override_pricing');
+                    })
+                    ->whereHas('product', function ($q3) {
+                        $q3->where('is_clearance', true);
+                    });
+                });
+            });
+        }
+
+        // Sort by created_at desc by default
+        $sortBy = $filters['sort_by'] ?? 'created_at';
+        $sortOrder = $filters['sort_order'] ?? 'desc';
+
+        // Handle special sort options
+        if ($sortBy === 'price_asc') {
+            $query->orderBy('price', 'asc');
+        } elseif ($sortBy === 'price_desc') {
+            $query->orderBy('price', 'desc');
+        } elseif ($sortBy === 'name') {
+            $query->join('products', 'product_variants.product_id', '=', 'products.id')
+                  ->orderBy('products.name', $sortOrder)
+                  ->select('product_variants.*');
+        } else {
+            $query->orderBy('product_variants.' . $sortBy, $sortOrder);
+        }
+
+        if (!empty($filters['per_page'])) {
+            return $query->paginate(
+                (int) $filters['per_page'],
+                ['*'],
+                'page',
+                (int) ($filters['page'] ?? 1)
+            );
+        }
+
+        return $query->get();
+    }
 }

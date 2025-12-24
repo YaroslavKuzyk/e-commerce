@@ -116,7 +116,7 @@ export function useCategoryPage() {
         success: boolean;
         data: Product[];
         meta: CategoryPageMeta;
-      }>(`${apiBase}/api/products/by-slugs?${queryString}`);
+      }>(`${apiBase}/api/products/variants?${queryString}`);
 
       products.value = response.data;
       meta.value = response.meta;

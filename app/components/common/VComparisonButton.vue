@@ -1,32 +1,38 @@
 <template>
   <UButton
     :variant="variant"
-    :color="isFavorite ? 'error' : 'neutral'"
+    :color="isCompared ? 'info' : 'neutral'"
     :size="size"
     :class="buttonClass"
     @click.stop.prevent="handleClick"
   >
-    <Heart
+    <Scale
       :class="[
         iconClass,
-        isFavorite ? 'fill-current' : '',
         'transition-transform',
         isAnimating ? 'scale-125' : '',
       ]"
     />
+    <span v-if="showLabel" class="ml-2">
+      {{
+        isCompared ? $t("comparison.inComparison") : $t("comparison.compare")
+      }}
+    </span>
   </UButton>
 </template>
 
 <script lang="ts" setup>
-import { Heart } from "lucide-vue-next";
-import { useFavoriteStore } from "~/stores/useFavoriteStore";
+import { Scale } from "lucide-vue-next";
+import { useComparisonStore } from "~/stores/useComparisonStore";
 
 interface Props {
   variantId: number;
+  categoryId: number;
   variant?: "ghost" | "soft" | "outline" | "solid";
   size?: "xs" | "sm" | "md" | "lg" | "xl";
   iconClass?: string;
   buttonClass?: string;
+  showLabel?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -34,25 +40,25 @@ const props = withDefaults(defineProps<Props>(), {
   size: "sm",
   iconClass: "w-5 h-5",
   buttonClass: "",
+  showLabel: false,
 });
 
-const favoriteStore = useFavoriteStore();
+const comparisonStore = useComparisonStore();
 
-const isFavorite = computed(() => favoriteStore.isFavorite(props.variantId));
+const isCompared = computed(() => comparisonStore.isCompared(props.variantId));
 const isAnimating = ref(false);
 
 const handleClick = async () => {
   isAnimating.value = true;
 
-  await favoriteStore.toggle(props.variantId);
+  await comparisonStore.toggle(props.variantId, props.categoryId);
 
   setTimeout(() => {
     isAnimating.value = false;
   }, 200);
 };
 
-// Initialize store on mount
 onMounted(() => {
-  favoriteStore.init();
+  comparisonStore.init();
 });
 </script>

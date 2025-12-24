@@ -1,7 +1,7 @@
 const STORAGE_KEY = "cart";
 
 export interface CartItem {
-  productId: number;
+  variantId: number;
   quantity: number;
 }
 
@@ -21,7 +21,7 @@ export const getCartFromStorage = (): CartItem[] => {
     return parsed.filter(
       (item): item is CartItem =>
         typeof item === "object" &&
-        typeof item.productId === "number" &&
+        typeof item.variantId === "number" &&
         typeof item.quantity === "number"
     );
   } catch {
@@ -43,19 +43,19 @@ export const saveCartToStorage = (items: CartItem[]): void => {
 };
 
 /**
- * Add product to cart in localStorage (or update quantity if exists)
+ * Add variant to cart in localStorage (or update quantity if exists)
  */
 export const addToCartStorage = (
-  productId: number,
+  variantId: number,
   quantity: number = 1
 ): CartItem[] => {
   const cart = getCartFromStorage();
-  const existingIndex = cart.findIndex((item) => item.productId === productId);
+  const existingIndex = cart.findIndex((item) => item.variantId === variantId);
 
   if (existingIndex !== -1) {
     cart[existingIndex].quantity += quantity;
   } else {
-    cart.push({ productId, quantity });
+    cart.push({ variantId, quantity });
   }
 
   saveCartToStorage(cart);
@@ -63,14 +63,14 @@ export const addToCartStorage = (
 };
 
 /**
- * Update product quantity in cart in localStorage
+ * Update variant quantity in cart in localStorage
  */
 export const updateCartItemStorage = (
-  productId: number,
+  variantId: number,
   quantity: number
 ): CartItem[] => {
   const cart = getCartFromStorage();
-  const existingIndex = cart.findIndex((item) => item.productId === productId);
+  const existingIndex = cart.findIndex((item) => item.variantId === variantId);
 
   if (existingIndex !== -1) {
     if (quantity <= 0) {
@@ -85,30 +85,30 @@ export const updateCartItemStorage = (
 };
 
 /**
- * Remove product from cart in localStorage
+ * Remove variant from cart in localStorage
  */
-export const removeFromCartStorage = (productId: number): CartItem[] => {
+export const removeFromCartStorage = (variantId: number): CartItem[] => {
   const cart = getCartFromStorage();
-  const filtered = cart.filter((item) => item.productId !== productId);
+  const filtered = cart.filter((item) => item.variantId !== variantId);
   saveCartToStorage(filtered);
   return filtered;
 };
 
 /**
- * Get product quantity in cart
+ * Get variant quantity in cart
  */
-export const getCartItemQuantity = (productId: number): number => {
+export const getCartItemQuantity = (variantId: number): number => {
   const cart = getCartFromStorage();
-  const item = cart.find((item) => item.productId === productId);
+  const item = cart.find((item) => item.variantId === variantId);
   return item?.quantity || 0;
 };
 
 /**
- * Check if product is in cart
+ * Check if variant is in cart
  */
-export const isInCartStorage = (productId: number): boolean => {
+export const isInCartStorage = (variantId: number): boolean => {
   const cart = getCartFromStorage();
-  return cart.some((item) => item.productId === productId);
+  return cart.some((item) => item.variantId === variantId);
 };
 
 /**

@@ -118,11 +118,19 @@
               </span>
             </UButton>
           </NuxtLink>
-          <UButton variant="ghost" color="neutral">
-            <template #leading>
-              <Scale class="w-5 h-5" />
-            </template>
-          </UButton>
+          <NuxtLink :to="localePath('/comparison')">
+            <UButton variant="ghost" color="neutral" class="relative">
+              <template #leading>
+                <Scale class="w-5 h-5" />
+              </template>
+              <span
+                v-if="comparisonStore.totalCount > 0"
+                class="absolute -top-1 -right-1 w-5 h-5 bg-blue-500 text-white text-xs rounded-full flex items-center justify-center font-medium"
+              >
+                {{ comparisonStore.totalCount > 99 ? '99+' : comparisonStore.totalCount }}
+              </span>
+            </UButton>
+          </NuxtLink>
           <NuxtLink :to="localePath('/cart')">
             <UButton variant="ghost" color="neutral" class="relative">
               <template #leading>
@@ -163,6 +171,7 @@ import {
 } from "lucide-vue-next";
 import { useFavoriteStore } from "~/stores/useFavoriteStore";
 import { useCartStore } from "~/stores/useCartStore";
+import { useComparisonStore } from "~/stores/useComparisonStore";
 
 const isCatalogModalOpen = ref(false);
 const isCallbackModalOpen = ref(false);
@@ -172,11 +181,13 @@ const localePath = useLocalePath();
 const { phones, logoFileId } = useStoreSettings();
 const favoriteStore = useFavoriteStore();
 const cartStore = useCartStore();
+const comparisonStore = useComparisonStore();
 
-// Initialize favorites and cart on mount
+// Initialize stores on mount
 onMounted(() => {
   favoriteStore.init();
   cartStore.init();
+  comparisonStore.init();
 });
 
 const menuItems = computed(() => {

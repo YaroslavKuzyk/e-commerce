@@ -4,11 +4,13 @@
     class="v-blog-post-card group block bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow"
   >
     <!-- Image -->
-    <div class="aspect-video bg-gray-100 overflow-hidden">
+    <div
+      class="aspect-video overflow-hidden flex items-center justify-center pt-2"
+    >
       <VSecureImage
         v-if="post.preview_image_id"
         :fileId="post.preview_image_id"
-        imgClass="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        imgClass="h-full object-cover transition-transform duration-300"
       />
       <div v-else class="w-full h-full flex items-center justify-center">
         <FileText class="w-12 h-12 text-gray-300" />
@@ -27,7 +29,9 @@
       </div>
 
       <!-- Title -->
-      <h3 class="font-semibold text-lg mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+      <h3
+        class="font-semibold text-lg mb-2 line-clamp-2 group-hover:text-primary transition-colors"
+      >
         {{ post.title }}
       </h3>
 
@@ -37,7 +41,9 @@
       </p>
 
       <!-- Read More -->
-      <div class="mt-3 flex items-center gap-1 text-primary font-medium text-sm">
+      <div
+        class="mt-3 flex items-center gap-1 text-primary font-medium text-sm"
+      >
         <span>Читати далі</span>
         <ArrowRight class="w-4 h-4" />
       </div>

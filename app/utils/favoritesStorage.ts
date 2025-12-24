@@ -33,38 +33,38 @@ export const saveFavoritesToStorage = (ids: number[]): void => {
 };
 
 /**
- * Add product ID to favorites in localStorage
+ * Add variant ID to favorites in localStorage
  */
-export const addFavoriteToStorage = (productId: number): number[] => {
+export const addFavoriteToStorage = (variantId: number): number[] => {
   const favorites = getFavoritesFromStorage();
-  if (!favorites.includes(productId)) {
-    favorites.push(productId);
+  if (!favorites.includes(variantId)) {
+    favorites.push(variantId);
     saveFavoritesToStorage(favorites);
   }
   return favorites;
 };
 
 /**
- * Remove product ID from favorites in localStorage
+ * Remove variant ID from favorites in localStorage
  */
-export const removeFavoriteFromStorage = (productId: number): number[] => {
+export const removeFavoriteFromStorage = (variantId: number): number[] => {
   const favorites = getFavoritesFromStorage();
-  const filtered = favorites.filter((id) => id !== productId);
+  const filtered = favorites.filter((id) => id !== variantId);
   saveFavoritesToStorage(filtered);
   return filtered;
 };
 
 /**
- * Toggle product ID in favorites in localStorage
+ * Toggle variant ID in favorites in localStorage
  */
 export const toggleFavoriteInStorage = (
-  productId: number
+  variantId: number
 ): { favorites: number[]; isFavorite: boolean } => {
   const favorites = getFavoritesFromStorage();
-  const index = favorites.indexOf(productId);
+  const index = favorites.indexOf(variantId);
 
   if (index === -1) {
-    favorites.push(productId);
+    favorites.push(variantId);
     saveFavoritesToStorage(favorites);
     return { favorites, isFavorite: true };
   } else {
@@ -75,11 +75,11 @@ export const toggleFavoriteInStorage = (
 };
 
 /**
- * Check if product is in favorites in localStorage
+ * Check if variant is in favorites in localStorage
  */
-export const isFavoriteInStorage = (productId: number): boolean => {
+export const isFavoriteInStorage = (variantId: number): boolean => {
   const favorites = getFavoritesFromStorage();
-  return favorites.includes(productId);
+  return favorites.includes(variantId);
 };
 
 /**

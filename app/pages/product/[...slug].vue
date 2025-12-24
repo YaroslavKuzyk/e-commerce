@@ -16,15 +16,22 @@
         <div class="flex gap-8">
           <!-- Product Images -->
           <div class="w-1/2">
-            <div class="aspect-square bg-muted rounded-lg overflow-hidden">
+            <div
+              class="aspect-square flex justify-center rounded-lg overflow-hidden relative"
+            >
+              <!-- Discount/Clearance Badge -->
+              <UBadge
+                v-if="hasDiscount"
+                color="error"
+                class="absolute top-4 left-4 z-10 text-lg px-3 py-1"
+              >
+                -{{ discountPercent }}%
+              </UBadge>
               <VSecureImage
                 v-if="mainImageFileId"
                 :file-id="mainImageFileId"
                 :alt="product.name"
-                width="100%"
-                height="100%"
-                object-fit="cover"
-                img-class="w-full h-full"
+                img-class="h-full !object-contain"
               />
               <div
                 v-else
@@ -74,24 +81,26 @@
             </div>
 
             <!-- Price -->
-            <div class="text-3xl font-bold text-primary mb-6">
-              {{
-                formatPrice(
-                  currentVariant?.current_price ||
-                    product.current_price ||
-                    product.base_price
-                )
-              }}
-              грн
+            <div class="mb-6">
+              <div v-if="hasDiscount && oldPrice" class="text-xl text-dimmed line-through">
+                {{ formatPrice(oldPrice) }} грн
+              </div>
+              <div class="text-3xl font-bold text-primary">
+                {{
+                  formatPrice(
+                    currentVariant?.current_price ||
+                      product.current_price ||
+                      product.base_price
+                  )
+                }}
+                грн
+              </div>
             </div>
 
             <!-- Variant Selection -->
-            <div
-              v-if="product.attributes && product.attributes.length"
-              class="mb-6"
-            >
+            <div v-if="availableAttributes.length" class="mb-6">
               <div
-                v-for="attribute in product.attributes"
+                v-for="attribute in availableAttributes"
                 :key="attribute.id"
                 class="mb-4"
               >
@@ -106,11 +115,8 @@
                         : 'outline'
                     "
                     size="sm"
-                    :disabled="
-                      !isAttributeValueAvailable(attribute.id, value.id)
-                    "
                     :class="{
-                      'line-through opacity-50': !isAttributeValueAvailable(
+                      'line-through opacity-50': !isAttributeValueInStock(
                         attribute.id,
                         value.id
                       ),
@@ -147,7 +153,9 @@
             <!-- Add to Cart -->
             <div class="flex items-center gap-4">
               <!-- Quantity Input -->
-              <div class="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg">
+              <div
+                class="flex items-center border border-gray-300 dark:border-gray-600 rounded-lg"
+              >
                 <button
                   class="px-3 py-2 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-l-lg transition-colors"
                   :disabled="quantity <= 1"
@@ -179,7 +187,7 @@
                 :loading="isAddingToCart"
                 @click="handleAddToCart"
               >
-                {{ $t('cart.addToCart') }}
+                {{ $t("cart.addToCart") }}
               </UButton>
 
               <!-- Add to Favorites Button -->
@@ -191,9 +199,15 @@
                 @click="handleToggleFavorite"
               >
                 <template #leading>
-                  <Heart :class="['w-5 h-5', isFavorite ? 'fill-current' : '']" />
+                  <Heart
+                    :class="['w-5 h-5', isFavorite ? 'fill-current' : '']"
+                  />
                 </template>
-                {{ isFavorite ? $t('favorites.removeFromFavorites') : $t('favorites.addToFavorites') }}
+                {{
+                  isFavorite
+                    ? $t("favorites.removeFromFavorites")
+                    : $t("favorites.addToFavorites")
+                }}
               </UButton>
             </div>
 
@@ -334,6 +348,133 @@ const isInStock = computed(() => {
   return false;
 });
 
+// Discount calculations
+const hasDiscount = computed(() => {
+  const variant = currentVariant.value as any;
+  const prod = product.value as any;
+
+  if (variant) {
+    return (
+      variant.has_active_discount ||
+      (variant.discount_percentage && variant.discount_percentage > 0) ||
+      variant.is_clearance
+    );
+  }
+
+  return (
+    prod?.has_active_discount ||
+    (prod?.discount_percentage && prod.discount_percentage > 0) ||
+    prod?.is_clearance
+  );
+});
+
+const discountPercent = computed(() => {
+  const variant = currentVariant.value as any;
+  const prod = product.value as any;
+
+  return variant?.discount_percentage || prod?.discount_percentage || 0;
+});
+
+const oldPrice = computed(() => {
+  const variant = currentVariant.value as any;
+  const prod = product.value as any;
+
+  if (hasDiscount.value) {
+    return variant?.price || variant?.base_price || prod?.base_price || null;
+  }
+  return null;
+});
+
+// Get available attributes with values that actually exist in variants
+interface AvailableAttributeValue {
+  id: number;
+  value: string;
+  color_code?: string | null;
+  attribute_id?: number;
+}
+
+interface AvailableAttribute {
+  id: number;
+  name: string;
+  values: AvailableAttributeValue[];
+}
+
+const availableAttributes = computed<AvailableAttribute[]>(() => {
+  if (!product.value?.variants?.length) return [];
+
+  // Collect all unique attribute values from existing variants
+  const attributeMap = new Map<number, AvailableAttribute>();
+
+  product.value.variants.forEach((variant) => {
+    if (!variant.attribute_values) return;
+
+    variant.attribute_values.forEach((attrValue) => {
+      const attrId = attrValue.attribute_id;
+      if (!attrId) return;
+
+      // Get attribute name from product.attributes
+      const productAttr = product.value?.attributes?.find(
+        (a) => a.id === attrId
+      );
+      const attrName = productAttr?.name || `Attribute ${attrId}`;
+
+      if (!attributeMap.has(attrId)) {
+        attributeMap.set(attrId, {
+          id: attrId,
+          name: attrName,
+          values: [],
+        });
+      }
+
+      const attr = attributeMap.get(attrId)!;
+      // Check if this value already exists
+      if (!attr.values.some((v) => v.id === attrValue.id)) {
+        attr.values.push({
+          id: attrValue.id,
+          value: attrValue.value,
+          color_code: attrValue.color_code,
+          attribute_id: attrId,
+        });
+      }
+    });
+  });
+
+  // Sort values by their original order if available
+  attributeMap.forEach((attr) => {
+    const productAttr = product.value?.attributes?.find(
+      (a) => a.id === attr.id
+    );
+    if (productAttr?.values) {
+      attr.values.sort((a, b) => {
+        const aIndex = productAttr.values.findIndex((v) => v.id === a.id);
+        const bIndex = productAttr.values.findIndex((v) => v.id === b.id);
+        return (aIndex === -1 ? 999 : aIndex) - (bIndex === -1 ? 999 : bIndex);
+      });
+    }
+  });
+
+  return Array.from(attributeMap.values());
+});
+
+// Check if attribute value has at least one variant in stock
+const isAttributeValueInStock = (attrId: number, valueId: number): boolean => {
+  if (!product.value?.variants?.length) return false;
+
+  // Create a test selection with this attribute value
+  const testSelection = { ...selectedAttributes.value, [attrId]: valueId };
+  const testAttrValues = Object.values(testSelection);
+
+  // Check if any variant matches this selection AND has stock > 0
+  return product.value.variants.some((variant) => {
+    if (!variant.attribute_values) return false;
+    const variantAttrIds = variant.attribute_values.map((av) => av.id);
+    const matches = testAttrValues.every((attrValueId) =>
+      variantAttrIds.includes(attrValueId)
+    );
+    return matches && variant.stock > 0;
+  });
+};
+
 // Quantity management
 const quantity = ref(1);
 
@@ -400,27 +541,6 @@ const handleToggleFavorite = async () => {
 // Attribute selection
 const isAttributeSelected = (attrId: number, valueId: number): boolean => {
   return selectedAttributes.value[attrId] === valueId;
-};
-
-// Check if attribute value is available (has at least one variant with current selection)
-const isAttributeValueAvailable = (
-  attrId: number,
-  valueId: number
-): boolean => {
-  if (!product.value?.variants?.length) return false;
-
-  // Create a test selection with this attribute value
-  const testSelection = { ...selectedAttributes.value, [attrId]: valueId };
-  const testAttrValues = Object.values(testSelection);
-
-  // Check if any variant matches this selection
-  return product.value.variants.some((variant) => {
-    if (!variant.attribute_values) return false;
-    const variantAttrIds = variant.attribute_values.map((av) => av.id);
-    return testAttrValues.every((attrValueId) =>
-      variantAttrIds.includes(attrValueId)
-    );
-  });
 };
 
 const selectAttribute = (attrId: number, valueId: number) => {

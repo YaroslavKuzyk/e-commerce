@@ -1,10 +1,7 @@
 <template>
   <UPage>
     <UContainer>
-      <VBreadcrumbs
-        :items="breadcrumbs"
-        class="pt-6"
-      />
+      <VBreadcrumbs :items="breadcrumbs" class="pt-6" />
 
       <!-- Loading State -->
       <div v-if="isLoading" class="py-8">
@@ -23,8 +20,12 @@
       <!-- Post Not Found -->
       <div v-else-if="!currentPost" class="py-16 text-center">
         <FileText class="w-16 h-16 text-gray-300 mx-auto mb-4" />
-        <h2 class="text-2xl font-semibold text-gray-600 mb-2">Публікацію не знайдено</h2>
-        <p class="text-dimmed mb-4">Можливо, вона була видалена або переміщена</p>
+        <h2 class="text-2xl font-semibold text-gray-600 mb-2">
+          Публікацію не знайдено
+        </h2>
+        <p class="text-dimmed mb-4">
+          Можливо, вона була видалена або переміщена
+        </p>
         <UButton to="/blog">Повернутись до блогу</UButton>
       </div>
 
@@ -56,11 +57,11 @@
         <!-- Preview Image -->
         <div
           v-if="currentPost.preview_image_id"
-          class="aspect-video bg-gray-100 rounded-lg overflow-hidden mb-8"
+          class="aspect-video rounded-lg overflow-hidden mb-8 flex items-center justify-center"
         >
           <VSecureImage
             :fileId="currentPost.preview_image_id"
-            imgClass="w-full h-full object-cover"
+            imgClass="h-full"
           />
         </div>
 

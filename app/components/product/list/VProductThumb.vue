@@ -6,10 +6,13 @@
     <div class="v-product-thumb flex flex-col gap-2">
       <!-- Header -->
       <div class="flex items-center justify-between gap-2">
-        <UBadge v-if="isNew" color="warning" class="bg-[#CDDC39] text-black">Хіт продаж</UBadge>
-        <UBadge v-else-if="hasDiscount" color="error">-{{ discountPercent }}%</UBadge>
+        <UBadge v-if="hasDiscount" color="error"
+          >-{{ discountPercent }}%</UBadge
+        >
         <span v-else></span>
-        <span class="text-sm text-dimmed">Код: <strong>{{ product.id }}</strong></span>
+        <span class="text-sm text-dimmed"
+          >Код: <strong>{{ (product as any).sku || product.id }}</strong></span
+        >
       </div>
 
       <!-- Image -->
@@ -19,13 +22,22 @@
           :fileId="product.main_image_file_id"
           imgClass="max-w-[172px] max-h-[172px] object-contain"
         />
-        <div v-else class="w-[172px] h-[172px] bg-gray-100 rounded flex items-center justify-center">
+        <div
+          v-else
+          class="w-[172px] h-[172px] bg-gray-100 rounded flex items-center justify-center"
+        >
           <Package class="w-12 h-12 text-gray-400" />
         </div>
 
         <VFavoriteButton
-          :product-id="product.id"
+          :variant-id="variantId"
           class="absolute top-2 right-2 z-1"
+        />
+        <VComparisonButton
+          v-if="product.category_id"
+          :variant-id="variantId"
+          :category-id="product.category_id"
+          class="absolute top-10 right-2 z-1"
         />
       </div>
 
@@ -60,15 +72,20 @@
       <!-- Footer Price -->
       <div class="flex items-end justify-between gap-2">
         <div>
-          <div v-if="hasDiscount" class="text-sm text-dimmed line-through">
+          <div
+            v-if="hasDiscount && oldPrice"
+            class="text-sm text-dimmed line-through"
+          >
             {{ formatPrice(oldPrice) }} грн
           </div>
-          <div class="text-xl font-semibold text-primary">{{ formatPrice(currentPrice) }} грн</div>
+          <div class="text-xl font-semibold text-primary">
+            {{ formatPrice(currentPrice) }} грн
+          </div>
         </div>
         <div>
           <UButton
             variant="soft"
-            :color="cartStore.isInCart(product.id) ? 'primary' : 'neutral'"
+            :color="cartStore.isInCart(variantId) ? 'primary' : 'neutral'"
             class="w-[44px] h-[36px] flex items-center justify-center mb-[2px]"
             :loading="isAddingToCart"
             @click.stop.prevent="addToCart"
@@ -81,7 +98,7 @@
       <!-- Hidden Content -->
       <div ref="hiddenRef" class="v-product-thumb__hidden">
         <div class="text-sm text-dimmed">
-          {{ product.short_description || 'Опис відсутній' }}
+          {{ product.short_description || "Опис відсутній" }}
         </div>
       </div>
     </div>
@@ -95,6 +112,7 @@ import type { Product, AttributeValue } from "~/models/product";
 import VSecureImage from "~/components/common/VSecureImage.vue";
 import VRating from "~/components/common/VRating.vue";
 import VFavoriteButton from "~/components/common/VFavoriteButton.vue";
+import VComparisonButton from "~/components/common/VComparisonButton.vue";
 import { buildProductUrl } from "~/utils/urlBuilder";
 import { useCartStore } from "~/stores/useCartStore";
 
@@ -108,11 +126,18 @@ const cartStore = useCartStore();
 
 // Cart functionality
 const isAddingToCart = ref(false);
+
+// Get the variant ID - use variant_id if available (from variants API), otherwise product.id
+const variantId = computed(() => {
+  const product = props.product as any;
+  return product.variant_id || product.id;
+});
+
 const addToCart = async () => {
   if (isAddingToCart.value) return;
   isAddingToCart.value = true;
   try {
-    await cartStore.add(props.product.id);
+    await cartStore.add(variantId.value);
   } finally {
     isAddingToCart.value = false;
   }
@@ -123,7 +148,8 @@ const categoryPath = computed(() => {
   if (!props.product.category) return [];
 
   const path: string[] = [];
-  let currentCategory: typeof props.product.category | undefined = props.product.category;
+  let currentCategory: typeof props.product.category | undefined =
+    props.product.category;
 
   while (currentCategory) {
     path.unshift(currentCategory.slug);
@@ -133,9 +159,11 @@ const categoryPath = computed(() => {
   return path;
 });
 
-// Build product URL with category slug
+// Build product URL with category slug and optional variant slug
 const productUrl = computed(() => {
-  return buildProductUrl(categoryPath.value, props.product.slug);
+  // Check if product has variant_slug (from variants API)
+  const variantSlug = (props.product as any).variant_slug;
+  return buildProductUrl(categoryPath.value, props.product.slug, variantSlug);
 });
 
 const hiddenRef = ref<HTMLElement | null>(null);
@@ -144,7 +172,9 @@ const selectedColorId = ref<number | null>(null);
 const isNew = computed(() => {
   const createdAt = new Date(props.product.created_at);
   const now = new Date();
-  const diffDays = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
+  const diffDays = Math.floor(
+    (now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24)
+  );
   return diffDays <= 30;
 });
 
@@ -174,9 +204,11 @@ const colorOptions = computed(() => {
 onMounted(() => {
   if (colorOptions.value.length > 0) {
     // Find default variant's color or use first color
-    const defaultVariant = props.product.variants?.find(v => v.is_default);
+    const defaultVariant = props.product.variants?.find((v) => v.is_default);
     if (defaultVariant?.attribute_values) {
-      const defaultColor = defaultVariant.attribute_values.find(av => av.color_code);
+      const defaultColor = defaultVariant.attribute_values.find(
+        (av) => av.color_code
+      );
       if (defaultColor) {
         selectedColorId.value = defaultColor.id;
         return;
@@ -190,13 +222,17 @@ const selectColor = (colorId: number) => {
   selectedColorId.value = colorId;
 
   // Find variant with this color
-  const variant = props.product.variants?.find(v => {
-    return v.attribute_values?.some(av => av.id === colorId);
+  const variant = props.product.variants?.find((v) => {
+    return v.attribute_values?.some((av) => av.id === colorId);
   });
 
   if (variant?.slug) {
     // Navigate to product page with variant
-    const url = buildProductUrl(categoryPath.value, props.product.slug, variant.slug);
+    const url = buildProductUrl(
+      categoryPath.value,
+      props.product.slug,
+      variant.slug
+    );
     router.push(url);
   } else {
     // Navigate to product page without variant
@@ -208,16 +244,41 @@ const selectColor = (colorId: number) => {
 const rating = computed(() => props.product.average_rating || 0);
 const reviewCount = computed(() => props.product.reviews_count || 0);
 
-// Price calculations
-const currentPrice = computed(() => props.product.base_price);
-const oldPrice = computed(() => {
-  // Stub: 10-20% higher price for "discount" effect
-  return String(Math.round(Number(props.product.base_price) * 1.15));
+// Price calculations - support both products and variants
+const currentPrice = computed(() => {
+  const product = props.product as any;
+  // Variants have current_price calculated
+  if (product.current_price !== undefined) {
+    return product.current_price;
+  }
+  return product.base_price;
 });
-const hasDiscount = computed(() => false); // Set to true to show discount
-const discountPercent = computed(() => 15);
 
-const formatPrice = (price: string) => {
+const oldPrice = computed(() => {
+  const product = props.product as any;
+  // If has active discount, show base_price as old price
+  if (product.has_active_discount || product.discount_percentage) {
+    return product.base_price;
+  }
+  return null;
+});
+
+const hasDiscount = computed(() => {
+  const product = props.product as any;
+  return (
+    product.has_active_discount ||
+    (product.discount_percentage && product.discount_percentage > 0) ||
+    product.is_clearance
+  );
+});
+
+const discountPercent = computed(() => {
+  const product = props.product as any;
+  return product.discount_percentage || 0;
+});
+
+const formatPrice = (price: string | number | null) => {
+  if (price === null) return "";
   return Number(price).toLocaleString("uk-UA");
 };
 
