@@ -273,6 +273,58 @@ class RoleSeeder extends Seeder
             ],
         ];
 
+        // Створюємо permissions для управління відгуками
+        $productReviewPermissions = [
+            [
+                'name' => 'Read Product Reviews',
+                'type' => Permission::TYPE_READ,
+                'group' => 'Product Reviews',
+            ],
+            [
+                'name' => 'Update Product Review',
+                'type' => Permission::TYPE_UPDATE,
+                'group' => 'Product Reviews',
+            ],
+            [
+                'name' => 'Delete Product Review',
+                'type' => Permission::TYPE_DELETE,
+                'group' => 'Product Reviews',
+            ],
+        ];
+
+        // Створюємо permissions для налаштувань магазину
+        $storeSettingsPermissions = [
+            [
+                'name' => 'Read Store Settings',
+                'type' => Permission::TYPE_READ,
+                'group' => 'Store Settings',
+            ],
+            [
+                'name' => 'Update Store Settings',
+                'type' => Permission::TYPE_UPDATE,
+                'group' => 'Store Settings',
+            ],
+        ];
+
+        // Створюємо permissions для заявок на передзвінок
+        $callbackRequestPermissions = [
+            [
+                'name' => 'Read Callback Requests',
+                'type' => Permission::TYPE_READ,
+                'group' => 'Callback Requests',
+            ],
+            [
+                'name' => 'Update Callback Request',
+                'type' => Permission::TYPE_UPDATE,
+                'group' => 'Callback Requests',
+            ],
+            [
+                'name' => 'Delete Callback Request',
+                'type' => Permission::TYPE_DELETE,
+                'group' => 'Callback Requests',
+            ],
+        ];
+
         // Об'єднуємо всі permissions
         $allPermissions = array_merge(
             $rolePermissions,
@@ -285,7 +337,10 @@ class RoleSeeder extends Seeder
             $attributePermissions,
             $productPermissions,
             $blogCategoryPermissions,
-            $blogPostPermissions
+            $blogPostPermissions,
+            $productReviewPermissions,
+            $storeSettingsPermissions,
+            $callbackRequestPermissions
         );
 
         $createdPermissions = [];

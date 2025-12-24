@@ -2,7 +2,13 @@
   "common": {
     "search": "Search",
     "searchPlaceholder": "I want to find...",
-    "catalog": "Catalog"
+    "catalog": "Catalog",
+    "noResults": "No results found",
+    "products": "Products",
+    "categories": "Categories",
+    "blogCategories": "Blog categories",
+    "blogPosts": "Blog posts",
+    "viewAllResults": "View all results"
   },
   "header": {
     "city": "Kyiv",
@@ -20,13 +26,6 @@
   },
   "footer": {
     "workingHours": "Working hours",
-    "weekdays": "Mon-Fri",
-    "weekends": "Sat-Sun",
-    "customerSupport": "Customer support",
-    "commercialQuestions": "Commercial questions",
-    "workAtCompany": "Work at company",
-    "onlineChat": "Online chat",
-    "telegramChat": "Telegram chat",
     "socialNetworks": "Our social networks",
     "subscribers": "subscribers",
     "navCustomers": "For customers",
@@ -46,5 +45,30 @@
     "partnership": "Partnership",
     "vacancies": "Vacancies",
     "blog": "Blog"
+  },
+  "comparison": {
+    "title": "Comparison lists",
+    "comparing": "Comparing",
+    "productsCount": "{count} products",
+    "addedToast": "Product added to comparison",
+    "removedToast": "Product removed from comparison",
+    "emptyTitle": "Comparison lists are empty",
+    "emptyDescription": "Add products to comparison to compare their characteristics",
+    "goToStore": "Go to store",
+    "onlyDifferences": "Only differences",
+    "addMore": "Add more",
+    "add": "Add",
+    "share": "Share list",
+    "linkCopied": "Link copied",
+    "copyLink": "Copy link:",
+    "compare": "Compare",
+    "inComparison": "In comparison",
+    "characteristic": "Characteristic",
+    "clearList": "Clear list",
+    "noProducts": "No products to compare"
+  },
+  "cart": {
+    "inCart": "In cart",
+    "addToCart": "Add to cart"
   }
 }

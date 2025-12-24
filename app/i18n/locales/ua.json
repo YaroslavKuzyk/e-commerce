@@ -2,7 +2,48 @@
   "common": {
     "search": "Пошук",
     "searchPlaceholder": "Я хочу знайти...",
-    "catalog": "Каталог"
+    "catalog": "Каталог",
+    "noResults": "Нічого не знайдено",
+    "products": "Товари",
+    "categories": "Категорії",
+    "blogCategories": "Категорії блогу",
+    "blogPosts": "Статті блогу",
+    "viewAllResults": "Переглянути всі результати",
+    "home": "Головна"
+  },
+  "favorites": {
+    "title": "Улюблені товари",
+    "loading": "Завантаження...",
+    "loadingProducts": "Завантаження товарів...",
+    "guestNotice": "Увійдіть в акаунт, щоб зберегти улюблені товари та мати доступ до них з будь-якого пристрою.",
+    "emptyTitle": "У вас поки немає улюблених товарів",
+    "emptyDescription": "Додавайте товари до улюблених, натискаючи на іконку серця, щоб не загубити їх.",
+    "goToStore": "Перейти до магазину",
+    "addedToast": "Додано до улюблених",
+    "removedToast": "Видалено з улюблених",
+    "addToFavorites": "Додати до улюблених",
+    "removeFromFavorites": "Видалити з улюблених"
+  },
+  "cart": {
+    "title": "Кошик",
+    "loading": "Завантаження...",
+    "items": "шт.",
+    "guestNotice": "Увійдіть в акаунт, щоб зберегти кошик та мати доступ до нього з будь-якого пристрою.",
+    "emptyTitle": "Ваш кошик порожній",
+    "emptyDescription": "Додавайте товари до кошика, щоб оформити замовлення.",
+    "goToStore": "Перейти до магазину",
+    "addedToast": "Додано до кошика",
+    "removedToast": "Видалено з кошика",
+    "addToCart": "Додати до кошика",
+    "clearCart": "Очистити кошик",
+    "sku": "Артикул",
+    "perItem": "шт.",
+    "orderSummary": "Ваше замовлення",
+    "subtotal": "Сума",
+    "discount": "Знижка",
+    "total": "Разом",
+    "checkout": "Оформити замовлення",
+    "continueShopping": "Продовжити покупки"
   },
   "header": {
     "city": "Київ",
@@ -18,15 +59,33 @@
     "blog": "Блог",
     "contacts": "Контакти"
   },
+  "callback": {
+    "title": "Замовити дзвінок",
+    "description": "Залиште свій номер телефону і ми передзвонимо вам найближчим часом",
+    "phone": "Номер телефону",
+    "phonePlaceholder": "+38 (0__) ___-__-__",
+    "name": "Ім'я",
+    "namePlaceholder": "Ваше ім'я",
+    "comment": "Коментар",
+    "commentPlaceholder": "Додатковий коментар (необов'язково)",
+    "submit": "Передзвоніть мені",
+    "successTitle": "Успішно",
+    "successMessage": "Ми отримали вашу заявку і зв'яжемося з вами найближчим часом",
+    "errorTitle": "Помилка",
+    "errorMessage": "Не вдалося відправити заявку. Спробуйте ще раз"
+  },
+  "reviews": {
+    "form": {
+      "error": "Помилка",
+      "fileTooLarge": "Файл {name} перевищує 5 МБ",
+      "successTitle": "Дякуємо!",
+      "successMessage": "Ваш відгук буде опублікований після модерації",
+      "errorTitle": "Помилка",
+      "errorMessage": "Не вдалося відправити відгук. Спробуйте пізніше"
+    }
+  },
   "footer": {
     "workingHours": "Режим роботи",
-    "weekdays": "Пн-Пт",
-    "weekends": "Сб-Нд",
-    "customerSupport": "Підтримка клієнтів",
-    "commercialQuestions": "Комерційні питання",
-    "workAtCompany": "Робота в компанії",
-    "onlineChat": "Онлайн чат",
-    "telegramChat": "Telegram чат",
     "socialNetworks": "Наші соціальні мережі",
     "subscribers": "підписників",
     "navCustomers": "Покупцям",
@@ -46,5 +105,26 @@
     "partnership": "Партнерство",
     "vacancies": "Вакансії",
     "blog": "Блог"
+  },
+  "comparison": {
+    "title": "Списки порівнянь",
+    "comparing": "Порівнюємо",
+    "productsCount": "{count} товарів",
+    "addedToast": "Товар додано до порівняння",
+    "removedToast": "Товар видалено з порівняння",
+    "emptyTitle": "Списки порівнянь порожні",
+    "emptyDescription": "Додайте товари до порівняння, щоб порівняти їх характеристики",
+    "goToStore": "Перейти до магазину",
+    "onlyDifferences": "Тільки відмінності",
+    "addMore": "Додати ще модель",
+    "add": "Додати",
+    "share": "Поділитись списком",
+    "linkCopied": "Посилання скопійовано",
+    "copyLink": "Скопіюйте посилання:",
+    "compare": "Порівняти",
+    "inComparison": "В порівнянні",
+    "characteristic": "Характеристика",
+    "clearList": "Очистити список",
+    "noProducts": "Немає товарів для порівняння"
   }
 }

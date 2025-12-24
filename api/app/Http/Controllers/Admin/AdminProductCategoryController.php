@@ -111,6 +111,7 @@ class AdminProductCategoryController extends Controller
      *             required={"name", "slug", "status"},
      *             @OA\Property(property="parent_id", type="integer", nullable=true, example=null),
      *             @OA\Property(property="name", type="string", example="Electronics"),
+     *             @OA\Property(property="subtitle", type="string", nullable=true, example="For photographers"),
      *             @OA\Property(property="slug", type="string", example="electronics"),
      *             @OA\Property(property="status", type="string", enum={"draft", "published"}, example="published"),
      *             @OA\Property(property="body_description", type="string", nullable=true),
@@ -138,6 +139,7 @@ class AdminProductCategoryController extends Controller
         $validator = Validator::make($request->all(), [
             'parent_id' => 'nullable|exists:product_categories,id',
             'name' => 'required|string|max:255',
+            'subtitle' => 'nullable|string|max:255',
             'slug' => 'required|string|unique:product_categories,slug|max:255',
             'status' => 'required|in:draft,published',
             'body_description' => 'nullable|string',
@@ -188,6 +190,7 @@ class AdminProductCategoryController extends Controller
      *         @OA\JsonContent(
      *             @OA\Property(property="parent_id", type="integer", nullable=true),
      *             @OA\Property(property="name", type="string", example="Electronics"),
+     *             @OA\Property(property="subtitle", type="string", nullable=true, example="For photographers"),
      *             @OA\Property(property="slug", type="string", example="electronics"),
      *             @OA\Property(property="status", type="string", enum={"draft", "published"}, example="published"),
      *             @OA\Property(property="body_description", type="string", nullable=true),
@@ -216,6 +219,7 @@ class AdminProductCategoryController extends Controller
         $validator = Validator::make($request->all(), [
             'parent_id' => 'nullable|exists:product_categories,id',
             'name' => 'sometimes|required|string|max:255',
+            'subtitle' => 'nullable|string|max:255',
             'slug' => 'sometimes|required|string|max:255|unique:product_categories,slug,' . $id,
             'status' => 'sometimes|required|in:draft,published',
             'body_description' => 'nullable|string',

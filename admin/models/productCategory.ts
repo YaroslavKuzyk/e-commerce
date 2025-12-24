@@ -4,6 +4,7 @@ export interface ProductCategory {
   id: number;
   parent_id: number | null;
   name: string;
+  subtitle: string | null;
   slug: string;
   status: ProductCategoryStatus;
   body_description: string | null;
@@ -19,6 +20,7 @@ export interface ProductCategory {
 export interface ProductCategoryFormData {
   parent_id?: number | null;
   name: string;
+  subtitle?: string | null;
   slug: string;
   status: ProductCategoryStatus;
   body_description?: string | null;

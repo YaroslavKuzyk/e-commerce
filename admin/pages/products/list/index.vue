@@ -133,6 +133,7 @@ import ProductsTable from "~/components/products/list/tables/ProductsTable.vue";
 import VProductDeleteModal from "~/components/products/list/modals/VProductDeleteModal.vue";
 import VPagination from "~/components/common/VPagination.vue";
 import type { Product, ProductFilters, ProductStatus } from "~/models/product";
+import type { ProductCategory } from "~/models/productCategory";
 
 definePageMeta({
   middleware: ["sanctum:auth", "permissions"],
@@ -167,10 +168,20 @@ const { data: categoriesData } = await productCategoryStore.fetchProductCategori
 const { data: brandsData } = await productBrandStore.fetchProductBrands();
 
 const categoryOptions = computed(() => {
-  return (categoriesData.value || []).map(cat => ({
-    label: cat.name,
-    value: cat.id,
-  }));
+  const flatten = (cats: ProductCategory[], level = 0): { label: string; value: number }[] => {
+    return cats.reduce((acc: { label: string; value: number }[], cat) => {
+      const prefix = level > 0 ? '— '.repeat(level) : '';
+      acc.push({
+        label: prefix + cat.name,
+        value: cat.id,
+      });
+      if (cat.subcategories && cat.subcategories.length > 0) {
+        acc.push(...flatten(cat.subcategories, level + 1));
+      }
+      return acc;
+    }, []);
+  };
+  return flatten(categoriesData.value || []);
 });
 
 const brandOptions = computed(() => {

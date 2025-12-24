@@ -6,5 +6,6 @@ export const useProductCategory = () => {
   return {
     getAllProductCategories: () => provider.getAllProductCategories(),
     getProductCategoryById: (id: number) => provider.getProductCategoryById(id),
+    getLatestCategories: (limit?: number) => provider.getLatestCategories(limit),
   };
 };

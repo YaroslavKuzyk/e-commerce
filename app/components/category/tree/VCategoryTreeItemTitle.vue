@@ -5,7 +5,12 @@
       'bg-primary-50': active,
     }"
   >
-    <!-- <img :src="category.menu_image_file_id" :alt="category.name" /> -->
+    <VSecureImage
+      :fileId="category.logo_file_id"
+      :alt="category.name"
+      :width="35"
+      :height="35"
+    />
     <span>{{ category.name }}</span>
     <ChevronRight class="ml-auto" />
   </div>
@@ -13,6 +18,7 @@
 
 <script lang="ts" setup>
 import { ChevronRight } from "lucide-vue-next";
+import VSecureImage from "~/components/common/VSecureImage.vue";
 import type { ProductCategory } from "~/models/productCategory";
 
 interface IProps {

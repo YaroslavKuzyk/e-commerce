@@ -8,6 +8,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Permission;
 use App\Enums\UserType;
 
@@ -102,5 +103,67 @@ class User extends Authenticatable
         return Permission::whereHas('roles', function ($query) {
             $query->whereIn('roles.id', $this->roles->pluck('id'));
         })->get();
+    }
+
+    /**
+     * Get user's favorite product variants (many-to-many).
+     */
+    public function favoriteVariants(): BelongsToMany
+    {
+        return $this->belongsToMany(ProductVariant::class, 'user_favorites', 'user_id', 'product_variant_id')
+            ->withPivot('created_at')
+            ->orderByPivot('created_at', 'desc');
+    }
+
+    /**
+     * Check if product variant is in user's favorites.
+     */
+    public function hasFavorite(int $variantId): bool
+    {
+        return $this->favoriteVariants()->where('product_variant_id', $variantId)->exists();
+    }
+
+    /**
+     * Get user's cart items.
+     */
+    public function cartItems(): HasMany
+    {
+        return $this->hasMany(CartItem::class);
+    }
+
+    /**
+     * Get user's cart product variants (many-to-many through cart_items).
+     */
+    public function cartVariants(): BelongsToMany
+    {
+        return $this->belongsToMany(ProductVariant::class, 'cart_items', 'user_id', 'product_variant_id')
+            ->withPivot('quantity', 'created_at', 'updated_at')
+            ->orderByPivot('created_at', 'desc');
+    }
+
+    /**
+     * Get user's comparison entries.
+     */
+    public function comparisons(): HasMany
+    {
+        return $this->hasMany(UserComparison::class);
+    }
+
+    /**
+     * Get user's comparison product variants (many-to-many through user_comparisons).
+     */
+    public function comparisonVariants(): BelongsToMany
+    {
+        return $this->belongsToMany(ProductVariant::class, 'user_comparisons', 'user_id', 'product_variant_id')
+            ->withPivot('category_id', 'created_at')
+            ->orderByPivot('created_at', 'desc');
+    }
+
+    /**
+     * Check if product variant is in user's comparison.
+     */
+    public function hasComparison(int $variantId): bool
+    {
+        return $this->comparisons()->where('product_variant_id', $variantId)->exists();
     }
 }
