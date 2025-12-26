@@ -2,7 +2,7 @@ import type { BlogCategory, BlogPost, BlogMeta } from "~/models/blog";
 
 export function useBlog() {
   const config = useRuntimeConfig();
-  const apiBase = config.public.sanctum?.baseUrl || "http://localhost:8000";
+  const apiBase = config.public.sanctum?.baseUrl ;
 
   // State
   const categories = ref<BlogCategory[]>([]);

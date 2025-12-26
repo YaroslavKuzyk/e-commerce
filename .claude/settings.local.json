@@ -32,7 +32,10 @@
       "Bash(grep:*)",
       "Bash(npx vue-tsc:*)",
       "Bash(ls:*)",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "Bash(docker start:*)",
+      "Bash(docker rm:*)",
+      "Bash(docker exec:*)"
     ],
     "deny": [],
     "ask": []

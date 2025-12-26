@@ -52,7 +52,7 @@ import VBlogPostCard from "~/components/blog/VBlogPostCard.vue";
 import type { BlogPost } from "~/models/blog";
 
 const config = useRuntimeConfig();
-const apiBase = config.public.sanctum?.baseUrl || "http://localhost:8000";
+const apiBase = config.public.sanctum?.baseUrl ;
 
 const posts = ref<BlogPost[]>([]);
 const isLoading = ref(true);
