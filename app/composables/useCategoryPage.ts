@@ -18,7 +18,7 @@ export function useCategoryPage() {
   const route = useRoute();
   const router = useRouter();
   const config = useRuntimeConfig();
-  const apiBase = config.public.sanctum?.baseUrl || "http://localhost:8000";
+  const apiBase = config.public.sanctum?.baseUrl ;
 
   // State
   const attributeSlugs = ref<string[]>([]);

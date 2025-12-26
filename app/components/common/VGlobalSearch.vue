@@ -236,7 +236,7 @@ interface SearchResults {
 
 const config = useRuntimeConfig();
 const router = useRouter();
-const apiBase = config.public.sanctum?.baseUrl || "http://localhost:8000";
+const apiBase = config.public.sanctum?.baseUrl ;
 
 const searchQuery = ref("");
 const showResults = ref(false);

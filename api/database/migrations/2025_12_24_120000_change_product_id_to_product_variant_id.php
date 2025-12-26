@@ -21,6 +21,7 @@ return new class extends Migration
         // Update cart_items table
         // First add a temporary index on user_id so we can drop the unique constraint
         DB::statement('CREATE INDEX cart_items_user_id_temp_idx ON cart_items (user_id)');
+        DB::statement('ALTER TABLE cart_items DROP FOREIGN KEY cart_items_product_id_foreign');
         DB::statement('ALTER TABLE cart_items DROP INDEX cart_items_user_id_product_id_unique');
         DB::statement('ALTER TABLE cart_items DROP INDEX cart_items_product_id_index');
         DB::statement('ALTER TABLE cart_items CHANGE COLUMN product_id product_variant_id BIGINT UNSIGNED NOT NULL');

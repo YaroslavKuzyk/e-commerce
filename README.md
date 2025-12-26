@@ -69,7 +69,7 @@ docker-compose exec nuxt npm install
 ## Доступ до сервісів
 
 - **Nuxt Frontend:** http://localhost:3000
-- **Laravel API:** http://localhost:8000
+- **Laravel API:** http://localhost:80
 - **PHPMyAdmin:** http://localhost:8080
 - **Nuxt DevTools:** http://localhost:24678
 
@@ -160,7 +160,7 @@ DB_PASSWORD=root
 ### Nuxt Frontend (app/.env)
 
 ```env
-NUXT_SANCTUM_BASE_URL=http://localhost:8000
+NUXT_SANCTUM_BASE_URL=http://localhost:80
 NUXT_SANCTUM_ORIGIN=http://localhost:3000
 ```
 
@@ -211,7 +211,7 @@ docker-compose up -d --build
 ### Nuxt не може підключитися до API
 
 Переконайтеся, що в `app/.env`:
-- `NUXT_SANCTUM_BASE_URL=http://localhost:8000` (для браузера)
+- `NUXT_SANCTUM_BASE_URL=http://localhost:80` (для браузера)
 - В docker-compose.yml: `NUXT_SANCTUM_BASE_URL=http://api:8000` (для серверного SSR)
 
 ## Production Build

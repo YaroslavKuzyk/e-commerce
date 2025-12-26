@@ -45,5 +45,9 @@ export default defineNuxtConfig({
     globalMiddleware: {
       enabled: false,
     },
+    client: {
+      retry: false,
+    },
+    logLevel: 0,
   },
 });
