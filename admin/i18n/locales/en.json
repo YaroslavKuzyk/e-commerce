@@ -53,6 +53,10 @@
     "posts": "Posts",
     "deliveryPayment": "Delivery & Payment",
     "files": "Files",
+    "storeSettings": "Store Settings",
+    "callbackRequests": "Callback Requests",
+    "systemSettings": "System Settings",
+    "reviews": "Reviews",
     "profile": "Profile",
     "settings": "Settings",
     "logout": "Logout"

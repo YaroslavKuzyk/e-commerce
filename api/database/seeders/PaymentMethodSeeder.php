@@ -15,28 +15,16 @@ class PaymentMethodSeeder extends Seeder
     {
         $paymentMethods = [
             [
-                'name' => 'Cash on Delivery',
-                'name_uk' => 'Оплата при отриманні',
-                'code' => 'cash_on_delivery',
-                'description' => 'Pay with cash upon delivery',
-                'description_uk' => 'Оплата готівкою при отриманні товару',
+                'name' => 'Payment on Delivery',
+                'name_uk' => 'Оплата під час отримання товару',
+                'code' => 'payment_on_delivery',
+                'description' => 'Pay with cash or card upon delivery',
+                'description_uk' => 'Оплата готівкою або карткою при отриманні товару',
                 'type' => 'cash_on_delivery',
                 'provider' => null,
                 'provider_config' => null,
                 'is_active' => true,
                 'sort_order' => 1,
-            ],
-            [
-                'name' => 'Card on Delivery',
-                'name_uk' => 'Оплата карткою при отриманні',
-                'code' => 'card_on_delivery',
-                'description' => 'Pay with card upon delivery',
-                'description_uk' => 'Оплата банківською карткою при отриманні',
-                'type' => 'cash_on_delivery',
-                'provider' => null,
-                'provider_config' => null,
-                'is_active' => true,
-                'sort_order' => 2,
             ],
             [
                 'name' => 'MonoPay',
@@ -51,7 +39,7 @@ class PaymentMethodSeeder extends Seeder
                     'webhook_url' => '',
                 ],
                 'is_active' => true,
-                'sort_order' => 3,
+                'sort_order' => 2,
             ],
             [
                 'name' => 'LiqPay',
@@ -66,7 +54,7 @@ class PaymentMethodSeeder extends Seeder
                     'private_key' => '',
                 ],
                 'is_active' => true,
-                'sort_order' => 4,
+                'sort_order' => 3,
             ],
             [
                 'name' => 'Bank Transfer',
@@ -78,9 +66,12 @@ class PaymentMethodSeeder extends Seeder
                 'provider' => null,
                 'provider_config' => null,
                 'is_active' => true,
-                'sort_order' => 5,
+                'sort_order' => 4,
             ],
         ];
+
+        // Delete old payment methods that were merged
+        PaymentMethod::whereIn('code', ['cash_on_delivery', 'card_on_delivery'])->delete();
 
         foreach ($paymentMethods as $method) {
             PaymentMethod::updateOrCreate(

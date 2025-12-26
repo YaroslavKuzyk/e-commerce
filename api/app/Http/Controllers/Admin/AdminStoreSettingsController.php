@@ -77,6 +77,10 @@ class AdminStoreSettingsController extends Controller
             'footer_working_hours.phone2' => 'sometimes|array',
             'footer_working_hours.phone2.label' => 'sometimes|nullable|string|max:100',
             'footer_working_hours.phone2.value' => 'sometimes|nullable|string|max:50',
+
+            'slides' => 'sometimes|array',
+            'slides.*.file_id' => 'required|integer|exists:files,id',
+            'slides.*.link' => 'nullable|string|max:500',
         ]);
 
         // Update each section as separate key

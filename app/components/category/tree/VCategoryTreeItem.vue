@@ -30,22 +30,28 @@
         class="flex-1 overflow-auto pl-12 bg-white"
         :style="{ maxHeight: `${listHeight}px` }"
       >
-        <div>
-          <div v-if="activeCategory">
-            <router-link
-              :to="`/category/${activeCategory.slug}`"
-              class="text-lg font-semibold flex items-center gap-2 mb-2"
-            >
-              <VSecureImage
-                v-if="activeCategory.logo_file_id"
-                :fileId="activeCategory.logo_file_id"
-                class="w-6 h-6 mr-[2px]"
-              />
-              {{ activeCategory.name }}
-            </router-link>
+        <div v-if="activeCategory">
+          <router-link
+            :to="`/category/${activeCategory.slug}`"
+            class="text-lg font-semibold flex items-center gap-2 mb-4"
+          >
+            <VSecureImage
+              v-if="activeCategory.logo_file_id"
+              :fileId="activeCategory.logo_file_id"
+              class="w-6 h-6 mr-[2px]"
+            />
+            {{ activeCategory.name }}
+          </router-link>
 
+          <!-- Show catalog menu if exists (even if empty) -->
+          <VCatalogMenuDisplay
+            v-if="activeCatalogMenu"
+            :menu="activeCatalogMenu"
+          />
+
+          <!-- Show subcategories only if NO catalog menu exists -->
+          <template v-else-if="subcategoriesData.length">
             <router-link
-              v-if="subcategoriesData.length"
               :to="`/category/${activeCategory.slug}/${subcategoriesData[0].slug}`"
               class="text-md font-medium flex items-center gap-2 text-gray-600"
             >
@@ -62,10 +68,8 @@
                 {{ subcategory.name }}
               </router-link>
             </div>
-          </div>
+          </template>
         </div>
-        <div></div>
-        <div></div>
       </div>
 
       <div
@@ -83,8 +87,10 @@
 
 <script setup lang="ts">
 import type { ProductCategory } from "~/models/productCategory";
+import type { CatalogMenu } from "~/models/catalogMenu";
 import VCategoryTreeItemTitle from "./VCategoryTreeItemTitle.vue";
 import VSecureImage from "~/components/common/VSecureImage.vue";
+import VCatalogMenuDisplay from "~/components/category/menu/VCatalogMenuDisplay.vue";
 
 interface IProps {
   onPage?: boolean;
@@ -94,12 +100,16 @@ interface IProps {
 const { onPage, inModal } = defineProps<IProps>();
 
 const productCategoryStore = useProductCategoryStore();
+const catalogMenuStore = useCatalogMenuStore();
 
 const {
   data: categoriesData,
   refresh: refreshCategoriesData,
   status,
 } = await productCategoryStore.fetchProductCategories();
+
+// Fetch all catalog menus for root categories
+await catalogMenuStore.fetchAllMenus();
 
 const isInteractive = computed(() => onPage || inModal);
 
@@ -108,6 +118,7 @@ const listHeight = ref(0);
 const activeCategoryId = ref<number | null>(null);
 const showContent = ref(false);
 const subcategoriesData = ref<ProductCategory[]>([]);
+const activeCatalogMenu = ref<CatalogMenu | null>(null);
 
 const activeCategory = computed(() =>
   categoriesData.value?.find(
@@ -120,6 +131,10 @@ const handleCategoryHover = (id: number) => {
     activeCategoryId.value = id;
     showContent.value = true;
 
+    // Get catalog menu for this category
+    activeCatalogMenu.value = catalogMenuStore.getMenuFromCache(id);
+
+    // Fallback to subcategories if no menu
     subcategoriesData.value =
       categoriesData.value?.find((category) => category.id === id)
         ?.subcategories || [];

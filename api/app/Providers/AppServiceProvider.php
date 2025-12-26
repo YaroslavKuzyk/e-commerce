@@ -28,6 +28,11 @@ use App\Contracts\Services\Admin\AdminCustomerServiceInterface;
 use App\Contracts\Services\CustomerAuthServiceInterface;
 use App\Contracts\CustomerProductCategoryServiceInterface;
 use App\Contracts\CustomerProductServiceInterface;
+use App\Contracts\CatalogMenuRepositoryInterface;
+use App\Contracts\AdminCatalogMenuServiceInterface;
+use App\Contracts\CustomerCatalogMenuServiceInterface;
+use App\Contracts\SystemSettingRepositoryInterface;
+use App\Contracts\AdminSystemSettingServiceInterface;
 use App\Repositories\DeliveryMethodRepository;
 use App\Repositories\PaymentMethodRepository;
 use App\Repositories\ProductCategoryRepository;
@@ -54,6 +59,11 @@ use App\Services\Admin\AdminCustomerService;
 use App\Services\CustomerAuthService;
 use App\Services\CustomerProductCategoryService;
 use App\Services\CustomerProductService;
+use App\Repositories\CatalogMenuRepository;
+use App\Repositories\SystemSettingRepository;
+use App\Services\Admin\AdminCatalogMenuService;
+use App\Services\Admin\AdminSystemSettingService;
+use App\Services\CustomerCatalogMenuService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -74,6 +84,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(FileRepositoryInterface::class, FileRepository::class);
         $this->app->bind(AttributeRepositoryInterface::class, AttributeRepository::class);
         $this->app->bind(ProductRepositoryInterface::class, ProductRepository::class);
+        $this->app->bind(CatalogMenuRepositoryInterface::class, CatalogMenuRepository::class);
+        $this->app->bind(SystemSettingRepositoryInterface::class, SystemSettingRepository::class);
 
         // Register Admin Service bindings
         $this->app->bind(AdminAuthServiceInterface::class, AdminAuthService::class);
@@ -89,11 +101,14 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(AdminProductServiceInterface::class, AdminProductService::class);
         $this->app->bind(AdminBlogCategoryServiceInterface::class, AdminBlogCategoryService::class);
         $this->app->bind(AdminBlogPostServiceInterface::class, AdminBlogPostService::class);
+        $this->app->bind(AdminCatalogMenuServiceInterface::class, AdminCatalogMenuService::class);
+        $this->app->bind(AdminSystemSettingServiceInterface::class, AdminSystemSettingService::class);
 
         // Register Customer Service bindings
         $this->app->bind(CustomerAuthServiceInterface::class, CustomerAuthService::class);
         $this->app->bind(CustomerProductCategoryServiceInterface::class, CustomerProductCategoryService::class);
         $this->app->bind(CustomerProductServiceInterface::class, CustomerProductService::class);
+        $this->app->bind(CustomerCatalogMenuServiceInterface::class, CustomerCatalogMenuService::class);
     }
 
     /**

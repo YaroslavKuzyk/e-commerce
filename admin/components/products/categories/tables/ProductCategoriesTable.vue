@@ -66,6 +66,16 @@
 
       <template #actions-cell="{ row }">
         <div class="flex items-center justify-end gap-2">
+          <HasPermissions v-if="row.original.level === 0" :required-permissions="['Update Catalog Menu']">
+            <UButton
+              size="sm"
+              variant="ghost"
+              icon="i-heroicons-squares-2x2"
+              color="primary"
+              title="Налаштувати меню"
+              @click="navigateTo(`/products/categories/${row.original.id}/catalog-menu`)"
+            />
+          </HasPermissions>
           <HasPermissions :required-permissions="['Create Product Category']">
             <UButton
               size="sm"

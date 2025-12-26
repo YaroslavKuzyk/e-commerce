@@ -350,6 +350,72 @@
           </div>
         </div>
 
+        <!-- Slides -->
+        <div class="bg-white dark:bg-gray-900 rounded-lg border border-gray-200 dark:border-gray-700 p-6">
+          <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-semibold flex items-center gap-2">
+              <ImagePlay class="w-5 h-5" />
+              {{ $t('storeSettings.slides.title') }}
+            </h3>
+            <UButton
+              type="button"
+              variant="outline"
+              size="sm"
+              @click="openSlideFilePicker"
+            >
+              <Plus class="w-4 h-4 mr-1" />
+              {{ $t('common.add') }}
+            </UButton>
+          </div>
+
+          <div v-if="form.slides.length === 0" class="text-gray-500 text-sm py-4 text-center">
+            {{ $t('storeSettings.slides.noSlidesAdded') }}
+          </div>
+
+          <draggable
+            v-else
+            v-model="form.slides"
+            item-key="file_id"
+            handle=".drag-handle"
+            class="space-y-3"
+          >
+            <template #item="{ element: slide, index }">
+              <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div class="drag-handle cursor-grab active:cursor-grabbing text-gray-400 hover:text-gray-600">
+                  <GripVertical class="w-5 h-5" />
+                </div>
+                <div class="w-32 h-20 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shrink-0">
+                  <VSecureImage
+                    :file-id="slide.file_id"
+                    alt="Slide"
+                    width="w-32"
+                    height="h-20"
+                    object-fit="cover"
+                  />
+                </div>
+                <div class="flex-1">
+                  <UFormField :label="$t('storeSettings.slides.link')" class="w-full">
+                    <UInput
+                      v-model="slide.link"
+                      :placeholder="$t('storeSettings.slides.linkPlaceholder')"
+                      class="w-full"
+                    />
+                  </UFormField>
+                </div>
+                <UButton
+                  type="button"
+                  variant="ghost"
+                  color="error"
+                  size="sm"
+                  @click="removeSlide(index)"
+                >
+                  <Trash2 class="w-4 h-4" />
+                </UButton>
+              </div>
+            </template>
+          </draggable>
+        </div>
+
         <!-- Save Button -->
         <HasPermissions :required-permissions="['Update Store Settings']">
           <div class="flex justify-end pt-4">
@@ -373,6 +439,14 @@
       :max-files="1"
       file-type="image"
       @select="handleFileSelect"
+    />
+
+    <!-- Slide Picker Modal -->
+    <VFilePickerModal
+      v-model:is-open="isSlidePickerOpen"
+      :max-files="10"
+      file-type="image"
+      @select="handleSlideFileSelect"
     />
   </VSidebarContent>
 </template>
@@ -399,13 +473,14 @@ import {
   Youtube,
   Linkedin,
   GripVertical,
+  ImagePlay,
 } from "lucide-vue-next";
 import draggable from "vuedraggable";
 import HasPermissions from "~/components/common/VHasPermissions.vue";
 import VSidebarContent from "~/components/sidebar/VSidebarContent.vue";
 import VSecureImage from "~/components/common/VSecureImage.vue";
 import VFilePickerModal from "~/components/files/modals/VFilePickerModal.vue";
-import type { StoreSettings, PhoneContact, EmailContact, SocialLink } from "~/models/storeSettings";
+import type { StoreSettings, PhoneContact, EmailContact, SocialLink, Slide } from "~/models/storeSettings";
 import type { IFile } from "~/models/files";
 
 definePageMeta({
@@ -419,7 +494,8 @@ const storeSettingsStore = useStoreSettingsStore();
 
 const saving = ref(false);
 const isFilePickerOpen = ref(false);
-const filePickerTarget = ref<'favicon' | 'logo'>('favicon');
+const filePickerTarget = ref<'favicon' | 'logo' | 'slide'>('favicon');
+const isSlidePickerOpen = ref(false);
 
 const socialPlatforms = [
   { value: 'instagram', label: 'Instagram' },
@@ -478,6 +554,7 @@ const form = reactive<StoreSettings>({
     phone2: { label: '', value: '' },
   },
   social_links: [],
+  slides: [],
 });
 
 // Initialize form with data
@@ -491,6 +568,7 @@ watch(settingsData, (data) => {
     form.working_hours = { ...form.working_hours, ...data.working_hours };
     form.footer_working_hours = { ...form.footer_working_hours, ...data.footer_working_hours };
     form.social_links = data.social_links || [];
+    form.slides = data.slides || [];
   }
 }, { immediate: true });
 
@@ -519,6 +597,22 @@ const addSocialLink = () => {
 
 const removeSocialLink = (index: number) => {
   form.social_links.splice(index, 1);
+};
+
+// Slide management
+const openSlideFilePicker = () => {
+  isSlidePickerOpen.value = true;
+};
+
+const handleSlideFileSelect = (files: IFile[]) => {
+  files.forEach(file => {
+    form.slides.push({ file_id: file.id, link: '' });
+  });
+  isSlidePickerOpen.value = false;
+};
+
+const removeSlide = (index: number) => {
+  form.slides.splice(index, 1);
 };
 
 // File picker
@@ -554,6 +648,7 @@ const saveSettings = async () => {
       working_hours: form.working_hours,
       footer_working_hours: form.footer_working_hours,
       social_links: form.social_links.filter(l => l.platform && l.url),
+      slides: form.slides.filter(s => s.file_id),
     };
 
     await storeSettingsStore.onUpdateStoreSettings(payload);
