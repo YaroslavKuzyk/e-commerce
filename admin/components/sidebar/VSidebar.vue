@@ -100,6 +100,7 @@ import {
   MessageSquare,
   Store,
   PhoneCall,
+  Cog,
 } from "lucide-vue-next";
 import type { Component } from "vue";
 import VAvatar from "@/components/common/VAvatar.vue";
@@ -241,6 +242,12 @@ const menus = computed(() => {
       icon: PhoneCall,
       to: "/callback-requests",
       requiredPermissions: ["Read Callback Requests"],
+    },
+    {
+      label: t("nav.systemSettings"),
+      icon: Cog,
+      to: "/system-settings",
+      requiredPermissions: ["Read System Settings"],
     },
   ];
 

@@ -86,6 +86,7 @@ class StoreSetting extends Model
                 'phone2' => ['label' => '', 'value' => ''],
             ],
             'social_links' => [],
+            'slides' => [],
         ];
     }
 }

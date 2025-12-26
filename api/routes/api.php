@@ -17,7 +17,10 @@ use App\Http\Controllers\Admin\AdminBlogPostController;
 use App\Http\Controllers\Admin\AdminProductReviewController;
 use App\Http\Controllers\Admin\AdminStoreSettingsController;
 use App\Http\Controllers\Admin\AdminCallbackRequestController;
+use App\Http\Controllers\Admin\AdminCatalogMenuController;
+use App\Http\Controllers\Admin\AdminSystemSettingController;
 use App\Http\Controllers\CustomerAuthController;
+use App\Http\Controllers\CustomerCatalogMenuController;
 use App\Http\Controllers\CustomerProductCategoryController;
 use App\Http\Controllers\CustomerProductController;
 use App\Http\Controllers\CustomerFileController;
@@ -115,6 +118,10 @@ Route::post('/callback-requests', [CallbackRequestController::class, 'store']);
 
 // Public comparison route (for shared links)
 Route::post('/comparisons/by-ids', [CustomerPublicComparisonController::class, 'getByIds']);
+
+// Catalog menus routes (public)
+Route::get('/catalog-menus', [CustomerCatalogMenuController::class, 'index']);
+Route::get('/catalog-menus/category/{categoryId}', [CustomerCatalogMenuController::class, 'show']);
 
 // Admin routes group with /admin prefix
 Route::prefix('admin')->group(function () {
@@ -278,5 +285,29 @@ Route::prefix('admin')->group(function () {
         Route::delete('callback-requests/{id}', [AdminCallbackRequestController::class, 'destroy'])->middleware('permission:Delete Callback Request');
         Route::post('callback-requests/bulk-delete', [AdminCallbackRequestController::class, 'bulkDelete'])->middleware('permission:Delete Callback Request');
         Route::post('callback-requests/bulk-update-status', [AdminCallbackRequestController::class, 'bulkUpdateStatus'])->middleware('permission:Update Callback Request');
+
+        // Catalog menus management routes with permissions
+        Route::get('catalog-menus/category/{categoryId}', [AdminCatalogMenuController::class, 'show'])->middleware('permission:Read Catalog Menus');
+        Route::post('catalog-menus/category/{categoryId}', [AdminCatalogMenuController::class, 'store'])->middleware('permission:Update Catalog Menu');
+        Route::delete('catalog-menus/category/{categoryId}', [AdminCatalogMenuController::class, 'destroy'])->middleware('permission:Delete Catalog Menu');
+
+        // Catalog menu sections routes
+        Route::post('catalog-menus/{menuId}/sections', [AdminCatalogMenuController::class, 'addSection'])->middleware('permission:Update Catalog Menu');
+        Route::put('catalog-menus/sections/{sectionId}', [AdminCatalogMenuController::class, 'updateSection'])->middleware('permission:Update Catalog Menu');
+        Route::delete('catalog-menus/sections/{sectionId}', [AdminCatalogMenuController::class, 'deleteSection'])->middleware('permission:Update Catalog Menu');
+        Route::post('catalog-menus/{menuId}/sections/reorder', [AdminCatalogMenuController::class, 'reorderSections'])->middleware('permission:Update Catalog Menu');
+
+        // Catalog menu items routes
+        Route::post('catalog-menus/sections/{sectionId}/items', [AdminCatalogMenuController::class, 'addItem'])->middleware('permission:Update Catalog Menu');
+        Route::put('catalog-menus/items/{itemId}', [AdminCatalogMenuController::class, 'updateItem'])->middleware('permission:Update Catalog Menu');
+        Route::delete('catalog-menus/items/{itemId}', [AdminCatalogMenuController::class, 'deleteItem'])->middleware('permission:Update Catalog Menu');
+        Route::post('catalog-menus/sections/{sectionId}/items/reorder', [AdminCatalogMenuController::class, 'reorderItems'])->middleware('permission:Update Catalog Menu');
+
+        // System settings management routes with permissions
+        Route::get('system-settings', [AdminSystemSettingController::class, 'index'])->middleware('permission:Read System Settings');
+        Route::get('system-settings/{type}', [AdminSystemSettingController::class, 'show'])->middleware('permission:Read System Settings');
+        Route::put('system-settings/{type}', [AdminSystemSettingController::class, 'update'])->middleware('permission:Update System Settings');
+        Route::patch('system-settings/{type}/toggle-active', [AdminSystemSettingController::class, 'toggleActive'])->middleware('permission:Update System Settings');
+        Route::delete('system-settings/{type}', [AdminSystemSettingController::class, 'destroy'])->middleware('permission:Delete System Settings');
     });
 });

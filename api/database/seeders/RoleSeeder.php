@@ -325,6 +325,44 @@ class RoleSeeder extends Seeder
             ],
         ];
 
+        // Створюємо permissions для управління меню каталогу
+        $catalogMenuPermissions = [
+            [
+                'name' => 'Read Catalog Menus',
+                'type' => Permission::TYPE_READ,
+                'group' => 'Catalog Menus',
+            ],
+            [
+                'name' => 'Update Catalog Menu',
+                'type' => Permission::TYPE_UPDATE,
+                'group' => 'Catalog Menus',
+            ],
+            [
+                'name' => 'Delete Catalog Menu',
+                'type' => Permission::TYPE_DELETE,
+                'group' => 'Catalog Menus',
+            ],
+        ];
+
+        // Створюємо permissions для системних налаштувань
+        $systemSettingsPermissions = [
+            [
+                'name' => 'Read System Settings',
+                'type' => Permission::TYPE_READ,
+                'group' => 'System Settings',
+            ],
+            [
+                'name' => 'Update System Settings',
+                'type' => Permission::TYPE_UPDATE,
+                'group' => 'System Settings',
+            ],
+            [
+                'name' => 'Delete System Settings',
+                'type' => Permission::TYPE_DELETE,
+                'group' => 'System Settings',
+            ],
+        ];
+
         // Об'єднуємо всі permissions
         $allPermissions = array_merge(
             $rolePermissions,
@@ -340,7 +378,9 @@ class RoleSeeder extends Seeder
             $blogPostPermissions,
             $productReviewPermissions,
             $storeSettingsPermissions,
-            $callbackRequestPermissions
+            $callbackRequestPermissions,
+            $catalogMenuPermissions,
+            $systemSettingsPermissions
         );
 
         $createdPermissions = [];

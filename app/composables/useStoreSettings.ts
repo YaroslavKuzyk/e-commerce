@@ -21,6 +21,7 @@ export const useStoreSettings = () => {
           phone2: { label: '', value: '' },
         },
         social_links: [],
+        slides: [],
       }),
     }
   );
@@ -40,6 +41,8 @@ export const useStoreSettings = () => {
 
   const socialLinks = computed(() => storeSettings.value?.social_links || []);
 
+  const slides = computed(() => storeSettings.value?.slides || []);
+
   const footerWorkingHours = computed(() => storeSettings.value?.footer_working_hours || {
     weekdays: { label: 'Пн-Пт', from: '09:00', to: '20:00' },
     weekends: { label: 'Сб-Нд', from: '10:00', to: '20:00' },
@@ -57,5 +60,6 @@ export const useStoreSettings = () => {
     workingHours,
     footerWorkingHours,
     socialLinks,
+    slides,
   };
 };

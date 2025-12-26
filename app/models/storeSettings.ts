@@ -41,6 +41,11 @@ export interface SocialLink {
   followers?: string;
 }
 
+export interface Slide {
+  file_id: number;
+  link?: string;
+}
+
 export interface GeneralSettings {
   store_name: string;
   favicon_file_id: number | null;
@@ -58,6 +63,7 @@ export interface StoreSettings {
   working_hours: WorkingHours;
   footer_working_hours: FooterWorkingHours;
   social_links: SocialLink[];
+  slides: Slide[];
 }
 
 export interface IStoreSettingsProvider {

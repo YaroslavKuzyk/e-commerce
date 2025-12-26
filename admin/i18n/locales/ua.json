@@ -57,6 +57,7 @@
     "files": "Файли",
     "storeSettings": "Налаштування магазину",
     "callbackRequests": "Заявки на дзвінок",
+    "systemSettings": "Системні налаштування",
     "profile": "Профіль",
     "settings": "Налаштування",
     "logout": "Вихід"
@@ -371,6 +372,12 @@
       "urlPlaceholder": "https://...",
       "followersPlaceholder": "1.2M",
       "noLinksAdded": "Соціальні мережі не додано"
+    },
+    "slides": {
+      "title": "Слайдер",
+      "link": "Посилання (необов'язково)",
+      "linkPlaceholder": "/category/slug або https://...",
+      "noSlidesAdded": "Слайди не додано"
     }
   },
   "callbackRequests": {
